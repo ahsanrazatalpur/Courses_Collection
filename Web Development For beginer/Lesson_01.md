@@ -1,0 +1,1 @@
+WE have html and we have navlink to shift between page as we know we have lot of pages in our website  and in navlink we also provide links in the perticular homepage for direting the user to different pages in the website in navigation bars we have several options starting with company brand name  and logo that introduce or tell us about the website 
