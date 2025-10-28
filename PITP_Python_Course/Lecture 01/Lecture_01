@@ -1,0 +1,130 @@
+***                            What is a computer program ?                          ***
+A simple analogy : A recipe
+
+A recipe is a set of instruction for a person 
+A program is a set of instruction for a computer
+
+
+Think 
+You are a chef and recipe is a program and the kitchen is the tool for computer
+
+The computer follows your instruction exactly , without getting tired or making assumptions
+
+
+
+
+
+
+***                          What is a programing language                                  ***
+
+How do we talk to computer ?
+
+Computer only undersatnd binary 1s and 0s 
+
+This is like trying to talk to someone using on off clicks
+
+It is very difficult to human
+
+A programming language is a translator 
+
+It let us write instruction in language closer to english 
+
+A special program called (interpreter and compiler) that translate it into 0s and 1s for the computer 
+
+
+
+
+***                                 Why we are learning Python                                   ***
+
+Imagine many programming language 
+some are :
+          complex
+          simple
+    
+Python is known for being :
+  1. Readable (easy syntax)
+  2. Simple  (easy to understand closer to english)
+  3. Friendly (clear error message and huge community for help)
+
+
+
+
+
+***                                     Python Introduction                                       ***
+
+Python : The people programming language 
+
+Created by Guido Van Rossum in 1991
+Name after Monty Python not the snake
+High-Level ,interpreted programming language 
+known for simplicity and readibilty
+
+
+
+
+***                                        Key Features                                            ***
+
+1. Easy to learn and use
+2. Clear English like syntax
+3. Versatile (Used everywhere) 
+4 . Huge community Support 
+
+
+
+
+
+
+
+
+***                                        Why Python                                              ***
+
+1. Websites and Apps (Instagram, Spotify, Netflix)
+2. Data Analysis (Finding pattern in number and information)
+3. Automation (Making the computer , repetitive task for you remaining 1000 files, filling out forms)
+4. Artificial Inteligience (teaching computer learn and making decision)
+5. Games (Creating Simple games and graphic)
+
+
+
+
+
+
+***                                       Application of Python                                     ***
+
+1. Web Development (Django, Flask)
+2. Data Science (Pandas , numpy , Matplotlib)
+3. Machine Learning (TensorFlow)
+4. Automation /Scripting
+5. Game Development
+
+
+
+
+
+***                                       Python Ecosystem                                             ***
+
+1. Core Python  (syntax, Standard Library)
+2. Package & Libraries (Pip, conda, Pypi)
+3. Environments (Venv, conda)
+4. IDE and Tools
+  -  Jupyter Notebook : intactive coding + data Science 
+  - Vs code : Lightweight , multipurpose 
+  - PyCharm : Professional IDE
+  - Google Colab :  Cloud-based , no setup required 
+
+
+
+
+  ***                                     Installation                                                  ***
+
+ - Install python
+ - Instal Vs or any IDE 
+ - Create First file with .py extension 
+
+
+
+
+
+***                                    First Program in Python                                          ***
+
+print("Hello World!")
