@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up Form</title>
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Sign Up Form 🖊️</h1>
+
+        {% if submitted %}
+            <!-- Display submitted data -->
+            <div class="submitted-data">
+                <h2>Form Submitted ✅</h2>
+                <ul>
+                    <li><strong>Name:</strong> {{ name }}</li>
+                    <li><strong>Father Name:</strong> {{ father_name }}</li>
+                    <li><strong>Email:</strong> {{ email }}</li>
+                    <li><strong>Phone:</strong> {{ phone }}</li>
+                </ul>
+                <a href="/signup"><button>Fill Again</button></a>
+            </div>
+        {% else %}
+            <!-- Show the form -->
+            <form action="/signup-process" method="post">
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <input type="text" name="name" id="name" placeholder="Enter your name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="father_name">Father Name:</label>
+                    <input type="text" name="father_name" id="father_name" placeholder="Enter your father name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" name="email" id="email" placeholder="Enter your email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone:</label>
+                    <input type="tel" name="phone" id="phone" placeholder="Enter your mobile number" required>
+                </div>
+
+                <button type="submit">Submit</button>
+            </form>
+        {% endif %}
+    </div>
+</body>
+</html>

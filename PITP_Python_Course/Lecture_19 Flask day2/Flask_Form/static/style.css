@@ -1,0 +1,197 @@
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body with animated gradient background */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+    animation: bgColorChange 9s infinite alternate;
+}
+
+/* Twinkling stars overlay */
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    z-index: 0;
+}
+
+body::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200%;
+    height: 200%;
+    z-index: 0;
+    background-image:
+        radial-gradient(white 1px, transparent 1px),
+        radial-gradient(white 1px, transparent 1px),
+        radial-gradient(white 1px, transparent 1px),
+        radial-gradient(white 1px, transparent 1px),
+        radial-gradient(white 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: starsMove 5s linear infinite, starsTwinkle 2s infinite;
+}
+
+/* Stars movement and twinkle animation */
+@keyframes starsMove {
+    from { transform: translate(0,0); }
+    to { transform: translate(-100px,-50px); }
+}
+
+@keyframes starsTwinkle {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+/* Background color gradient animation */
+@keyframes bgColorChange {
+    0% { background: linear-gradient(120deg, #1e3c72, #2a5298); }
+    25% { background: linear-gradient(120deg, #ff512f, #dd2476); }
+    50% { background: linear-gradient(120deg, #11998e, #38ef7d); }
+    75% { background: linear-gradient(120deg, #ee0979, #ff6a00); }
+    100% { background: linear-gradient(120deg, #1e3c72, #2a5298); }
+}
+
+/* Form container */
+.container {
+    position: relative; /* above stars */
+    z-index: 1;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 50px 60px;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+    width: 450px;
+    text-align: center;
+    animation: floatForm 6s ease-in-out infinite;
+}
+
+/* Floating animation */
+@keyframes floatForm {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+/* Heading */
+.container h1 {
+    font-size: 30px;
+    margin-bottom: 40px;
+    color: #222;
+    letter-spacing: 1px;
+    position: relative;
+}
+
+.container h1::after {
+    content: "";
+    display: block;
+    width: 70px;
+    height: 3px;
+    background: linear-gradient(to right, #007BFF, #00d4ff);
+    margin: 12px auto 0 auto;
+    border-radius: 3px;
+}
+
+/* Form groups */
+.form-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 20px 0;
+    line-height: 2;
+    opacity: 0;
+    transform: translateX(-50px);
+    animation: slideIn 0.8s forwards;
+}
+
+.form-group:nth-child(1) { animation-delay: 0.2s; }
+.form-group:nth-child(2) { animation-delay: 0.4s; }
+.form-group:nth-child(3) { animation-delay: 0.6s; }
+
+/* Labels */
+label {
+    flex: 1;
+    font-weight: 600;
+    color: #444;
+    letter-spacing: 0.5px;
+    text-align: left;
+    margin-right: 20px;
+}
+
+/* Inputs */
+input {
+    flex: 2;
+    padding: 16px 18px;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    background: #f0f0f5;
+    box-shadow: inset 2px 2px 6px rgba(0,0,0,0.1), inset -2px -2px 6px rgba(255,255,255,0.7);
+    transition: all 0.4s ease;
+}
+
+input:focus {
+    background: #e8f1ff;
+    box-shadow: 0 0 12px rgba(0,123,255,0.5);
+    outline: none;
+    transform: scale(1.05);
+}
+
+/* Submit Button */
+button {
+    width: 100%;
+    padding: 16px;
+    margin-top: 20px;
+    background: linear-gradient(45deg, #007BFF, #00d4ff);
+    border: none;
+    border-radius: 14px;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    box-shadow: 0 5px 18px rgba(0,123,255,0.4);
+}
+
+button:hover {
+    background: linear-gradient(45deg, #0056b3, #00a8d4);
+    box-shadow: 0 8px 25px rgba(0,123,255,0.6);
+    transform: translateY(-2px) scale(1.03);
+}
+
+/* Slide-in animation for form items */
+@keyframes slideIn {
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+    .container {
+        width: 90%;
+        padding: 35px 25px;
+    }
+    .form-group {
+        flex-direction: column;
+        align-items: flex-start;
+        margin: 20px 0;
+    }
+    label {
+        margin-bottom: 10px;
+    }
+    input {
+        width: 100%;
+    }
+}

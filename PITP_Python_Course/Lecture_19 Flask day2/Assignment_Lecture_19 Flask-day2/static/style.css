@@ -1,0 +1,99 @@
+/* Global page styling */
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #74b9ff, #a29bfe);
+  color: #333;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Form container */
+form {
+  background: #fff;
+  padding: 25px 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Headings */
+h1 {
+  text-align: center;
+  color: #2d3436;
+  margin-bottom: 20px;
+}
+
+/* Labels and Inputs */
+label {
+  display: block;
+  margin-top: 10px;
+  font-weight: 600;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  outline: none;
+  transition: 0.2s ease-in-out;
+}
+
+input:focus, textarea:focus {
+  border-color: #0984e3;
+  box-shadow: 0 0 5px rgba(9, 132, 227, 0.3);
+}
+
+/* Submit Button */
+button {
+  width: 100%;
+  background: #0984e3;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 15px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background: #74b9ff;
+}
+
+/* Messages */
+p {
+  text-align: center;
+  font-weight: 600;
+  color: #2d3436;
+  margin-top: 20px;
+}
+
+/* Submitted data section */
+div {
+  background: #dfe6e9;
+  padding: 10px;
+  border-radius: 8px;
+  margin-top: 15px;
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  form {
+    padding: 20px;
+  }
+
+  body {
+    padding: 10px;
+  }
+}
