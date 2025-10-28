@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <p id="demo"> </p>
+    <p id="p1"> </p>
+    <p id="p2"> </p>
+    <p id="p3"> </p>
+    <script>
+        function Person(first, last, age, eye) {
+            this.firstName = first;
+            this.lastName = last;
+            this.age = age;
+            this.eyeColor = eye;
+        }
+
+        const myFather = new Person("John", "Doe", 50, "blue");
+
+
+        document.getElementById("demo").innerHTML =
+            "My father Name is  " + myFather.firstName + ".";
+        document.getElementById("p1").innerHTML =
+            "My father Last name is " + myFather.lastName + ".";
+        document.getElementById("p2").innerHTML =
+            "My father Age is " + myFather.age + ".";
+        document.getElementById("p3").innerHTML =
+            "My father eye is " + myFather.eyeColor + ".";
+    </script>
+</body>
+
+</html>

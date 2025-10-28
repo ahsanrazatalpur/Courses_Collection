@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form In HTML CSS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+
+        .form_container {
+            height: 600px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+
+        }
+
+        form {
+            height: 500px;
+            width: 700px;
+            border: 2px solid black;
+            border-radius: 25px;
+            background-color: #3ad6f2;
+
+
+        }
+
+        form h1 {
+            text-align: center;
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+            margin-top: 8px;
+        }
+
+        .form_content {
+            margin-top: 20px;
+            text-indent: 10px;
+
+        }
+
+        .form_submit {
+            padding: 0.5rem 2rem;
+            text-decoration: none;
+            color: white;
+            background-color: #555;
+            border-radius: 5px;
+            margin: 50px 280px;
+
+        }
+
+        .form_submit:hover {
+            background-color: #444;
+        }
+
+        .form_content input {
+            margin: 5px auto;
+        }
+
+        .form_content label {
+            text-indent: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form_container">
+        <form action="">
+            <h1>Fill the Form</h1>
+            <div class="form_content">
+                <label for="name">Name : </label>
+                <input type="text" name="name" id="name" placeholder="Enter your name">
+                <label for="f_name">Father's Name: </label>
+                <input type="text" placeholder="Enter your fathers name"> <br>
+                <label for="age">Age : </label>
+                <input type="text" placeholder="Enter your age">
+
+                <label for="age">Phone : </label>
+                <input type="tel" placeholder="Enter your Phone Number"><br>
+                <label for="Address">Address : </label>
+                <input type="text" placeholder="Enter your Full Address">
+
+                <label for="age">City : </label>
+                <input type="text" placeholder="Enter your City"><br>
+
+                <label for="age">Domicile : </label>
+                <input type="text" placeholder="Enter your Domicile city">
+
+                <label for="select-multiple">Your Favourite Color :</label>  
+                <input type="color" name="" id=""><br>
+
+                <label for="">Enter Your Email Address</label>
+                <input type="email" name="" id=""><br>
+
+                <label for="hobby">Your Hobby: </label>
+                <label for="hobby">Driving</label>
+                <input type="checkbox" name="hobby" id="hobby">
+                <label for="hobby">Reading</label>
+                <input type="checkbox" name="hobby" id="hobby">
+                <label for="hobby">Skatting</label>
+                <input type="checkbox" name="hobby" id="hobby">
+
+                <label for="">Image : </label>
+                <input type="file" name="" id=""><br>
+
+                <label for="">Choose Your Favourite Number : </label>
+                <input type="number" name="" id="">
+
+                <label for="">Choose DateTime</label>
+                <input type="datetime-local" name="" id=""> <br>
+
+                <label for="">Choose your password</label>
+                <input type="password" name="" id="">
+                <label for="">Enter password again</label>
+                <input type="password" name="" id=""> <br>
+
+                <label for="test">Choose One: </label>
+                <label for="test">Girlfriend</label>
+                <input type="radio" name="test" id="test">
+                <label for="test">Friend</label>
+                <input type="radio" name="test" id="test">
+                <label for="test">100000$</label>
+                <input type="radio" name="test" id="test">
+
+                <label for="">Choose your City</label>
+                <select name="" id="">
+                    <option value="" disabled selected>Choose Your City</option>
+                    <option value="">Badin</option>
+                    <option value="">Hyderabad</option>
+                    <option value="">Karachi</option>
+                </select> <br>
+
+                <label for="">Your Strength</label>
+                <input type="range" name="" id="">
+                <label for="">Serarch anything</label>
+                <input type="search" name="" id=""> <br>
+
+                <a class="form_submit" href="">Submit</a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>

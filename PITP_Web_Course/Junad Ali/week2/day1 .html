@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS Hands-on Task</title>
+  <style>
+    /* Task 1: Paragraph Styling */
+    .para-style {
+      color: darkblue;           /* text color */
+      text-align: justify;       /* text alignment */
+      font-size: 18px;
+    }
+
+    /* Task 2: Box Model Layout */
+    .box {
+      background-color: lightblue;
+      border: 3px solid navy;
+      padding: 20px;
+      margin: 30px;
+      width: 350px;
+    }
+
+    .inner-box {
+      background-color: white;
+      border: 2px dashed gray;
+      padding: 10px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>CSS Hands-on Task</h1>
+
+  <!-- Box Model Example -->
+  <div class="box">
+    <h2>Main Box</h2>
+    <p class="para-style">
+      This paragraph is styled using a custom CSS class.
+      The text is dark blue and justified. The box around it uses
+      margins, padding, and borders to demonstrate the CSS box model.
+    </p>
+
+    <div class="inner-box">
+      <p class="para-style">
+        This is an inner box with its own border and padding.
+        The CSS box model helps control spacing and layout of web elements.
+      </p>
+    </div>
+  </div>
+</body>
+</html>

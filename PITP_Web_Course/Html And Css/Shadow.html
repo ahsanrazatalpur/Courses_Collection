@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shadow</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            /* box-shadow: 2px 2px 2px rgba(185, 6, 6, 0.8); */
+            box-shadow: 5px 10px 18px rgb(39, 36, 36),
+            inset 2px 2px 3px red;  /*inset :  inner shadow*/
+            border: 5px solid black;
+            margin: 100px auto;
+        }
+        p{
+            text-shadow: 2px 3px 5px rgb(143, 50, 205);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        margin-top: 160px;
+        font-size: 50px;
+        font-weight: bolder;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <p>Text Shadow</p>
+        <!-- There are two types of shadow
+
+        1. text shadow  for text
+        2. box shadow  for box
+        5px → shadow moves right
+box-shadow : 5px, 5px, 15px, grey;
+5px → shadow moves right
+5px → shadow moves down
+15px → blur (softness)
+gray → color of the shadow
+        -->
+    </div>
+</body>
+
+</html>

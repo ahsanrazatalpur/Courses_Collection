@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .img_container {
+            width: 100%;
+            height: 590px;
+        }
+
+        img {
+            height: 400px;
+            width: 600px;
+            display: block; /*img is inline by default so make img display block so it become center on x and y axis*/
+            margin: 100px auto;
+            float: right; /* make img on right of parent */
+            float: left;/* make img on left of parent */
+            float: inline-start; /* make img on left of parent */
+            float: inline-end; /* make img on right of parent */
+
+        }
+    </style>
+</head>
+
+<body>
+    <div class="img_container">
+        <img src="https://images.pexels.com/photos/145939/pexels-photo-145939.jpeg" alt="">
+    </div>
+   
+</body>
+
+</html>

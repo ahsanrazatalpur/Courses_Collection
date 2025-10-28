@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flex_ShortHand</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .container{
+            height: 400px;
+            width: 800px;
+            background-color: #cf4879;
+            border: 2px solid black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 100px auto;
+        }
+        .box{
+            height: 100px;
+            width: 100px;
+            margin: 10px;
+        }
+        .box1{
+            background-color: #47b913;
+            flex: 2 3 20px;
+        }
+        .box2{
+            background-color: #de7035;
+            flex: 2 2 50px;
+        }
+        .box3{
+            background-color: #a511ab;
+            flex: 1 1 120px;
+        }
+    </style>
+</head>
+<body>
+    <!-- flex: <grow> <shrink> <basis>; -->
+
+    <div class="container">
+        <div class="box box1">Box 1</div>
+        <div class="box box2">Box 2</div>
+        <div class="box box3">Box 3</div>
+    </div>
+    
+</body>
+</html>

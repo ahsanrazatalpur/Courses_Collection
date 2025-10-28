@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Tags implementation</title>
+</head>
+
+<body>
+    <h1>All Tags implementation in HTML</h1>
+    <hr>
+    <!-- h1 to h6 for heading -->
+    <h1>Most important heading</h1>
+    <h2>Less important heading</h2>
+    <h3>More Less important heading</h3>
+    <h4>Most less important heading</h4>
+    <h5> important heading</h5>
+    <h6>Least important heading</h6>
+    <hr>
+
+
+    <!-- p tag used to write paragraph -->
+    <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Earum, amet?</p>
+    <hr>
+
+
+    <!-- <hr> tag used for horizental line -->
+    <hr>
+    <hr <!-- a tag used to create hyper link to land on any other location or page -->
+    <a href="path">Link</a>
+    <hr>
+
+
+    <!-- img tag used to link or diplay img -->
+    <img src="path" alt="text for browser">
+    <hr>
+
+
+    <!-- <ul> used for Unordered list -->
+    <ul>
+        <li>Green</li>
+        <li>Blue</li>
+        <li>Red</li>
+    </ul>
+    <hr>
+
+
+    <!-- <li> tag used for list item -->
+    <li></li>
+    <hr>
+
+    <!-- <ol> used for making order list -->
+    <ol>
+        <li>Monday</li>
+        <li>Tuesday</li>
+        <li>Wednesday</li>
+    </ol>
+    <hr>
+
+
+    <!-- dl used for discription list
+     <dl> mean defination list like container for List
+     <dt> means defination term like heading of a List
+     <dd> mean description defination  like content for heading -->
+    <dl>
+        <dt>Name :</dt>
+        <dd>Ahsan</dd>
+
+        <dt>Age :</dt>
+        <dd>20</dd>
+
+        <dt>Profession :</dt>
+        <dd>Web Developer</dd>
+    </dl>
+    <hr>
+
+
+
+    <!-- table -->
+    <!-- <th> mean table heading used to create heading of a table (bold text)
+ <tr> means tabble row used to create row in table
+ <td> mean table data used to create table data -->
+    <table>
+        <tr>
+            <th> Name </th>
+            <th> Age </th>
+            <th> Profeession </th>
+        </tr>
+        <tr>
+            <td>Ahsan</td>
+            <td>20</td>
+            <td>Web Developer</td>
+        </tr>
+    </table>
+    <hr>
+
+
+    <!-- Semantic tags for container 
+three sematic container for table 
+table used to create table 
+thead used to create table head container
+tbody used to create table body container
+tfoot container used to create foot container for table 
+-->
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Profession</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Ahsan Raza</td>
+                <td>22</td>
+                <td>Web Developer</td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td>Ali Raza</td>
+                <td>25</td>
+                <td>Pharmacy</td>
+            </tr>
+        </tfoot>
+    </table>
+    <hr>
+
+
+    <!-- form tag used to create form like a container of form and all input inside form -->
+    <form action="">
+        <input type="text" name="" id="" placeholder="Enter Your Name">
+        <input type="text" name="" id="" placeholder="Enter Your Age">
+        <input type="submit" value="Submit">
+    </form>
+    <hr>
+
+
+    <!-- textarea tag used to cretae multi line text
+  have attribute like row decide how much rows
+  and cols decide how much columns -->
+    <textarea name="" id="" placeholder="Enter your hobbies" rows="3" cols="5"></textarea>
+    <hr>
+
+
+    <!-- input tag used to talk any type of input
+have attribute placeholder for default text  -->
+    <input type="text" placeholder="enter text">
+    <hr>
+
+
+    <!-- button used to ceate any type of button  -->
+    <button>Click Here</button>
+    <hr>
+
+
+    <!-- select used to create multiple option like drop down 
+ have attribute like selected mean by default selected and disables mean that link disable
+ and select content option inside-->
+    <select name="" id="">
+        <option value="" selected disabled>City</option>
+        <option value=""> Badin</option>
+        <option value=""> Hyderabad</option>
+        <option value=""> Karachi</option>
+    </select>
+    <hr>
+
+    <!-- iframe used to link any external link, img, audio, video  or other html page-->
+    <iframe src="" frameborder="0"></iframe>
+    <hr>
+
+
+    <!-- <script src="path"></script> used to link JavaScript sheet -->
+    <hr>
+
+
+    <!-- noscript use for sefault text when JavaScript sheet is not working -->
+    <noscript>Somethig error with your browser ! </noscript>
+    <hr>
+
+
+    <!-- div genric container for styling and layout it is block element -->
+    <div style="background-color: red; width: 50px; height: 50px;">Content</div>
+    <hr>
+
+
+
+    <!-- span tag is also genric container but it is inline used to Highlight or select bw content -->
+    <p>Hi there my name is <span style="font-weight: bold;">Ahsan Raza</span></p>
+    <hr>
+
+
+    <!-- strong tag used to make text bolder It is semantic tag for highlight or important text while other
+ font-weight and b tag are non-sematic tags prefer  strong for makung text bold for seo-->
+    <strong>Dil Dil Pakistan</strong>
+    <hr>
+
+
+    <!-- em tag for making text emphasis , italic It is sematic tag while other i tag for italic text is non-sematic -->
+    <em>This is a sample of em tag</em>
+    <hr>
+
+
+    <!-- small tag used to make our text smaller It is also semantic tags -->
+    <small>This is smaller text</small>
+    <hr>
+
+
+    <!-- code tag used for write a code of any language and it display the code It is semantic tag for wirte
+ or dispaly code -->
+    <code>print("Hello World")</code>
+    <hr>
+
+    <!-- pre tag used to show output or context same output as it is mean do niot ignore whitespace and linespace -->
+    <pre>This is sample 
+                       Text to test
+                                                       the work of pre tag
+ </pre>
+    <hr>
+
+    <!-- q tag used to give double quote to smaller text , It is semantic tag-->
+    <p>My name is <q>Ahsan Raza</q></p>
+    <hr>
+
+
+    <!-- blockqute tag used to make content block and give some indent -->
+    <blockquote>Used to make text block and give some indent</blockquote>
+    <hr>
+
+
+    <!-- abbr tag used to give abbrevation mean full form of short form when user hover on it , it is semantic tag -->
+    <abbr title="Hyper Text Markup language">HTML</abbr> is simple language
+    <hr>
+
+
+    <!-- acronym  It is also same as abbr used for full form of short form but it is not valid in Html5 and 
+ also it is only used for one word short form mean short form but pronounse like a single word like
+ NASA, SUTA, US, -->
+    <acronym title="This is acronym">acr</acronym>
+    <hr>
+
+
+    <!-- dfn used for any defination , It make text italic , It is semantic for defination only the term
+that being defined not whole defination -->
+    <dfn>HTML</dfn>stand for hyper text makeup lanuage, It used to make web Layoput structire
+    <hr>
+
+
+    <!-- var for variable in maths expression , It make var italic and it is semantic tag only for variable-->
+ <p>The formula for area of cicle is <var>A = L x W</var></p>
+<hr>
+
+
+
+
+<!-- kbd for keyboard input , mean the key that user have to press on keyboard, It is semantic tag -->
+ <p>presss <kbd>Ctrl + c</kbd> for copy the text</p>
+ <p>Press <kbd>Ctrl + v</kbd> for paste copied text</p>
+<hr>
+
+
+
+<!-- tt mean teletype (older printer like text) , it is non-semantic , but it is not valid in Html5-->
+ <tt>Hi There it is tt sample</tt>
+<hr>
+
+
+
+<!-- samp used foe sample output from computer or program not just text it is sematic tag -->
+ <p><code>print("hello world")</code>output : <samp>hello world</samp></p>
+<hr>
+
+
+<!-- map used for  clickable area on img-->
+<map name="">This is map</map>
+
+<!-- area used with map and img atg define  means which area -->
+
+<!-- 
+<img>, <map>, and <area> work together to create clickable areas on an image.
+<img> uses the 'usemap' attribute to link to a <map>.
+<map> contains <area> elements defining clickable regions.
+-->
+<img src="world-map.jpg" alt="World Map" usemap="#worldmap">
+
+<map name="worldmap">
+    <area shape="rect" coords="34,44,270,350" href="asia.html" alt="Asia">
+    <area shape="circle" coords="500,150,60" href="africa.html" alt="Africa">
+    <area shape="poly" coords="130,200,180,230,220,180" href="europe.html" alt="Europe">
+</map>
+<hr>
+
+
+
+
+
+
+
+
+
+</body>
+
+</html>

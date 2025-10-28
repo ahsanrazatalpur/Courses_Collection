@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=<device-width>, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <p id="demo"></p>
+    <p id="demo2"></p>
+    <p id="demo3"></p>
+    <p id="demo4"></p>
+    <script>
+        const myArray = ["Ford", "BMW", "Fiat"];
+        document.getElementById("demo").innerHTML = myArray;
+    </script>
+
+    <script>
+        const myJSON = '["Ford", "BMW", "Fiat"]';
+        const myArray2 = JSON.parse(myJSON);
+        document.getElementById("demo2").innerHTML = myArray2;
+    </script>
+
+    <script>
+        const myJSON2 = '["Ford", "BMW", "Fiat"]';
+        const myArray3 = JSON.parse(myJSON2);
+        document.getElementById("demo3").innerHTML = myArray3[0];
+    </script>
+
+    <script>
+        const myJSON3 = '{"name":"John", "age":30, "cars":["Ford", "BMW", "Fiat"]}';
+        const myObj3 = JSON.parse(myJSON3);
+
+        document.getElementById("demo4").innerHTML = myObj3.cars[0];
+    </script>
+
+</body>
+
+</html>

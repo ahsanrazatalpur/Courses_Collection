@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <label> value </label>
+    <input type="number" id="n" />
+    <button onclick="mytest()"> Click here </button>
+
+    <script>
+        function mytest() {
+            let x = document.getElementById("n").value;
+
+            let y = Number(x);
+
+            switch (y) {
+                case 1:
+
+                    {
+                        alert("Monday");
+                    }
+                    break;
+                case 2:
+                    {
+                        alert("Tuesday");
+                    }
+                    break;
+                case 3:
+                    {
+                        alert("wednessday");
+                    }
+                    break;
+                case 4:
+                    {
+                        alert("Thursday");
+                    }
+                    break;
+                case 5:
+                    {
+                        alert("Friday");
+                    }
+                    break;
+                case 6:
+                    {
+                        alert("Saturday");
+                    }
+                    break;
+                case 7:
+                    {
+                        alert("Sunday");
+                    }
+                    break;
+                default:
+                    {
+                        alert("Wrong");
+                    }
+
+            }
+        }
+    </script>
+
+</body>
+
+</html>

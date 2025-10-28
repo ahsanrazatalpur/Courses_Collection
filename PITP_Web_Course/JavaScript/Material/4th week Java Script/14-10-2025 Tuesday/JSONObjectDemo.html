@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+
+    <h2>Creating an Object from a JSON Literal</h2>
+    <p id="demo"></p>
+    <p id="demo2"></p>
+    <p id="demo3"></p>
+
+    <script>
+        const myObj = {
+            "name": "Chettan Parkash",
+            "age": 30,
+            "car": null
+        };
+        document.getElementById("demo").innerHTML = myObj.name;
+    </script>
+
+    <script>
+        const myJSON = '{"name":"Chettan parkash", "age":30, "car":null}';
+        const myObj2 = JSON.parse(myJSON);
+        document.getElementById("demo2").innerHTML = myObj2.name;
+    </script>
+
+
+    <script>
+        const myJSON2 = '{"name":"Chettan Parkash", "age":30, "car":null}';
+        const myObj3 = JSON.parse(myJSON2);
+        document.getElementById("demo3").innerHTML = myObj3["name"];
+    </script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script>
+        function validateForm() {
+            let x = document.forms["myForm"]["uname"].value;
+            let y = document.forms["myForm"]["pas"].value;
+            if (x == "laar" && y == "laar123") {
+                alert("login success ");
+
+            } else {
+                alert("login failed");
+            }
+
+        }
+    </script>
+    <style>
+        #body {
+            background-color: brown;
+        }
+        
+        #form {
+            background-color: aquamarine;
+            background-repeat: none;
+            align-items: center;
+        }
+        
+        #l1 {
+            font-size: 16px;
+            font-family: 'Courier New', Courier, monospace;
+            color: black;
+        }
+        
+        #l2 {
+            font-size: 16px;
+            font-family: 'Courier New', Courier, monospace;
+            color: black;
+        }
+        
+        #f1 {
+            font-size: large;
+            font-family: 'Times New Roman', Times, serif;
+            color: brown width: 14px;
+            text-align: center;
+            height: 20px;
+        }
+        
+        #f2 {
+            font-size: large;
+            font-family: 'Times New Roman', Times, serif;
+            scroll-padding-block-end: 15px;
+            line-break: auto;
+            color: brown width: 50px;
+            height: 20px;
+            text-align: center;
+        }
+        
+        #btn {
+            width: 100px;
+            height: 50px;
+            background-color: blueviolet;
+            color: black;
+            text-align: center;
+            margin: 20px;
+            padding: 20px;
+            align-items: center;
+        }
+    </style>
+
+</head>
+
+<body style="background-color: brown;">
+
+
+    <div id="form">
+        <form name="myForm" action="#" onsubmit="validateForm()" method="post">
+
+            <label id="l1"> User Name </label>
+            <input type="text" name="uname" id="f1"><br><br>
+            <label id="l2"> Password </label>
+            <input type="password" name="pas" id="f2"><br><br>
+            <input type="submit" value="Submit" id="btn">
+        </form>
+    </div>
+</body>
+
+</html>

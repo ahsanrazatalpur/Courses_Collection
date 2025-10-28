@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+
+    <h2>Access a JavaScript object</h2>
+    <p id="demo"></p>
+    <p id="demo2"></p>
+    <p id="demo3"></p>
+    <p id="demo4"></p>
+    <script>
+        const myObj = {
+            name: "Fizan",
+            age: 22,
+            city: "Badin"
+        };
+        document.getElementById("demo").innerHTML = myObj.name;
+    </script>
+
+
+    <script>
+        const myObj2 = {
+            name: "Junid",
+            age: 22,
+            city: "Badin"
+        };
+        document.getElementById("demo2").innerHTML = myObj2["name"];
+    </script>
+    <p id="demo"></p>
+
+    <script>
+        const myObj3 = {
+            name: "CS",
+            age: 30,
+            city: "Badin"
+        };
+        myObj3.name = "BBA";
+        document.getElementById("demo3").innerHTML = myObj3.name;
+    </script>
+
+    <script>
+        const myObj4 = {
+            name: "English",
+            age: 30,
+            city: "Badin"
+        };
+        myObj4["name"] = "CS";
+        document.getElementById("demo4").innerHTML = myObj4.name;
+    </script>
+</body>
+
+</html>

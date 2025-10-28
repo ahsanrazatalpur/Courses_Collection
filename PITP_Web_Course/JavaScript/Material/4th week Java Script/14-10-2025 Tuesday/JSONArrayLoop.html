@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+
+    <h2>Looping an Array</h2>
+    <p id="demo"></p>
+    <p id="demo2"></p>
+    <p id="demo3"></p>
+
+    <script>
+        const myJSON = '{"name":["ab","Ac","Ad"], "age":[30,22,25,40], "cars":["Ford", "BMW", "Fiat"]}';
+        const myObj = JSON.parse(myJSON);
+
+        let text = "";
+        for (let i in myObj.cars) {
+            text += myObj.cars[i] + ", ";
+        }
+
+        document.getElementById("demo").innerHTML = text;
+
+        let text2 = "";
+        for (let i in myObj.name) {
+            text2 += myObj.name[i] + ", ";
+        }
+
+        document.getElementById("demo2").innerHTML = text2;
+    </script>
+
+    <script>
+        let text3 = "";
+        for (let i in myObj.age) {
+            text3 += myObj.age[i] + ", ";
+        }
+
+        document.getElementById("demo3").innerHTML = text3;
+    </script>
+</body>
+
+</html>

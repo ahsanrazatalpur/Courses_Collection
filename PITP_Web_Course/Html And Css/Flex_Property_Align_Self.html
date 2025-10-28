@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Align Selft</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .container{
+            height: 400px;
+            width: 800px;
+            background-color: #2cef7a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 100px auto;
+        }
+        .box{
+            height: 100px;
+            width: 100px;
+            margin: 10px;
+        }
+        .box1{
+            background-color: #d75c5c;
+            align-self: center;
+        }
+        .box2{
+            background-color: #3650d4;
+            align-self: flex-start;
+        }
+        .box3{
+            background-color: #935cd7;
+            align-self: flex-end;
+        }
+    </style>
+</head>
+<body>
+    <!-- same as align item (on container) but it apply on box(child it self) not container -->
+    <div class="container">
+        <div class="box box1">Box 1</div>
+        <div class="box box2">Box 2</div>
+        <div class="box box3">Box 3</div>
+    </div>
+</body>
+</html>

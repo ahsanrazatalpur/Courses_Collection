@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flex_Properties</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .container{
+            height: 400px;
+            width: 800px;
+            background-color: #b468c9;
+            border: 2px solid black;
+            margin: 100px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .box{
+            height: 100px;
+            width: 100px;
+            margin: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .box1{
+            background-color: #cb0909;
+            order: 2;
+        }
+        .box2{
+            background-color: #09c8cb;
+            order: 4;
+
+        }
+        .box3{
+            background-color: #7709cb;
+            order: 3;
+        }
+    </style>
+</head>
+<body>
+    <!-- Flex property : order to use order (flex property) make its parent flex , greater the order last the position or  less order apear first 
+    eg : 2 box in flex container   box 1 = order 2    box2 = order = 1 so box 2 come/apear first -->
+    <div class="container">
+        <div class="box box1">Box 1</div>
+        <div class="box box2">Box 2</div>
+        <div class="box box3">Box 3</div>
+    </div>
+</body>
+</html>

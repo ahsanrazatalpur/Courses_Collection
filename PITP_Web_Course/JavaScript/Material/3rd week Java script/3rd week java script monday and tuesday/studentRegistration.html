@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h2>Student Registration Form</h2>
+
+        <div class="form-group">
+            <label for="fullName">Full Name:</label>
+            <input type="text" id="fullName" name="fullName" required>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+
+        <div class="form-group">
+            <label for="dob">Date of Birth:</label>
+            <input type="date" id="dob" name="dob" required>
+        </div>
+
+        <div class="form-group">
+            <label for="gender">Gender:</label>
+            <select id="gender" name="gender" required>
+                    <option value="">Select Gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                </select>
+        </div>
+
+        <div class="form-group">
+            <label for="course">Course:</label>
+            <input type="text" id="course" name="course" required>
+        </div>
+
+        <div class="form-group">
+            <label for="address">Address:</label>
+            <textarea id="address" name="address" rows="4" required></textarea>
+        </div>
+
+        <button onclick="getName()"> Submit </button>
+
+
+    </div>
+
+    <script>
+        function getName() {
+            let name = document.getElementById("fullName").value;
+            let mail = document.getElementById("email").value;
+            let com = document.getElementById("dob").value;
+            let gen = document.getElementById("gender").value;
+            let cos = document.getElementById("course").value;
+            let ad = document.getElementById("address").value;
+            document.write("Full Name : " + name + "<br>  Email :  " + mail + "<br> Course:   " + com + "<br> Gender  " + gen + "<br>  Course " + cos + "<br> Address " + ad);
+        }
+    </script>
+</body>
+
+</html>

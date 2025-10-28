@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Positions in CSS</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+There are 5 types of position in CSS
+ 1. Static(By default) : It means the element cannot be moved using top, right, bottom, or left.
+    It is used to reset an element or confirm that no other positioning is applied.
+
+2. Relative:(move with itself) It allows moving the element using top, right, bottom, or left, but it does not affect 
+    the layout — the element still keeps its original space in the page flow.
+
+3. Absolute :(change pisition to relevant to its parent only whose who have position else no if no position to ancecot
+then find most top parent) It removes the element from the normal layout flow and positions it relative to its nearest 
+   positioned ancestor (or the viewport if none). It can be moved freely using top, right, bottom, left.
+
+4. Fixed :It removes the element from the normal layout flow and positions it relative to the viewport, 
+    so it stays in the same place even when scrolling. It can be moved using top, right, bottom, left. 
+
+5. Sticky :It behaves like relative until you scroll past a certain point, then it becomes fixed (sticks) at
+    a defined position using top, right, bottom, or left.
+    
+</body>
+</html>

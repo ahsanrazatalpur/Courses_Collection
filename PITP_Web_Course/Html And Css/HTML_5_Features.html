@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML-5 features</title>
+</head>
+
+<body>
+    <h1>HTML 5 features</h1>
+    <h2>New Semantic Tags </h2>
+    <ul>
+        <li>Header</li>
+        <li>Footer</li>
+        <li>Article</li>
+        <li>Aside</li>
+        <li>Nav</li>
+    </ul>
+    <hr>
+    <h1>Image</h1>
+    <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e" alt="beach view" width="400" height="300">
+    <hr>
+    <h1>Video</h1>
+    <video src="https://www.w3schools.com/html/mov_bbb.mp4" controls>See Vide</video>
+    <hr>
+    <h1>New Forms Input</h1>
+    <input type="email">
+    <input type="date">
+    <input type="range">
+    <input type="color">
+    <input type="number">
+    <input type="url">
+    <input type="search">
+    <input type="tel">
+    <hr>
+    <h1>For Graphic Animation</h1>
+    <p>canvas and svg mostly used in games</p>
+    <hr>
+    <h1>Local Storage</h1>
+    <p>Local storage mean data still remain on browser even closing the browser</p>
+    localStorage.setItem("username", "Ahsan")
+    <h1>Session Storage </h1>
+    <p>data removed when browser is closed</p>
+    <hr>
+    <h1> Geolocation API</h1>
+    <p>use to get user location with permission</p>
+    navigator.geolocation.getCurrentPosition(showPosition);
+    <hr>
+    <h1>Offline Application</h1>
+    <p>HTML 5 alow website to work offline with the help of chache or service worker</p>
+    <hr>
+    <h1>New APIS</h1>
+    <p>HTML5 introduced powerful APIs for modern web apps</p>
+    <ul>
+        <li>Drag and drop APi</li>
+        <li>Canvas Api</li>
+        <li>Web browser (background-working)</li>
+    </ul>
+    <h1>Improved Accessibility & SEO</h1>
+    <p>Semantic elements + alt text + structure help screen readers and search engines understand your content better.
+    </p>
+    <hr>
+    <h1>Doctype Simplified</h1>
+    <p>Old HTML4 Doctype was long; now it’s short and clean</p>
+    <h1>More Detail</h1>
+    <p>Iframe is not used for directly img it is use when we embeded other web content</p>
+    <p>Iframe can indirectly run video and audio too</p>
+    <h1>Example usage</h1>
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/Si7DovGBDuQ?si=SHNp3xbyALnJMUew"
+        title="YouTube video player" frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        <hr>
+        <h1>Canvas</h1>
+        <canvas id="myCanvas" width="200" height="100" style="border:1px solid black;"></canvas>
+
+<script>
+  const c = document.getElementById("myCanvas");
+  const ctx = c.getContext("2d");
+  ctx.fillStyle = "red";
+  ctx.fillRect(20, 20, 150, 50); // draw red rectangle
+</script>
+<hr>
+<!-- <svg> stands for Scalable Vector Graphics. -->
+
+    
+
+</body>
+
+</html>

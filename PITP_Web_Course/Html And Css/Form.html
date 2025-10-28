@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form</title>
+</head>
+<body>
+    <form action="submit">Post</form><br>
+    <label for="text">Enter Your Name :</label>
+    <input type="text" placeholder="Enter Your Name"><br>
+    <label for="tired">Are you tired ?</label>
+    <input type="checkbox" name="tired" id="tired" >Yes
+    <input type="checkbox" name="tired" id="tired" >No <br>
+    <label for="color">Choose Your favourite Color</label>
+    <input type="color" name="color" id="color">
+    <label for="email">Enter Your Email</label>
+    <input type="email" name="email" id="email"><br>
+    <label for="date"></label>
+    <input type="date" name="date" id="date"><br>
+    <label for="datetime">Date and Time : </label>
+    <input type="datetime" name="datetime" id="datetime"><br>
+    <label for="">Local Date and Time :</label>
+    <input type="datetime-local" name="" id=""><br>
+    <label for="">Upload your Project : </label>
+    <input type="file" name="" id="">
+    <label for="">Your Favourite Number :</label>
+    <input type="number" name="" id=""><br>
+    <label for="">Choose Your Password</label>
+    <input type="password" name="" id="" placeholder="Choose Password">
+    <input type="password" name="" id="" placeholder="Re-Enter Password"><br>
+    <label for="">Your Age is</label>
+    <label for="">20</label>
+    <input type="radio" name="" id="">
+    <label for="">30</label>
+    <input type="radio" name="" id="">
+    <label for="">Enter your mobile number</label>
+    <input type="tel" name="" id="">
+    <label for="">Chhose Your Strength</label>
+    <input type="range" name="" id="">
+    <label for="">Search for Things</label>
+    <input type="search" name="" id="">
+    <label for="">Enter Your Portfolio URL</label>
+    <input type="url" name="" id="">
+    <label for="">WEEK</label>
+    <input type="week" name="" id="">
+
+
+    <!-- Choice controls -->
+    <fieldset>
+      <legend>Single choice (radio)</legend>
+      <label><input type="radio" name="color" value="red"> Red</label>
+      <label><input type="radio" name="color" value="green" checked> Green</label>
+      <label><input type="radio" name="color" value="blue"> Blue</label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Multiple choices (checkbox)</legend>
+      <label><input type="checkbox" name="features" value="wifi"> Wi-Fi</label>
+      <label><input type="checkbox" name="features" value="ac" checked> AC</label>
+      <label><input type="checkbox" name="features" value="parking"> Parking</label>
+    </fieldset>
+
+    <label for="select">Select (single)</label>
+    <select id="select" name="select">
+      <option value="">Choose...</option>
+      <option value="a">Option A</option>
+      <option value="b" selected>Option B</option>
+    </select>
+
+    <label for="select-multiple">Select (multiple)</label>
+    <select id="select-multiple" name="select_multiple[]" multiple size="4">
+      <option value="1">One</option>
+      <option value="2">Two</option>
+      <option value="3">Three</option>
+      <option value="4">Four</option>
+    </select>
+
+    <input:datalist>
+Karachi
+pkista
+dke
+</input:datalist>
+
+
+
+    
+</body>
+</html>

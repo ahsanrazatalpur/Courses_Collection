@@ -1,0 +1,26 @@
+/* * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.btn_greet{
+    background : linear-gradient(45deg, blue, red);
+    color: #fff;
+}
+
+
+.hover_me{
+    height: 200px;
+    width: 200px;
+    background: linear-gradient(45deg, red, blue);
+    margin: 20px auto;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    cursor: pointer;
+
+    
+} */

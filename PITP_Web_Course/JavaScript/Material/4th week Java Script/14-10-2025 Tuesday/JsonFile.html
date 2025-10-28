@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        const jsonData = '{"name":"johan","age":30}';
+        const data = JSON.parse(jsonData);
+        document.write(data.name);
+        document.write(data.age);
+
+        const jsonString = JSON.stringify(data);
+        document.write(jsonString);
+    </script>
+</body>
+
+</html>

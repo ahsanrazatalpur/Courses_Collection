@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JavaScript Hands-on Task</title>
+  <link rel="stylesheet" href="day5 .css">
+</head>
+<body>
+  <h1>JavaScript Hands-on Example</h1>
+  <p>This example shows how JavaScript can perform arithmetic and string operations.</p>
+
+  <div class="output-box">
+    <h2>Results:</h2>
+    <p id="numResult"></p>
+    <p id="strResult"></p>
+  </div>
+
+  <footer>
+    <p>© 2025 JavaScript Practice</p>
+  </footer>
+
+  <!-- JavaScript Section -->
+  <script>
+    // Declare numeric variables
+    let a = 5;
+    let b = 10;
+    let sum = a + b;
+    let product = a * b;
+
+    // Declare string variables
+    let firstName = "Mahdi";
+    let lastName = "Raza";
+    let fullName = firstName + " " + lastName;
+
+    // Display results on the page
+    document.getElementById("numResult").innerHTML = 
+      "The sum of " + a + " and " + b + " is: " + sum + 
+      "<br>The product is: " + product;
+
+    document.getElementById("strResult").innerHTML = 
+      "Full Name: " + fullName;
+  </script>
+</body>
+</html>

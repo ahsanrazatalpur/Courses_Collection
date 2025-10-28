@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Navbar</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            background-color:#222;
+        }
+
+        nav {
+            color: #fff;
+            background-color: #c56cb8;
+            position: relative;
+            padding: 0.5rem 1rem;
+        }
+        .nav-brand{
+            font-size: 1.5rem;
+            margin-right:  auto;
+        }
+
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            padding: 0.5rem 0.75rem;
+            transition: background-color 0.3s;
+        }
+
+        .nav-links a:hover {
+            background-color: #fff;
+            color: black;
+        }
+
+        .nav-toggle {
+            display: none;
+            padding: 0.5rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        @media (max-width : 786px){
+            .nav-links{
+                top: 100%;
+                left: 0;
+                width: 100%;
+                max-height: 0;
+                flex-direction: column;
+                position: absolute;
+                overflow: hidden;
+                transition: max-height 0.3s ease-in;
+                background-color: #444;
+            
+            }
+            .nav-toggle{
+                display: block;
+            }
+            .nav-links a{
+                padding: 1rem;
+                border-top: 2px solid black;
+            }
+
+        }
+        nav.active .nav-links{
+            max-height: 500px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav id="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">My PortFolio</div>
+            <div class="nav-toggle" id="navToggle">☰</div>
+            <div class="nav-links">
+                <a href="">Home</a>
+                <a href="">About</a>
+                <a href="">Services</a>
+                <a href="">Contact</a>
+            </div>
+        </div>
+    </nav>
+    <script>
+        const nav = document.getElementById('navbar')
+        const toggle = document.getElementById('navToggle')
+        toggle.addEventListener('click', ()=>{
+            nav.classList.toggle('active')
+        })
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flex_Property-Shrink</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .container{
+            height: 200px;
+            width: 300px;
+            background-color: #aa7fd7;
+            margin: 100px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .box{
+            height: 200px;
+            width: 300px;
+    
+        }
+        .box1{
+            background-color: #cb3b3b;
+            flex-shrink: 3;     /* more shrink itself to fit in smallc ontiner*/
+        }
+        .box2{
+            background-color: #93e418;
+            flex-shrink: 1;      /* less shrink itself to fit in smallc ontiner*/
+        }
+        .box3{
+            background-color: #ee4fd6;
+        }
+    </style>
+</head>
+<body>
+    <!--
+     shrink property apply on child of flex container mean if container has no space so box (child)
+    shrik (compress/decrease size) to fit in container
+    by default it is 0 
+    1 mean less shrik
+    4 mean much shrink
+    -->
+    <div class="container">
+        <div class="box box1">Box 1</div>
+        <div class="box box2">Box 2</div>
+        <div class="box box3">Box 3</div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Center the box </title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            display: flex;
+            /*  secound way make parent container flixible and heights*/
+            justify-content: center;
+            align-items: center;
+            /* text-align: center; */
+            height: 100vh;
+            /*Height is necessay for verticallicaly center*/
+        }
+
+        .container {
+            height: 300px;
+            width: 300px;
+            border: 2px solid black;
+            border-radius: 10px;
+            /* margin: 150px auto;   first way 150 mean updown 50 and left right auto */
+
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        Im a Container
+        <!-- 
+        here are multiples ways to make div center
+
+        1. .container {
+  width: 300px;
+  margin: 200px auto; /* centers horizontally */
+}
+
+2..parent {
+  display: flex;
+  justify-content: center; /* horizontal */
+  align-items: center; /* vertical */
+  height: 100vh; /* needed for vertical centering */
+}
+
+.3 .parent {
+  display: grid;
+  place-items: center; /* centers both horizontally + vertically */
+  height: 100vh;
+}
+
+
+.4.container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+} -->
+
+    </div>
+
+</body>
+
+</html>

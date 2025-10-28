@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HTML Mock Interview Report - Enhanced</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f0f2f5;
+      color: #333;
+    }
+    h1, h2, h3 {
+      text-align: center;
+    }
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    .question {
+      background: #e6f2ff;
+      padding: 10px;
+      border-left: 5px solid #3399ff;
+      margin-top: 20px;
+    }
+    .your-answer, .feedback, .improved {
+      background: #f9f9f9;
+      padding: 10px;
+      border-left: 5px solid #999;
+      margin-top: 5px;
+      font-family: monospace;
+      white-space: pre-wrap;
+    }
+    .improved {
+      border-left-color: #28a745;
+      background: #e6ffe6;
+    }
+    .marks {
+      font-weight: bold;
+      color: #007700;
+      margin-top: 5px;
+    }
+    .overall, .summary, .certificate {
+      background: #d4edda;
+      padding: 15px;
+      border-left: 5px solid #28a745;
+      margin-top: 20px;
+      font-size: 1.2em;
+    }
+    code {
+      background: #eee;
+      padding: 2px 5px;
+      border-radius: 4px;
+    }
+    .certificate {
+      text-align: center;
+      font-size: 1.3em;
+      color: #004d00;
+      border: 2px dashed #28a745;
+      margin-top: 40px;
+      padding: 20px;
+    }
+    .stats {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>HTML Mock Interview Report</h1>
+    <h2>Candidate: Ahsan Raza</h2>
+    <h3>Total Interview Duration: 45 minutes</h3>
+    <h3>Total Questions: 5</h3>
+
+    <!-- Round 1 -->
+    <div class="question">Q1: Explain HTML</div>
+    <div class="your-answer">
+HTML stands for Hyper Text Markup Language. It is a language in which we make webpage structure and layout.
+    </div>
+    <div class="improved">
+HTML (HyperText Markup Language) is the standard markup language used to create and structure content on the web. It defines elements like headings, paragraphs, links, images, forms, tables, and sections to structure a web page semantically.
+    </div>
+    <div class="feedback">✅ Correct understanding. Enhanced answer provides definition, usage, and examples.</div>
+    <div class="marks">Marks: 10/10</div>
+
+    <!-- Round 2 -->
+    <div class="question">Q2: Create a product table with 3 products</div>
+    <div class="your-answer">
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;th&gt;Product&lt;/th&gt;
+    &lt;th&gt;Price&lt;/th&gt;
+    &lt;th&gt;Category&lt;/th&gt;
+    &lt;th&gt;Availability&lt;/th&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;&lt;td&gt;iPhone&lt;/td&gt;&lt;td&gt;Rs 200000&lt;/td&gt;&lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+    </div>
+    <div class="improved">
+&lt;table border="1"&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Product&lt;/th&gt;
+      &lt;th&gt;Price&lt;/th&gt;
+      &lt;th&gt;Category&lt;/th&gt;
+      &lt;th&gt;Availability&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;&lt;td&gt;iPhone&lt;/td&gt;&lt;td&gt;Rs 200000&lt;/td&gt;&lt;td&gt;15 version&lt;/td&gt;&lt;td&gt;In Stock&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;Samsung&lt;/td&gt;&lt;td&gt;Rs 20000&lt;/td&gt;&lt;td&gt;12 version&lt;/td&gt;&lt;td&gt;Limited Stock&lt;/td&gt;&lt;/tr&gt;
+  &lt;/tbody&gt;
+  &lt;tfoot&gt;
+    &lt;tr&gt;&lt;td&gt;Nokia&lt;/td&gt;&lt;td&gt;Rs 2000000&lt;/td&gt;&lt;td&gt;8 version&lt;/td&gt;&lt;td&gt;Out of stock&lt;/td&gt;&lt;/tr&gt;
+  &lt;/tfoot&gt;
+&lt;/table&gt;
+    </div>
+    <div class="feedback">✅ Correct tbody and tfoot usage. ⚠️ Minor: Thead must contain tr with th elements. Enhanced answer corrected it.</div>
+    <div class="marks">Marks: 9.5/10</div>
+
+    <!-- Round 3 -->
+    <div class="question">Q3: Unordered list of fruits with Google links</div>
+    <div class="your-answer">
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href="https://www.google.com/search?q=banana"&gt;Banana&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="https://www.google.com/search?q=apple"&gt;Apple&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="https://www.google.com/search?q=mango"&gt;Mango&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+    </div>
+    <div class="improved">
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href="https://www.google.com/search?q=banana" target="_blank" rel="noopener noreferrer"&gt;Banana 🍌&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="https://www.google.com/search?q=apple" target="_blank" rel="noopener noreferrer"&gt;Apple 🍎&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="https://www.google.com/search?q=mango" target="_blank" rel="noopener noreferrer"&gt;Mango 🥭&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+    </div>
+    <div class="feedback">✅ Correct usage of ul, li, a tags. ⚠️ Minor: Added rel="noopener noreferrer" for security.</div>
+    <div class="marks">Marks: 9.5/10</div>
+
+    <!-- Round 4 -->
+    <div class="question">Q4: Image & Video with alt & controls</div>
+    <div class="your-answer">
+&lt;img src="https://image.tmdb.org/t/p/w200/r7XifzvtezNt31ypvsmb6Oqxw49.jpg" alt="The Batman Movie Poster"&gt;
+&lt;video src="https://www.w3schools.com/html/mov_bbb.mp4" controls width="400"&gt;&lt;/video&gt;
+    </div>
+    <div class="improved">
+&lt;img src="https://image.tmdb.org/t/p/w200/r7XifzvtezNt31ypvsmb6Oqxw49.jpg" alt="The Batman Movie Poster" width="200"&gt;
+&lt;video src="https://www.w3schools.com/html/mov_bbb.mp4" controls width="400" poster="https://image.tmdb.org/t/p/w200/r7XifzvtezNt31ypvsmb6Oqxw49.jpg"&gt;&lt;/video&gt;
+    </div>
+    <div class="feedback">✅ Correct image & alt. ✅ Video correct with controls. ⚠️ Removed autoplay="disable". Enhanced with poster attribute.</div>
+    <div class="marks">Marks: 9.5/10</div>
+
+    <!-- Round 5 -->
+    <div class="question">Q5: Semantic Layout (header, main, section, article, aside, footer)</div>
+    <div class="your-answer">
+&lt;header&gt;&lt;div class="logo"&gt;My Website&lt;/div&gt;&lt;/header&gt;  
+&lt;main&gt;
+  &lt;div class="container"&gt;
+    &lt;section&gt;&lt;h1&gt;My Services&lt;/h1&gt;&lt;p&gt;Lorem ipsum...&lt;/p&gt;&lt;/section&gt;
+    &lt;article&gt;&lt;h1&gt;An Article&lt;/h1&gt;&lt;p&gt;Lorem ipsum...&lt;/p&gt;&lt;/article&gt;
+  &lt;/div&gt;
+&lt;/main&gt;
+&lt;aside&gt;This is side content&lt;/aside&gt;  
+&lt;footer&gt;&copy;All rights reserved 2025&lt;/footer&gt;
+    </div>
+    <div class="improved">
+&lt;header&gt;&lt;div class="logo"&gt;My Website&lt;/div&gt;&lt;/header&gt;  
+&lt;main&gt;
+  &lt;div class="container"&gt;
+    &lt;section&gt;&lt;h1&gt;My Services&lt;/h1&gt;&lt;p&gt;Describe your services here.&lt;/p&gt;&lt;/section&gt;
+    &lt;article&gt;&lt;h1&gt;Article Title&lt;/h1&gt;&lt;p&gt;Content of the article.&lt;/p&gt;&lt;/article&gt;
+  &lt;/div&gt;
+&lt;/main&gt;
+&lt;aside&gt;Additional info or ads here.&lt;/aside&gt;
+&lt;footer&gt;&copy; All rights reserved 2025&lt;/footer&gt;
+    </div>
+    <div class="feedback">✅ Correct semantic tag usage. ⚠️ Minor div closing order fixed. Recommended adding nav links.</div>
+    <div class="marks">Marks: 9.8/10</div>
+
+    <!-- Summary Report -->
+    <div class="summary">
+      <strong>Interview Summary:</strong><br>
+      Total Questions: 5<br>
+      ✅ Fully Correct: 2<br>
+      ⚠️ Partially Correct: 3<br>
+      ❌ Wrong / Needs Fix: 0<br>
+      Overall Score: 9.55 / 10<br>
+      Interview Duration: 45 minutes<br>
+      Intelligence Assessment: High logical understanding and rapid debugging skills. Excellent structure comprehension.
+    </div>
+
+    <!-- Overall Judgment -->
+    <div class="overall">
+      <strong>Level:</strong> Intermediate → Advanced Beginner<br>
+      <strong>Experience Fit:</strong> Ready for HTML-based projects, forms, tables, media embedding, and semantic layouts.<br>
+      <strong>Strengths:</strong> Semantic understanding, clean code, multimedia embedding, forms, tables.<br>
+      <strong>Areas to Improve:</strong> Minor syntax fixes, attribute usage, div nesting, shorter URLs, adding semantic nav links.
+    </div>
+
+    <!-- Certificate -->
+    <div class="certificate">
+      🎖️ <strong>Certificate of HTML Competence</strong> 🎖️<br>
+      This certifies that <strong>Ahsan Raza</strong> has demonstrated strong HTML knowledge,<br>
+      capable of building structured, semantic, and multimedia-rich webpages.<br>
+      Awarded on: 23 Oct 2025
+    </div>
+
+  </div>
+</body>
+</html>

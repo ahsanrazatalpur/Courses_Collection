@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<title> My Web Page </title>
+
+<body>
+
+    <p>Click the button to display the domain name of the server that loaded this document.</p>
+
+    <button onclick="myFunction()">Try it</button>
+
+    <p id="demo"></p>
+    <p id="demo2"></p>
+    <p id="demo3"></p>
+
+    <script>
+        function myFunction() {
+            document.getElementById("demo").innerHTML = document.domain;
+        }
+    </script>
+
+
+
+    <script>
+        document.getElementById("demo2").innerHTML = "The title of this document is: " + document.title;
+    </script>
+
+
+    <script>
+        document.getElementById("demo3").innerHTML = document.URL;
+    </script>
+
+
+    <button onclick="myFunction()">Try it</button>
+
+    <script>
+        function myFunction() {
+            var w = window.open();
+            w.document.open();
+            w.document.write("<h2>Hello World!</h2>");
+            w.document.close();
+        }
+    </script>
+
+</body>
+
+</html>

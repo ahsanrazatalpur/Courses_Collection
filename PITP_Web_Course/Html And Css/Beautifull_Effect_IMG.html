@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML inline Imgae</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            margin: 15px auto;
+            
+        }
+        img{
+            transition: transform 0.3s ease-in-out ;
+            box-shadow: 10px 10px 20px grey;
+        }
+        img:hover{
+         /* transition: transform 0.3s ease-in; */
+         transform: scale(1.1); /*from 1.1 img become larger*/
+         /* transform: scale(0.5); /*from 0 to 0.9 img become smaller
+         1.1 mean 10% larger
+         1.5 mean 50% larger
+         1.9 mean 90% larger
+         0.5 mean 50% smaller
+         0.2 mean 20% smaller
+         transform: scale(1); 1 by default no change in img */
+        }
+    </style>
+</head>
+<!-- <p>Note Pusdo class like hover doesnot work in inline</p> -->
+<body style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
+    <h1>HTML image</h1>
+    <img style="width: 600px; height : 400px; border-radius: 20px; cursor: pointer;" src="https://images.pexels.com/photos/145939/pexels-photo-145939.jpeg" alt="tiger" >
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+    <h1>JavaScript JSON</h1>
+    <h2>Creating an Object from JSON</h2>
+
+    <p id="demo"></p>
+    <p id="demo2"></p>
+    <p id="demo3"></p>
+
+    <script>
+        const txt = '{"name":"Fizan", "age":22, "city":"New York"}'
+        const myObj = JSON.parse(txt);
+
+        document.getElementById("demo").innerHTML = myObj.name + ", " + myObj.age;
+    </script>
+
+
+
+    <script>
+        const text = '[ "CS", "English", "BS Accounting", "BBA" ]';
+        const myArr = JSON.parse(text);
+        document.getElementById("demo2").innerHTML = myArr[0];
+    </script>
+
+    <script>
+        const text2 = '{"name":"Chettan Parkash", "birth":"1994-07-06", "city":"Badin"}';
+        const obj = JSON.parse(text2);
+        obj.birth = new Date(obj.birth);
+        document.getElementById("demo3").innerHTML = obj.name + ", " + obj.birth;
+    </script>
+</body>
+
+</html>

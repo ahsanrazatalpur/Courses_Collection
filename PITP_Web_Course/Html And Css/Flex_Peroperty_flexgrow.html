@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flex Property FlexGrow</title>
+    <style>
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+.container{
+    height: 400px;
+    width: 800px;
+    background-color: #57ada2;
+    margin: 100px auto;
+    border: 2px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.box{
+    height: 100px;
+    width: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px;
+    
+}
+.box1{
+    background-color: #0bb43b;
+    flex-grow: 1;
+    
+}
+.box2{
+    background-color: #240bb4;
+    flex-grow: 3;
+
+}
+.box3{
+    background-color: #d48e02;
+}
+    </style>
+</head>
+<body>
+    <!-- 
+    Flex grow proprty apply on flex container child mean how much remaining space cover by child 
+    eg :  total size of remaining space 
+      if i give flex-grow : 1 mean i give hime 1/4 of empty space 
+      if flex-grow : 2  mean 2/4 of remainingspace
+      if flex-grow : 3  mean 3/4 of remainingspace
+      if flex-grow : 4  mean 4/4 of remainingspace
+      by default it is 0
+      if i give only one box flex-grow : 1 so it keep all remaining empty space
+       -->
+    <div class="container">
+        <div class="box box1">Box 1</div>
+        <div class="box box2">Box 2</div>
+        <div class="box box3">Box 3</div>
+    </div>
+</body>
+</html>

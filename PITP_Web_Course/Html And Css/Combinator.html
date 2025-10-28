@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Combinator</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+
+        }
+        h1{  /*element selector*/
+            color: blue;
+        }
+        h1 p{  /*it select any p inside h1     decendant selector*/
+            color: rgb(42, 165, 97);
+        }
+        h1 > p{  /*Only select those p which are direct child of h1       chind selectore*/
+            color: chocolate;
+        }
+        h1 + p{    /*Ajacent sibling first p after h1*/
+            color: #902525;
+        }
+        h1 ~ p{    /*General sibling     Selects all <p> elements that come after an <h1>*/
+            color: aqua;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Hi Here we are pratacing  <p>Lorem ipsum dolor sit amet.</p> <p>Lorem ipsum dolor sit amet consectetur.</p>the combinator of Selectors</h1>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Recusandae, similique ex?</p>
+    <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Illum, necessitatibus.</p>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Nostrum, adipisci.</p>
+    <h1>The End</h1>
+</body>
+</html>

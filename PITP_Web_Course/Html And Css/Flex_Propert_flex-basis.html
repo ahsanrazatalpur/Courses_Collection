@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flex-Basis in Flex property</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .container{
+            height: 400px;
+            width: 800px;
+            background-color: #25a87e;
+            margin: 100px auto;
+            border: 2px solid black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .box{
+            height: 100px;
+            width: 100px;
+            margin: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .box1{
+            background-color: #9d4545;
+            flex-grow: 1;
+            flex-basis: 100px;
+        }
+        .box2{
+            background-color: #1c60a0;
+            flex-grow: 2;
+            flex-basis: 200px;
+        }
+        .box3{
+            background-color: #c67729;
+            flex-grow: 3;
+            flex-basis: 300px;
+        }
+    </style>
+</head>
+<body>
+    <!-- ➡️ flex-grow and flex-shrink both start from the size defined by flex-basis
+     (or the element’s natural size if no basis is set). -->
+    <div class="container">
+        <div class="box box1">Box 1</div>
+        <div class="box box2">Box 2</div>
+        <div class="box box3">Box 3</div>
+    </div>
+</body>
+</html>

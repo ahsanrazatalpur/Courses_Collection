@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Effect HTML</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            margin: 60px auto;
+        }
+        img{
+            width: 500px;
+            height: 400px;
+            box-shadow: 10px 10px 20px rgb(236, 234, 234);   
+            background-color: aquamarine;
+            cursor: pointer;
+            border-radius: 20px;
+            transition:transform 0.3s ease-in-out;
+        }
+        img:hover{
+            /* transition: background-color 0.3 ease-out; */
+            box-shadow: 15px 10px 0.5px grey;
+            transform: scale(1.2);
+            
+        }
+
+    </style>
+</head>
+<body>
+    <h1>Image Effect HTMl</h1>
+    <img src="https://images.pexels.com/photos/34950/pexels-photo.jpg" alt="">
+</body>
+</html>

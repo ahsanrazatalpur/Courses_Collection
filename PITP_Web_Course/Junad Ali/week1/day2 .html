@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forms and Tables Example</title>
+</head>
+<body>
+
+  <h1>Forms and Tables Example</h1>
+
+  <!-- Explanation -->
+  <p>
+    Forms allow users to input data on a webpage, which can be submitted to a server for processing. 
+    Tables are used to display data in rows and columns. 
+    Semantic HTML helps structure a page meaningfully, improving accessibility and SEO.
+  </p>
+
+  <!-- Hands-On Task 1: User Information Form -->
+  <h2>User Information Form</h2>
+  <form action="#" method="post">
+    <label for="name">Name:</label><br>
+    <input type="text" id="name" name="name" required><br><br>
+
+    <label for="email">Email:</label><br>
+    <input type="email" id="email" name="email" required><br><br>
+
+    <label for="comments">Comments:</label><br>
+    <textarea id="comments" name="comments" rows="4" cols="30"></textarea><br><br>
+
+    <input type="submit" value="Submit">
+  </form>
+
+  <hr>
+
+  <!-- Hands-On Task 2: Product Table -->
+  <h2>Product List</h2>
+  <table border="1" cellpadding="8" cellspacing="0">
+    <tr>
+      <th>Product Name</th>
+      <th>Price</th>
+      <th>Description</th>
+    </tr>
+    <tr>
+      <td>Wireless Mouse</td>
+      <td>$20</td>
+      <td>Comfortable and smooth mouse with long battery life.</td>
+    </tr>
+    <tr>
+      <td>Bluetooth Headphones</td>
+      <td>$45</td>
+      <td>High-quality sound and noise cancellation.</td>
+    </tr>
+    <tr>
+      <td>Laptop Stand</td>
+      <td>$30</td>
+      <td>Adjustable stand for better posture and cooling.</td>
+    </tr>
+  </table>
+
+</body>
+</html>

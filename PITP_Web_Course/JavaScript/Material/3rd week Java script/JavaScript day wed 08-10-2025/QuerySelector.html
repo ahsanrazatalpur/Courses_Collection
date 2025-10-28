@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <div id="myElement">This is my element.</div>
+    <script>
+        const elementById = document.querySelector("#myElement");
+        document.write(elementById.textContent);
+    </script>
+    <p class="example-class">This is an example paragraph.</p>
+
+    <script>
+        const elementByClass = document.querySelector(".example-class");
+        document.write(elementByClass.textContent);
+    </script>
+
+    <div>This is a div element.</div>
+
+    <script>
+        const divElement = document.querySelector("div");
+        document.write(divElement.textContent);
+    </script>
+    <div id="parent">
+        <p class="child-paragraph">A paragraph inside the parent.</p>
+    </div>
+
+    <script>
+        const specificElement = document.querySelector("#parent .child-paragraph");
+        document.write(specificElement.textContent);
+    </script>
+</body>
+
+</html>

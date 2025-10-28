@@ -1,0 +1,26 @@
+WordLetterCounter.css
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+
+textarea {
+    width: 97%;
+    padding: 10px;
+    height: 300px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 25px;
+}
+
+p {
+    font-size: 25px;
+    margin: 5px 0;
+    color: #333;
+}

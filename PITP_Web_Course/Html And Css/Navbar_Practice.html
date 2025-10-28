@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navbar</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .navbar {
+            background-color: #222;
+            color: #fff;
+            position: relative;
+            padding: 0.5rem 1rem;
+        }
+
+        .nav-brand {
+            font-size: 1.5rem;
+        }
+
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            padding: 0.5rem 0.75rem;
+            transition: background-color 0.3s;
+        }
+
+        .nav-links a:hover {
+            background-color: #555;
+        }
+
+        .nav-toggle {
+            display: none;
+            font-size: 1.5rem;
+            padding: 0.5rem;
+            cursor: pointer;
+        }
+
+        /* Responsiveness */
+        @media (max-width: 786px) {
+            .nav-links {
+
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background-color: #333;
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.3s ease-out;
+            }
+
+            .nav-links a {
+                border-top: 2px solid black;
+                padding: 1rem;
+            }
+
+            .nav-toggle {
+                display: block;
+            }
+        }
+
+        nav.active .nav-links {
+            max-height: 500px;
+            /* enough height for all links */
+        }
+
+        
+    </style>
+</head>
+
+<body>
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">My Website</div>
+            <div class="nav-toggle" id="navToggle">☰</div>
+            <div class="nav-links">
+                <a href="">Home</a>
+                <a href="">About</a>
+                <a href="">Service</a>
+                <a href="">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+
+    <script>
+        const nav = document.getElementById('navbar')
+        const toggle = document.getElementById('navToggle')
+        toggle.addEventListener('click', () => {
+            nav.classList.toggle('active')
+        })
+    </script>
+</body>
+
+</html>

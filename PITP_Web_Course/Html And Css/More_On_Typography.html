@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>More_On_Typography</title>
+</head>
+<style>
+    .font_test {
+        width: 200px;
+        height: 200px;
+        margin: 250px auto;
+        /* font-size  Units*/
+        /* px  =  1-inch = 96px */
+        /* rem = 1 rem = 16px */
+        /* 5vw  = viewpoint width (depend on device) */
+
+        /* Some Responsive fonts with clamp()*/
+        /* font-size: 1.5rem;
+        font-size: 5vw;
+        font-size: 3rem;
+         but these use as like this */
+         /* font-size: clamp(MIN, PREFERRED, MAX); */
+         font-size: clamp(1.5rem , 5vw, 3rem);
+
+         /* if i change the value in clamp so font behaviour alos change */
+         /* font-size: clamp(1rem, 3vw, 2rem); */
+
+    }
+</style>
+
+<body>
+    <p class="font_test">Hey, This is sample Fonts</p>
+</body>
+
+</html>

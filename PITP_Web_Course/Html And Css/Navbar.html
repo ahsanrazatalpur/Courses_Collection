@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Navbar</title>
+</head>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  nav {
+    background-color: rgb(61, 140, 230);
+    color: #fff;
+    padding: 0.5rem 1rem;
+    position: relative;
+  }
+
+  .nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .nav-brand {
+    font-size: 1.5rem;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .nav-links a {
+    color: #fff;
+    padding: 0.5rem 0.75rem;
+    text-decoration: none;
+    transition: background-color 0.3s;
+  }
+
+  .nav-links a:hover {
+    border-radius: 20px;
+    background-color: #fff;
+    color: black;
+  }
+</style>
+
+<body>
+  <nav id="navbar">
+    <div class="nav-container">
+      <div class="nav-brand">My Website</div>
+      <div class="nav-links">
+        <a href="">Home</a>
+        <a href="">Service</a>
+        <a href="">About</a>
+        <a href="">Contact Us</a>
+      </div>
+    </div>
+  </nav>
+</body>
+
+</html>

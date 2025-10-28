@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Position Relative</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .container{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 400px;
+            width: 800px;
+            background-color: rgb(0, 200, 255);
+            /* margin: 100px auto; */
+            position: relative;
+            top: 5px;
+            position: relative;
+            top: 100px;
+            left: 220px;
+        }
+        .box{
+            height: 200px;
+            width: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 10px;
+        }
+        .box1{
+            background-color: hotpink;
+            position: relative;
+            top: 2px;
+        }
+        .box2{
+            background-color: rgb(123, 105, 255);
+        }
+        .box3{
+            background-color: rgb(87, 189, 3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="box box1">box 1</div>
+        <div class="box box2">box 2</div>
+        <div class="box box3">box 3</div>
+    </div>
+    
+</body>
+</html>

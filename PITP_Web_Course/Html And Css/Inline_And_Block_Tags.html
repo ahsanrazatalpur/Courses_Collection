@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTML Inline vs Block Elements</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+  }
+  h1, h2 {
+    text-align: center;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+  }
+  th {
+    background-color: #007bff; /* primary blue */
+    color: white;
+    padding: 10px;
+    text-align: left;
+  }
+  td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    vertical-align: top;
+  }
+  tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+</style>
+</head>
+<body>
+
+<h1>HTML Elements Reference</h1>
+
+<h2>Block Elements</h2>
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Meaning</th>
+    <th>Use</th>
+  </tr>
+  <tr><td>&lt;div&gt;</td><td>Division</td><td>Generic container for grouping content</td></tr>
+  <tr><td>&lt;p&gt;</td><td>Paragraph</td><td>Defines a paragraph of text</td></tr>
+  <tr><td>&lt;h1&gt; - &lt;h6&gt;</td><td>Headings</td><td>Defines headings from largest to smallest</td></tr>
+  <tr><td>&lt;ul&gt;</td><td>Unordered list</td><td>Creates a bulleted list</td></tr>
+  <tr><td>&lt;ol&gt;</td><td>Ordered list</td><td>Creates a numbered list</td></tr>
+  <tr><td>&lt;li&gt;</td><td>List item</td><td>Defines an item inside a list</td></tr>
+  <tr><td>&lt;dl&gt;</td><td>Description List</td><td>Container for terms and descriptions</td></tr>
+  <tr><td>&lt;dt&gt;</td><td>Description Term</td><td>Defines a term in a description list</td></tr>
+  <tr><td>&lt;dd&gt;</td><td>Description Details</td><td>Defines the description of a term</td></tr>
+  <tr><td>&lt;table&gt;</td><td>Table</td><td>Defines a table</td></tr>
+  <tr><td>&lt;thead&gt;</td><td>Table Head</td><td>Groups header content in a table</td></tr>
+  <tr><td>&lt;tbody&gt;</td><td>Table Body</td><td>Groups body content in a table</td></tr>
+  <tr><td>&lt;tfoot&gt;</td><td>Table Footer</td><td>Groups footer content in a table</td></tr>
+  <tr><td>&lt;tr&gt;</td><td>Table row</td><td>Defines a row in a table</td></tr>
+  <tr><td>&lt;td&gt;</td><td>Table data</td><td>Defines a cell in a table row</td></tr>
+  <tr><td>&lt;th&gt;</td><td>Table header</td><td>Defines a header cell in a table row</td></tr>
+  <tr><td>&lt;form&gt;</td><td>Form</td><td>Contains form elements for user input</td></tr>
+  <tr><td>&lt;textarea&gt;</td><td>Text area</td><td>Multi-line text input in forms</td></tr>
+  <tr><td>&lt;header&gt;</td><td>Header</td><td>Defines header section of a page or section</td></tr>
+  <tr><td>&lt;footer&gt;</td><td>Footer</td><td>Defines footer section of a page or section</td></tr>
+  <tr><td>&lt;section&gt;</td><td>Section</td><td>Defines a thematic section of content</td></tr>
+  <tr><td>&lt;article&gt;</td><td>Article</td><td>Defines a self-contained article</td></tr>
+  <tr><td>&lt;aside&gt;</td><td>Aside</td><td>Defines content aside from main content</td></tr>
+  <tr><td>&lt;nav&gt;</td><td>Navigation</td><td>Contains navigation links</td></tr>
+  <tr><td>&lt;blockquote&gt;</td><td>Block quote</td><td>Defines a long quotation</td></tr>
+  <tr><td>&lt;pre&gt;</td><td>Preformatted</td><td>Preserves whitespace and line breaks</td></tr>
+  <tr><td>&lt;figure&gt;</td><td>Figure</td><td>Container for media and caption</td></tr>
+  <tr><td>&lt;details&gt;</td><td>Details</td><td>Expandable/collapsible content</td></tr>
+  <tr><td>&lt;noscript&gt;</td><td>No Script</td><td>Displays content if JavaScript is disabled</td></tr>
+  <tr><td>&lt;map&gt;</td><td>Image Map</td><td>Defines clickable areas on an image using &lt;area&gt;</td></tr>
+  <tr><td>&lt;area&gt;</td><td>Area</td><td>Defines a clickable region inside &lt;map&gt;</td></tr>
+</table>
+
+<h2>Inline Elements</h2>
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Meaning</th>
+    <th>Use</th>
+  </tr>
+  <tr><td>&lt;span&gt;</td><td>Span</td><td>Generic inline container</td></tr>
+  <tr><td>&lt;a&gt;</td><td>Anchor</td><td>Defines a hyperlink</td></tr>
+  <tr><td>&lt;strong&gt;</td><td>Strong text</td><td>Defines important text (bold)</td></tr>
+  <tr><td>&lt;em&gt;</td><td>Emphasis</td><td>Defines emphasized text (italic)</td></tr>
+  <tr><td>&lt;b&gt;</td><td>Bold</td><td>Displays text in bold</td></tr>
+  <tr><td>&lt;i&gt;</td><td>Italic</td><td>Displays text in italic</td></tr>
+  <tr><td>&lt;u&gt;</td><td>Underline</td><td>Underlines text</td></tr>
+  <tr><td>&lt;small&gt;</td><td>Small</td><td>Displays smaller text</td></tr>
+  <tr><td>&lt;abbr&gt;</td><td>Abbreviation</td><td>Defines an abbreviation with tooltip</td></tr>
+  <tr><td>&lt;acronym&gt;</td><td>Acronym</td><td>Defines an acronym (deprecated, use &lt;abbr&gt;)</td></tr>
+  <tr><td>&lt;dfn&gt;</td><td>Definition</td><td>Represents a term being defined</td></tr>
+  <tr><td>&lt;code&gt;</td><td>Code</td><td>Displays inline code snippet</td></tr>
+  <tr><td>&lt;tt&gt;</td><td>Teletype</td><td>Displays text in monospace font (deprecated)</td></tr>
+  <tr><td>&lt;q&gt;</td><td>Inline quote</td><td>Defines a short quotation</td></tr>
+  <tr><td>&lt;img&gt;</td><td>Image</td><td>Embeds an image</td></tr>
+  <tr><td>&lt;input&gt;</td><td>Input field</td><td>Collects user input in forms</td></tr>
+  <tr><td>&lt;label&gt;</td><td>Label</td><td>Defines label for a form input</td></tr>
+  <tr><td>&lt;mark&gt;</td><td>Highlight</td><td>Highlights text</td></tr>
+  <tr><td>&lt;sub&gt;</td><td>Subscript</td><td>Displays text below baseline</td></tr>
+  <tr><td>&lt;sup&gt;</td><td>Superscript</td><td>Displays text above baseline</td></tr>
+  <tr><td>&lt;time&gt;</td><td>Time</td><td>Represents date/time</td></tr>
+  <tr><td>&lt;var&gt;</td><td>Variable</td><td>Represents variable in text or code</td></tr>
+  <tr><td>&lt;kbd&gt;</td><td>Keyboard Input</td><td>Represents user input from a keyboard or device</td></tr>
+  <tr><td>&lt;bdo&gt;</td><td>Bi-directional override</td><td>Overrides text direction</td></tr>
+  <tr><td>&lt;output&gt;</td><td>Output</td><td>Represents result of calculation</td></tr>
+</table>
+
+</body>
+</html>

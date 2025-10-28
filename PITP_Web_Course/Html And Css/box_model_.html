@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Box Model In HTML</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+
+        }
+
+        .container {
+            width: 300px;
+            height: 300px;
+            border: 2px solid black;
+            margin: 150px auto;
+            display: flex;
+            align-items: center;
+            padding: 20px;  /*increase size from inside like bigger the size*/
+           
+        }
+
+        h1 {
+            color: blue;
+        }
+
+        p {
+            color: brown;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Heading</h1>
+        <p>This is The main paragraph</p>
+    </div>
+</body>
+
+</html>

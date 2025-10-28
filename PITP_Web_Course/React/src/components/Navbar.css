@@ -1,0 +1,29 @@
+/* *{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.navbar{
+    color: #fff;
+    background-color: #222;
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content:space-between;
+    
+}
+.nav-brand{
+font-size: 1.5rem;
+}
+.nav_links{
+    padding: 0.5rem 0.75rem;
+}
+.nav_links a{
+    color: #fff;
+    text-decoration: none;
+    padding: 0.5rem 0.75rem;
+}
+.nav_links a:hover{
+    background-color: #555;
+} */

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Important HTML Interview Questions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #fafafa;
+            color: #222;
+            margin: 40px;
+            line-height: 1.6;
+        }
+        h1, h2 {
+            color: #1a73e8;
+        }
+        pre {
+            background: #f1f1f1;
+            padding: 10px;
+            border-left: 4px solid #1a73e8;
+            overflow-x: auto;
+        }
+        code {
+            color: #d63384;
+        }
+        li {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🔥 All Important HTML Interview Questions (Basic to Advanced)</h1>
+    <p>This document covers every essential HTML topic — from beginner to expert — with examples. It’s designed so no interviewer can ask a question outside this list.</p>
+
+    <!-- BASIC QUESTIONS -->
+    <h2>🟢 Basic HTML Questions</h2>
+    <ol>
+        <li>
+            <b>1. What is HTML?</b><br>
+            HTML (HyperText Markup Language) is the standard language for creating web pages.
+            <pre><code>&lt;h1&gt;Hello World&lt;/h1&gt;</code></pre>
+        </li>
+
+        <li>
+            <b>2. What are tags and elements in HTML?</b><br>
+            Tags are building blocks of HTML. Elements include both start and end tags with content inside.
+            <pre><code>&lt;p&gt;This is a paragraph.&lt;/p&gt;</code></pre>
+        </li>
+
+        <li>
+            <b>3. What is the difference between &lt;!DOCTYPE html&gt; and &lt;html&gt;?</b><br>
+            <code>&lt;!DOCTYPE html&gt;</code> declares the HTML version (HTML5).  
+            <code>&lt;html&gt;</code> is the root element.
+        </li>
+
+        <li>
+            <b>4. What are block, inline, and inline-block elements?</b>
+            <pre><code>&lt;div&gt;Block&lt;/div&gt;
+&lt;span&gt;Inline&lt;/span&gt;</code></pre>
+        </li>
+
+        <li>
+            <b>5. What is the difference between id and class?</b><br>
+            <ul>
+                <li><code>id</code> is unique for each element.</li>
+                <li><code>class</code> can be used multiple times.</li>
+            </ul>
+            <pre><code>&lt;div id="header"&gt;&lt;/div&gt;
+&lt;div class="box"&gt;&lt;/div&gt;</code></pre>
+        </li>
+
+        <li>
+            <b>6. What is the use of &lt;meta&gt; tag?</b><br>
+            It provides metadata like description, keywords, and author.
+            <pre><code>&lt;meta name="description" content="Best HTML Guide"&gt;</code></pre>
+        </li>
+
+        <li>
+            <b>7. What are semantic tags?</b><br>
+            Tags that describe meaning, like <code>&lt;header&gt;</code>, <code>&lt;article&gt;</code>, <code>&lt;footer&gt;</code>.
+        </li>
+
+        <li>
+            <b>8. How do you create a hyperlink?</b>
+            <pre><code>&lt;a href="https://google.com"&gt;Visit Google&lt;/a&gt;</code></pre>
+        </li>
+
+        <li>
+            <b>9. How to display an image in HTML?</b>
+            <pre><code>&lt;img src="image.jpg" alt="description" width="200"&gt;</code></pre>
+        </li>
+
+        <li>
+            <b>10. What are lists in HTML?</b>
+            <pre><code>&lt;ul&gt;&lt;li&gt;Item&lt;/li&gt;&lt;/ul&gt;
+&lt;ol&gt;&lt;li&gt;Ordered Item&lt;/li&gt;&lt;/ol&gt;</code></pre>
+        </li>
+    </ol>
+
+    <!-- INTERMEDIATE QUESTIONS -->
+    <h2>🟡 Intermediate HTML Questions</h2>
+    <ol start="11">
+        <li>
+            <b>11. What is the difference between &lt;div&gt; and &lt;span&gt;?</b><br>
+            <code>&lt;div&gt;</code> is block-level, <code>&lt;span&gt;</code> is inline-level.
+        </li>
+
+        <li>
+            <b>12. What is the use of &lt;iframe&gt;?</b><br>
+            It embeds another webpage inside the current one.
+            <pre><code>&lt;iframe src="https://example.com" width="400" height="200"&gt;&lt;/iframe&gt;</code></pre>
+        </li>
+
+        <li>
+            <b>13. How do you create a table?</b>
+            <pre><code>&lt;table&gt;
+  &lt;tr&gt;&lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Age&lt;/th&gt;&lt;/tr&gt;
+  &lt;tr&gt;&lt;td&gt;Ahsan&lt;/td&gt;&lt;td&gt;22&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;</code></pre>
+        </li>
+
+        <li>
+            <b>14. Explain form elements in HTML.</b>
+            <pre><code>&lt;form&gt;
+  &lt;input type="text" placeholder="Name"&gt;
+  &lt;input type="email"&gt;
+  &lt;input type="submit" value="Send"&gt;
+&lt;/form&gt;</code></pre>
+        </li>
+
+        <li>
+            <b>15. What are input types in HTML5?</b><br>
+            <code>text, email, password, number, date, color, file, range, checkbox, radio</code>.
+        </li>
+
+        <li>
+            <b>16. How do you use the &lt;video&gt; and &lt;audio&gt; tags?</b>
+            <pre><code>&lt;video src="movie.mp4" controls&gt;&lt;/video&gt;
+&lt;audio src="song.mp3" controls&gt;&lt;/audio&gt;</code></pre>
+        </li>
+
+        <li>
+            <b>17. What are data-* attributes?</b><br>
+            Custom data stored in HTML for JS access.
+            <pre><code>&lt;div data-user="Ahsan"&gt;&lt;/div&gt;</code></pre>
+        </li>
+
+        <li>
+            <b>18. What is the difference between localStorage and sessionStorage?</b><br>
+            <ul>
+                <li><b>localStorage</b> → data persists even after closing browser.</li>
+                <li><b>sessionStorage</b> → data clears when tab closes.</li>
+            </ul>
+        </li>
+
+        <li>
+            <b>19. What is the difference between absolute and relative URLs?</b>
+            <pre><code>&lt;a href="https://google.com"&gt;Absolute&lt;/a&gt;
+&lt;a href="/contact.html"&gt;Relative&lt;/a&gt;</code></pre>
+        </li>
+
+        <li>
+            <b>20. What are void elements?</b><br>
+            Tags that don’t need closing tag (e.g., <code>&lt;br&gt;</code>, <code>&lt;img&gt;</code>, <code>&lt;hr&gt;</code>).
+        </li>
+    </ol>
+
+    <!-- ADVANCED QUESTIONS -->
+    <h2>🔴 Advanced HTML Questions</h2>
+    <ol start="21">
+        <li>
+            <b>21. Explain the difference between HTML and XHTML.</b><br>
+            XHTML is stricter, all tags must be properly closed, lowercase, and well-formed.
+        </li>
+
+        <li>
+            <b>22. What is the use of &lt;canvas&gt;?</b><br>
+            Used for drawing graphics using JavaScript.
+            <pre><code>&lt;canvas id="myCanvas" width="200" height="100"&gt;&lt;/canvas&gt;</code></pre>
+        </li>
+
+        <li>
+            <b>23. What is Web Storage API?</b><br>
+            Used to store data locally in browser (localStorage / sessionStorage).
+        </li>
+
+        <li>
+            <b>24. What is the difference between defer and async in &lt;script&gt;?</b>
+            <ul>
+                <li><b>async</b> → loads script asynchronously (execution not in order).</li>
+                <li><b>defer</b> → executes after HTML parsing is complete.</li>
+            </ul>
+        </li>
+
+        <li>
+            <b>25. What are ARIA attributes?</b><br>
+            Accessibility features for screen readers.  
+            Example: <code>aria-label="Close Menu"</code>
+        </li>
+
+        <li>
+            <b>26. What is the Shadow DOM?</b><br>
+            A hidden DOM tree used in Web Components for encapsulated styling and structure.
+        </li>
+
+        <li>
+            <b>27. How does &lt;template&gt; tag work?</b><br>
+            It holds HTML code that is not rendered until used via JavaScript.
+            <pre><code>&lt;template id="card"&gt;
+  &lt;div class="card"&gt;Hidden until used&lt;/div&gt;
+&lt;/template&gt;</code></pre>
+        </li>
+
+        <li>
+            <b>28. Explain lazy loading in HTML.</b><br>
+            Delays loading of images/videos until they are visible on screen.
+            <pre><code>&lt;img src="image.jpg" loading="lazy" alt="Lazy image"&gt;</code></pre>
+        </li>
+
+        <li>
+            <b>29. What is the purpose of the &lt;picture&gt; tag?</b><br>
+            Used for responsive images.
+            <pre><code>&lt;picture&gt;
+  &lt;source srcset="large.jpg" media="(min-width: 800px)"&gt;
+  &lt;img src="small.jpg" alt="Responsive image"&gt;
+&lt;/picture&gt;</code></pre>
+        </li>
+
+        <li>
+            <b>30. What is the difference between HTMLCollection and NodeList?</b><br>
+            <ul>
+                <li><b>HTMLCollection</b> updates automatically when DOM changes.</li>
+                <li><b>NodeList</b> is static (doesn’t auto-update).</li>
+            </ul>
+        </li>
+
+        <li>
+            <b>31. What is the purpose of the &lt;dialog&gt; tag?</b><br>
+            Creates a popup dialog box.
+            <pre><code>&lt;dialog open&gt;This is a dialog&lt;/dialog&gt;</code></pre>
+        </li>
+
+        <li>
+            <b>32. What is the difference between GET and POST in forms?</b><br>
+            <ul>
+                <li><b>GET</b>: Data visible in URL (used for fetching).</li>
+                <li><b>POST</b>: Data hidden, used for sending large or sensitive data.</li>
+            </ul>
+        </li>
+
+        <li>
+            <b>33. What are microdata and schema.org?</b><br>
+            They help search engines understand your content better.
+            <pre><code>&lt;div itemscope itemtype="https://schema.org/Person"&gt;
+  &lt;span itemprop="name"&gt;Ahsan Raza&lt;/span&gt;
+&lt;/div&gt;</code></pre>
+        </li>
+
+        <li>
+            <b>34. What are custom elements in HTML?</b><br>
+            Custom tags defined by users (part of Web Components).
+        </li>
+
+        <li>
+            <b>35. What are progressive web apps (PWAs)?</b><br>
+            Web apps that work offline and can be installed on devices using HTML + JS + Service Workers.
+        </li>
+
+        <li>
+            <b>36. What is the difference between &lt;b&gt; and &lt;strong&gt;, &lt;i&gt; and &lt;em&gt;?</b><br>
+            <ul>
+                <li><b>&lt;b&gt;</b> and <b>&lt;i&gt;</b> → styling only</li>
+                <li><b>&lt;strong&gt;</b> and <b>&lt;em&gt;</b> → semantic meaning (importance, emphasis)</li>
+            </ul>
+        </li>
+
+        <li>
+            <b>37. What are meta viewport settings for responsiveness?</b><br>
+            <pre><code>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</code></pre>
+        </li>
+
+        <li>
+            <b>38. What is difference between innerHTML, innerText and textContent?</b>
+            <ul>
+                <li><b>innerHTML</b> → includes HTML tags.</li>
+                <li><b>innerText</b> → only visible text.</li>
+                <li><b>textContent</b> → all text (including hidden).</li>
+            </ul>
+        </li>
+
+        <li>
+            <b>39. What is contenteditable attribute?</b><br>
+            Makes an element editable.
+            <pre><code>&lt;div contenteditable="true"&gt;Edit me&lt;/div&gt;</code></pre>
+        </li>
+
+        <li>
+            <b>40. What is difference between HTML and DOM?</b><br>
+            HTML → markup code.  
+            DOM → in-memory representation of the page used by JavaScript.
+        </li>
+    </ol>
+
+    <p><b>✅ Pro Tip:</b> Master these 40 Qs and you’ll be ready for any HTML interview — front-end or full-stack.</p>
+
+</body>
+</html>

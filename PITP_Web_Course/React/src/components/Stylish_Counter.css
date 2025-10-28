@@ -1,0 +1,37 @@
+/* *{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.container{
+    height: 300px;
+    width: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 160px auto;
+    border: 1px solid black;
+    border-radius: 10px;
+    flex-direction: column;
+    background: linear-gradient(45deg, rgb(206, 25, 112), rgb(59, 174, 10));
+    color: white;
+
+}
+.btn{
+    margin: 30px;
+
+}
+
+.btn button{
+    margin: 10px;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    transition: transform 0.3s ease-in;
+}
+.btn button:hover{
+    cursor: pointer;
+    transform: scale(1.1);
+    background: linear-gradient(45deg , black, white);
+
+} */

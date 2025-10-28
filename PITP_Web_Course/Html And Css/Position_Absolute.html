@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Position Absolute</title>
+</head>
+<style>
+    body{
+        position: absolute;
+        top: 0%;
+    }
+    *{
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    .container{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: rgb(206, 139, 14);
+        height: 400px;
+        width: 800px;
+        /* margin: 100px auto; */
+        position: absolute;
+        top: 0px;
+        left: 20px;
+        
+    }
+    .box{
+        width: 200px;
+        height: 200px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 10px;
+        position: absolute;
+        top: 15px;
+        left: 2px;
+    }
+    .box1{
+        background-color: yellowgreen;
+        position: absolute;
+        top: 0%;
+        left: 15px;
+        
+    }
+    .box2{
+        background-color: rgb(110, 78, 227);
+        position: absolute;
+        top: 10px;
+        right: 5px;
+    }
+    .box3{
+        background-color: rgb(159, 61, 61);
+        position: absolute;
+        left:10px ;
+    }
+</style>
+<body>
+    <div class="container">
+        <div class="box box1">Box 1</div>
+        <div class="box box2">Box 1</div>
+        <div class="box box3">Box 1</div>
+    </div>
+</body>
+</html>

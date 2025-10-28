@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Navbar and Card</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    .navbar {
+      background-color: #222;
+      color: #fff;
+      padding: 0.5rem 1rem;
+    }
+
+    .container {
+      display: flex;
+      align-self: center;
+      justify-content: space-between;
+
+    }
+
+    .nav_brand {
+      font-size: 1.5rem;
+    }
+
+    .nav_links {
+      display: flex;
+      gap: 2.5rem;
+    }
+
+    .nav_links a {
+      color: white;
+      text-decoration: none;
+      padding: 0.5rem 0.70rem;
+    }
+
+    .nav_links a:hover {
+      background-color: #555;
+    }
+
+    .nav-toggle {
+      display: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0.5rem;
+    }
+
+    @media (max-width : 786px) {
+      .nav_links {
+        background-color: #222;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        flex-direction: column;
+        overflow: hidden;
+        max-height: 0;
+        transition: max-height 0.3 ease-in;
+      }
+
+      .nav-toggle {
+        display: block;
+      }
+
+      .nav_links a {
+        border-top: 2px solif black;
+        padding: 1rem;
+
+      }
+
+      nav.active .nav_links {
+        max-height: 500px;
+      }
+    }
+
+    .card_container {
+      height: 550px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: row;
+    }
+
+    .card {
+      height: 350px;
+      width: 280px;
+      border: 2px solid black;
+      border-radius: 10px;
+      display: flex;
+      margin: 20px;
+      flex-direction: column;
+      box-shadow: 10px 10px 5px rgb(145, 144, 144);
+
+    }
+
+    .img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 3px;
+
+    }
+
+    .card_content {
+      text-align: center;
+    }
+
+    .card_link {
+      background-color: #222;
+      color: white;
+      text-decoration: none;
+      text-align: center;
+      padding: 0.5rem 2rem;
+      margin: 10px auto;
+      align-self: flex-start;
+
+    }
+
+    .card_link:hover {
+      background-color: #444;
+    }
+
+    .mean_heading {
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar" id="navabr">
+    <div class="container">
+      <div class="nav-toggle " id="navToggle">☰</div>
+      <div class="nav_brand">My Website</div>
+      <div class="nav_links">
+        <a href="">Home</a>
+        <a href="">About</a>
+        <a href="">Service</a>
+        <a href="">Contact</a>
+      </div>
+    </div>
+  </nav>
+
+
+  <div class="card_container">
+    <div class="card">
+      <img class="img" src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e" alt="">
+      <h2 class="card_content">Sea View</h2>
+      <p class="card_content">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Magnam, veniam? This is an
+        example decription for practice.</p>
+      <a class="card_link" href="">Explore More</a>
+    </div>
+    <div class="card">
+
+      <img class="img" src="https://images.unsplash.com/photo-1501785888041-af3ef285b470" alt="">
+
+      <h2 class="card_content">Sun Set View</h2>
+      <p class="card_content">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Magnam, veniam? This is an
+        example decription for practice.</p>
+      <a class="card_link" href="">Explore More</a>
+    </div>
+    <div class="card">
+
+      <img class="img" src="https://images.unsplash.com/photo-1501785888041-af3ef285b470" alt="">
+      <h2 class="card_content">Mountain view</h2>
+      <p class="card_content">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Magnam, veniam? This is an
+        example decription for practice.</p>
+      <a class="card_link" href="">Explore More</a>
+
+    </div>
+  </div>
+
+
+  <script>
+    const navbar = document.getElementById("navbar")
+    const toggle = document.getElementById("navToggle")
+    toggle.addEventListener('click', () => {
+      nav.classList.toggle('active')
+
+    })
+  </script>
+</body>
+
+</html>

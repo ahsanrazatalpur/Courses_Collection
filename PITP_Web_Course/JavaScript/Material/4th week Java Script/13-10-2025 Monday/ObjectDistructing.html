@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        const person = {
+            name: 'chettan',
+            lastName: 'Parkash',
+            age: 29,
+            occupation: 'lecturer'
+        };
+        const {
+            name,
+            lastName,
+            age,
+
+        } = person;
+        document.write("First name " + name + "<br>");
+        document.write(" Last name " + lastName + "<br>");
+        document.write("Age is : " + age + "<br>");
+
+        const {
+            name: fullName,
+            age: personAge
+        } = person;
+        document.write("Full Name " + fullName + "<br>");
+        document.write(" Age " + personAge + "<br>");
+
+
+        const {
+            occupation = 'Developer'
+        } = person;
+        document.write(occupation);
+
+
+        const employee = {
+            name: 'chettan parkash',
+            dept: {
+                name: 'HR'
+            }
+        };
+        const {
+            dept: {
+                name: deptName
+            }
+        } = employee;
+        document.write(deptName);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <label> User Name </label>
+    <input type="text" id="name" />
+
+    <label> <div class="form-group">
+      <label for="l"> Email </label>
+    <input type="email" class="form-control" name="" id="email" aria-describedby="emailHelpId" placeholder="">
+    <small id="emailHelpId" class="form-text text-muted">Help text</small>
+    </div>
+    </label>
+
+    <div class="form-group">
+        <label for=""> Comment </label>
+        <textarea class="form-control" name="" id="textarea" rows="3"></textarea>
+    </div>
+    <button onclick="getName()"> Submit </button>
+    <script>
+        function getName() {
+            let name = document.getElementById("name").value;
+            let mail = document.getElementById("email").value;
+            let com = document.getElementById("textarea").value;
+            document.write(name + "    " + mail + "    " + com);
+        }
+    </script>
+</body>
+
+</html>

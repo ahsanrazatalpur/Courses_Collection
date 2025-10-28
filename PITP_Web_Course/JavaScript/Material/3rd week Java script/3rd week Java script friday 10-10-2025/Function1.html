@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <p id="d1"> </p>
+    <p id="d2"> </p>
+    <p id="demo"></p>
+    <p id="d3"> </p>
+
+    <script>
+        function addition(p1, p2) {
+            return p1 + p2;
+        }
+
+        function substraction(p1, p2) {
+            return p1 - p2;
+        }
+
+        function myFunction(p1, p2) {
+            return p1 * p2;
+        }
+
+        function division(p1, p2) {
+            return p1 / p2;
+        }
+        let n1 = addition(4, 5);
+        let n2 = substraction(4, 2);
+        let result = myFunction(4, 3);
+        let n3 = division(6, 2);
+        document.getElementById("d1").innerHTML = "The Addition is : " + n1;
+        document.getElementById("d2").innerHTML = "The substraction is : " + n2;
+        document.getElementById("demo").innerHTML = "The Multiplication is: " + result;
+        document.getElementById("d3").innerHTML = "The division is : " + n3;
+    </script>
+</body>
+
+</html>
