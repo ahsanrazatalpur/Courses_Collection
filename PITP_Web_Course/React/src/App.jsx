@@ -22,6 +22,11 @@ import Another_Count_Hooks from "./components/Another_Count_Hooks";
 import Stylish_Counter from "./components/Stylish_Counter";
 import Name_Hooks from "./components/Name_Hooks";
 import Name_Stylish_Hooks from "./components/Name_Stylish_Hooks";
+import FormSubmit from "./components/Form_Hook.jsx";
+import MultipleInput from "./components/Multiple_Input.jsx";
+
+
+
 
 
 function App(){
@@ -79,7 +84,13 @@ function App(){
 {/* <Name_Hooks/> */}
 
 
-<Name_Stylish_Hooks/>
+{/* <Name_Stylish_Hooks/> */}
+
+
+{/* <FormSubmit/> */}
+
+
+<MultipleInput/>
 
 
 
