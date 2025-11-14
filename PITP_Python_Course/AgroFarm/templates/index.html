@@ -1,0 +1,3164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgroFarm</title>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  <!-- <script src="contact.js"></script> -->
+
+ <link rel="icon" href="https://cdn.pixabay.com/photo/2025/11/01/15/31/cow-9931057_1280.jpg" type="image/png">
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+
+
+</head>
+
+<body>
+
+  <!-- 🌾 NAVBAR -->
+  <header class="navbar" id="navbar">
+    <div class="nav-container">
+      <div class="brand">
+        <span class="brand-main">Agro</span><span class="brand-highlight">Farm🌿</span>
+      </div>
+
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html" class="active">Home</a>
+        <a href="#about">About</a>
+        <a href="#forum">Forum</a>
+        <a href="#knowledgeBase">Blog</a>
+        <a href="#agriculture-marketplace">Shop</a>
+        <a href="#aiPlantDoctor">AI Doctor</a>
+        <a href="#contact">Contact</a>
+      </nav>
+
+      <div class="right-controls" id="rightControls">
+        <!-- ✅ Universal User Icon (handled by JS + Flask) -->
+        <div class="user-menu">
+          <i class="bi login-icon" id="userIcon" title="User"
+            data-logged-in="{{ 'true' if current_user.is_authenticated else 'false' }}">
+          </i>
+        </div>
+
+        <!-- ✅ Mobile Menu Icon -->
+        <div class="menu-icon" id="menuIcon">
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 🌻 HERO SECTION -->
+  <section class="hero-section" id="hero">
+    <div class="hero-overlay">
+      <div class="hero-content">
+        <h1>Empowering Farmers, <span>Growing the Future</span></h1>
+        <p>Join us in transforming agriculture with technology, innovation, and sustainable farming practices.</p>
+        <a href="#about" class="hero-btn">Explore More</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 🌾 ABOUT SECTION -->
+<section class="about-section" id="about">
+  <div class="about-container">
+    <div class="about-text">
+      <h2>About <span>AgroFarm</span></h2>
+      <p>
+        At AgroFarm, we're dedicated to empowering farmers with modern technology,
+        sustainable practices, and innovation to enhance crop yield and soil health.
+        Together, we grow a better, greener future.
+      </p>
+      <button class="about-btn" id="readMoreBtn">Read More</button>
+    </div>
+    <div class="about-image" id="aboutImage"></div>
+  </div>
+</section>
+
+<!-- About Us Popup -->
+<div class="about-popup" id="aboutPopup">
+  <div class="popup-content">
+    <span class="close-btn" id="closePopup">&times;</span>
+    <h2>About <span>AgroFarm</span></h2>
+    
+    <div class="popup-body">
+      <div class="popup-image">
+        <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="AgroFarm Field">
+      </div>
+      
+      <div class="popup-text">
+        <h3>Our Mission</h3>
+        <p>To revolutionize agriculture through technology, education, and sustainable practices that benefit farmers, communities, and the environment.</p>
+        
+        <h3>What We Do</h3>
+        <ul>
+          <li>Provide smart farming solutions and IoT technology</li>
+          <li>Offer expert consultation and training programs</li>
+          <li>Connect farmers with modern agricultural tools</li>
+          <li>Promote sustainable and organic farming practices</li>
+          <li>Create marketplace for agricultural products</li>
+        </ul>
+        
+        <h3>Our Values</h3>
+        <div class="values-grid">
+          <div class="value-item">
+            <strong>Sustainability</strong>
+            <p>Environmentally conscious farming methods</p>
+          </div>
+          <div class="value-item">
+            <strong>Innovation</strong>
+            <p>Cutting-edge agricultural technology</p>
+          </div>
+          <div class="value-item">
+            <strong>Community</strong>
+            <p>Supporting farming communities worldwide</p>
+          </div>
+          <div class="value-item">
+            <strong>Quality</strong>
+            <p>Delivering excellence in everything we do</p>
+          </div>
+        </div>
+        
+        <div class="stats-section">
+          <div class="stat">
+            <span class="stat-number">5000+</span>
+            <span class="stat-label">Farmers Served</span>
+          </div>
+          <div class="stat">
+            <span class="stat-number">100+</span>
+            <span class="stat-label">Communities</span>
+          </div>
+          <div class="stat">
+            <span class="stat-number">15+</span>
+            <span class="stat-label">Years Experience</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+ <!-- 🌱 DISCUSSION FORUM SECTION -->
+<section class="forum-wrapper" id="forum">
+  <header class="forum-header">
+    <h1><i class="bi bi-chat-dots-fill"></i> AgroFarm Discussion Forum</h1>
+    <!-- Search Form -->
+    <form method="GET" action="{{ url_for('index') }}" class="forum-search" id="searchForm">
+      <input type="text" name="search" placeholder="Search discussions..."
+        value="{{ request.args.get('search', '') }}" />
+      <button type="submit" title="Search"><i class="bi bi-search"></i></button>
+    </form>
+  </header>
+
+  <main class="forum-layout">
+    <!-- Sidebar -->
+    <aside class="forum-sidebar">
+      <div class="image-card">
+        <img id="rotatingImg" src="https://images.pexels.com/photos/173984/pexels-photo-173984.jpeg"
+          alt="Farm Image" />
+        <div class="img-overlay">
+          <p>Explore Smart Farming!</p>
+        </div>
+      </div>
+      
+      <h3><i class="bi bi-clock"></i> Latest Posts</h3>
+      <ul id="latestPosts">
+        <!-- Will be populated by JavaScript -->
+      </ul>
+      
+      <div class="sidebar-stats">
+        <h4><i class="bi bi-graph-up"></i> Forum Stats</h4>
+        <div class="stat-item">
+          <span>Discussions:</span>
+          <strong id="totalDiscussions">0</strong>
+        </div>
+        <div class="stat-item">
+          <span>Replies:</span>
+          <strong id="totalReplies">0</strong>
+        </div>
+        <div class="stat-item">
+          <span>Users:</span>
+          <strong id="totalUsers">0</strong>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <section class="forum-main-content">
+      <!-- Categories -->
+      <div class="categories">
+        <h2 class="category-heading"><i class="bi bi-grid-fill"></i> Categories</h2>
+        <div class="category-cards">
+          <div class="category-card" data-category="Crop Cultivation">
+            <h3><i class="bi bi-tree"></i> Crop Cultivation</h3>
+            <ul>
+              <li>Wheat</li>
+              <li>Rice</li>
+              <li>Corn</li>
+            </ul>
+          </div>
+          <div class="category-card" data-category="Livestock">
+            <h3><i class="bi bi-heart"></i> Livestock</h3>
+            <ul>
+              <li>Cattle</li>
+              <li>Goats</li>
+              <li>Poultry</li>
+            </ul>
+          </div>
+          <div class="category-card" data-category="Irrigation">
+            <h3><i class="bi bi-droplet"></i> Irrigation</h3>
+            <ul>
+              <li>Drip Systems</li>
+              <li>Water Management</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Threads Header with Controls -->
+      <div class="threads-header">
+        <h2><i class="bi bi-chat-text"></i> Recent Discussions</h2>
+        <div class="threads-controls">
+          <button class="sort-btn active" data-sort="newest">Newest</button>
+          <button class="sort-btn" data-sort="popular">Popular</button>
+          <button class="refresh-btn" id="refreshThreads" title="Refresh">
+            <i class="bi bi-arrow-clockwise"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- New thread form (logged-in users) -->
+      {% if current_user.is_authenticated %}
+      <div class="new-thread">
+        <h2><i class="bi bi-plus-circle"></i> Start a New Discussion</h2>
+        <form id="newThreadForm">
+          <div class="form-group">
+            <input type="text" placeholder="Enter discussion title" name="title" required 
+                   class="title-input" maxlength="200" />
+            <span class="char-count">0/200</span>
+          </div>
+          
+          <div class="form-group">
+            <select name="category" required>
+              <option value="">Select Category</option>
+              <option value="Crop Cultivation">Crop Cultivation</option>
+              <option value="Livestock">Livestock</option>
+              <option value="Irrigation">Irrigation</option>
+              <option value="Soil Management">Soil Management</option>
+              <option value="Machinery">Machinery</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <textarea placeholder="Write your post..." name="content" required 
+                     rows="5" class="content-textarea" maxlength="2000"></textarea>
+            <span class="char-count">0/2000</span>
+          </div>
+          
+          <div class="form-footer">
+            <button type="submit" class="submit-btn">
+              <i class="bi bi-send-fill"></i> Post Discussion
+            </button>
+          </div>
+        </form>
+      </div>
+      {% else %}
+      <div class="new-thread-locked">
+        <div class="locked-message">
+          <i class="bi bi-lock"></i>
+          <p>You must <a href="{{ url_for('login') }}" class="login-link">log in</a> to start a new discussion.</p>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Discussion threads container -->
+      <div class="discussion-threads">
+        <div id="threadsContainer" class="threads-container">
+          <!-- Loading indicator -->
+          <div class="loading-indicator">
+            <i class="bi bi-arrow-repeat"></i>
+            <p>Loading discussions...</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</section>
+
+  <!-- Blog -->
+  <!-- Blog -->
+<!-- Knowledge Base Section -->
+<section class="kb-wrapper" id="knowledgeBase" data-is-admin="{{ 'true' if current_user.is_admin else 'false' }}">
+  <header class="kb-header">
+    <h1><i class="bi bi-book"></i> Knowledge Base</h1>
+    <div class="kb-search">
+      <input type="text" placeholder="Search knowledge base..." id="kbSearchInput" />
+      <button title="Search"><i class="bi bi-search"></i></button>
+    </div>
+  </header>
+
+  <main class="kb-layout">
+    <!-- Sidebar -->
+    <aside class="kb-sidebar">
+      <h3><i class="bi bi-lightbulb"></i> Latest Posts</h3>
+      <ul id="kbLatestPosts">
+        {% if recent_blogs %}
+        {% for blog in recent_blogs[:5] %}
+        <li>{{ blog.title }}</li>
+        {% endfor %}
+        {% else %}
+        <li>No recent posts</li>
+        {% endif %}
+      </ul>
+
+      <h3><i class="bi bi-list-task"></i> Categories</h3>
+      <ul id="kbCategories">
+        <!-- Categories will be dynamically loaded here -->
+        <li>Loading categories...</li>
+      </ul>
+
+      <!-- Admin Category Management -->
+      {% if current_user.is_admin %}
+      <div class="kb-category-management">
+        <h3><i class="bi bi-gear"></i> Manage Categories</h3>
+        <form id="kbCategoryForm" class="kb-category-form">
+          <input type="text" id="kbNewCategory" placeholder="New category name" required />
+          <button type="submit">Add Category</button>
+        </form>
+        <div id="kbCategoryList" class="kb-category-list">
+          <!-- Categories with delete buttons will appear here -->
+        </div>
+      </div>
+      {% endif %}
+    </aside>
+
+    <!-- Main Content -->
+    <section class="kb-main-content">
+
+      <!-- Blog Form (Visible to Everyone) -->
+      <div class="new-blog fade-in">
+        <h2><i class="bi bi-pencil-square"></i> {{ 'Post a New Blog' if current_user.is_admin else 'Share Your Knowledge' }}</h2>
+        <form id="kbBlogForm" method="POST" enctype="multipart/form-data">
+          <input type="text" id="kbBlogTitle" name="title" placeholder="Blog Title" required />
+          
+          <!-- Dynamic Category Select -->
+          <select id="kbCategorySelect" name="category" required>
+            <option value="">Select Category</option>
+            <!-- Categories will be dynamically loaded here -->
+          </select>
+          
+          <textarea id="kbBlogContent" name="content" placeholder="Write your blog description..." required></textarea>
+
+          <!-- File Upload Section -->
+          <div class="kb-file-upload-section">
+            <h3><i class="bi bi-cloud-upload"></i> Upload Content</h3>
+            <p class="kb-upload-hint">You can upload images, PDFs, PowerPoint presentations, videos, or audio files</p>
+            
+            <div class="kb-upload-options">
+              <div class="kb-upload-option">
+                <input type="radio" id="uploadTypeFile" name="uploadType" value="file" checked>
+                <label for="uploadTypeFile">Upload from Computer</label>
+                <div class="kb-file-input-container">
+                  <input type="file" id="kbMediaInput" name="media_file" accept="image/*, .pdf, .ppt, .pptx, video/*, audio/*" />
+                  <label for="kbMediaInput" class="kb-file-input-label">
+                    <i class="bi bi-folder2-open"></i> Choose File
+                  </label>
+                  <span id="kbFileName" class="kb-file-name">No file selected</span>
+                </div>
+              </div>
+              
+              <div class="kb-upload-option">
+                <input type="radio" id="uploadTypeUrl" name="uploadType" value="url">
+                <label for="uploadTypeUrl">Provide URL</label>
+                <input type="url" id="kbMediaUrlInput" name="media_url" placeholder="https://example.com/file.pdf" disabled />
+              </div>
+            </div>
+            
+            <div id="kbFilePreview" class="kb-file-preview"></div>
+          </div>
+
+          <div class="kb-form-actions">
+            <button type="submit" id="kbSubmitBtn">{{ 'Post Blog' if current_user.is_admin else 'Share Knowledge' }}</button>
+            <button type="button" id="kbCancelEdit" style="display:none;">Cancel</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Recent Blogs List (Visible to Everyone) -->
+      <div class="kb-blogs fade-in">
+        <h2><i class="bi bi-journal-text"></i> Recent Blogs</h2>
+        <div class="kb-blog-grid" id="kbBlogList">
+          <!-- Blogs will be dynamically loaded here -->
+          <div class="kb-loading">Loading blogs...</div>
+        </div>
+      </div>
+
+    </section>
+  </main>
+</section>
+
+<!-- Enhanced Blog Modal with Like/Comment Functionality -->
+<div id="kbBlogModal" class="kb-modal-overlay">
+  <div class="kb-modal-content">
+    <div class="kb-modal-header">
+      <h2 id="kbModalTitle">Blog Title</h2>
+      <div class="kb-modal-actions">
+        <!-- Like Button -->
+        <button class="kb-like-btn" id="kbModalLikeBtn">
+          <i class="bi bi-heart"></i>
+          <span id="kbLikeCount">0</span>
+        </button>
+        <!-- Close Button -->
+        <button class="kb-modal-close" id="kbModalClose">&times;</button>
+      </div>
+    </div>
+    
+    <div class="kb-modal-body">
+      <!-- Media Content Section -->
+      <div class="kb-modal-media" id="kbModalMediaContainer">
+        <!-- Media content will be dynamically inserted here -->
+      </div>
+      
+      <!-- Blog Meta Information -->
+      <div class="kb-modal-meta">
+        <span id="kbModalCategory"><i class="bi bi-tag"></i> Category</span>
+        <span id="kbModalDate"><i class="bi bi-calendar"></i> Date</span>
+        <span id="kbModalAuthor"><i class="bi bi-person"></i> Author</span>
+      </div>
+      
+      <!-- Blog Content -->
+      <div class="kb-modal-description">
+        <h4>Description</h4>
+        <div id="kbModalDescription" class="kb-modal-content-text">
+          <!-- Blog content will be inserted here -->
+        </div>
+      </div>
+      
+      <!-- Comments Section -->
+      <div class="kb-modal-comments">
+        <h4><i class="bi bi-chat-left-text"></i> Comments (<span id="kbCommentCount">0</span>)</h4>
+        
+        <!-- Add Comment Form -->
+        <form class="kb-comment-form" id="kbCommentForm">
+          <textarea placeholder="Share your thoughts..." required></textarea>
+          <button type="submit">Post Comment</button>
+        </form>
+        
+        <!-- Comments List -->
+        <div class="kb-comments-list" id="kbCommentsList">
+          <!-- Comments will be dynamically loaded here -->
+        </div>
+      </div>
+    </div>
+    
+    <div class="kb-modal-footer">
+      <button class="kb-modal-close-btn" id="kbModalCloseBtn">
+        <i class="bi bi-x-lg"></i> Close
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirmation Modal for Delete Actions -->
+<div id="kbConfirmModal" class="kb-modal-overlay confirm-modal">
+  <div class="kb-confirm-content">
+    <div class="kb-confirm-header">
+      <i class="bi bi-exclamation-triangle"></i>
+      <h3>Confirm Action</h3>
+    </div>
+    <div class="kb-confirm-body">
+      <p id="kbConfirmMessage">Are you sure you want to perform this action?</p>
+    </div>
+    <div class="kb-confirm-actions">
+      <button class="kb-confirm-cancel" id="kbConfirmCancel">Cancel</button>
+      <button class="kb-confirm-proceed" id="kbConfirmProceed">Proceed</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="kbToast" class="kb-toast">
+  <i class="bi bi-check-circle"></i>
+  <span id="kbToastMessage">Operation completed successfully!</span>
+</div>
+  <!-- consultancy-services -->
+<!-- consultancy-services -->
+<section class="consultancy-wrapper" id="consultancyServices">
+  <header class="consultancy-header">
+    <h1><i class="bi bi-people-fill"></i> Consultancy Services</h1>
+    
+    <!-- Header Controls - Search and Admin Button -->
+    <div class="header-controls">
+      <!-- Search Bar -->
+      <div class="consultancy-search">
+        <input type="text" placeholder="Search consultants..." id="consultancySearchInput" />
+        <button title="Search"><i class="bi bi-search"></i></button>
+      </div>
+      
+      <!-- Admin Panel Button (Visible only to admins) -->
+      <div id="adminPanelButton" style="display: none;">
+        <button class="btn-admin" id="toggleAdminPanel">
+          <i class="bi bi-shield-check"></i> Admin Panel
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="consultancy-layout">
+    <!-- Sidebar -->
+    <aside class="consultancy-sidebar">
+      <h3>Latest Consultants</h3>
+      <ul id="latestConsultants">
+        <li>No consultants yet</li>
+      </ul>
+
+      <h3>Categories</h3>
+      <ul id="consultancyCategories">
+        <!-- Categories will be populated dynamically -->
+      </ul>
+      
+      <!-- Category Stats (Admin only) -->
+      <div id="categoryStats" style="display: none; margin-top: 20px; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+        <h4><i class="bi bi-graph-up"></i> Category Stats</h4>
+        <div id="statsContent">
+          <!-- Stats will be loaded here -->
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <section class="consultancy-main-content">
+      <!-- User Registration Section -->
+      <div class="register-consultant" id="userRegistrationSection">
+        <h2><i class="bi bi-person-plus-fill"></i> Register as Consultant</h2>
+        <form id="consultantForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="consultantExpertise">Expertise/Skills *</label>
+              <input type="text" id="consultantExpertise" placeholder="e.g., Organic Farming, Pest Control" required />
+            </div>
+            
+            <div class="form-group">
+              <label for="consultantCategorySelect">Category *</label>
+              <select id="consultantCategorySelect" required>
+                <option value="">Select Category</option>
+                <!-- Categories will be populated dynamically -->
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="consultantExperience">Experience & Background *</label>
+            <textarea id="consultantExperience" placeholder="Describe your farming experience, qualifications, and why you want to be a consultant..." required rows="4"></textarea>
+          </div>
+
+          <button type="submit" class="btn-primary">
+            <i class="bi bi-send-check"></i> Submit for Approval
+          </button>
+          
+          <div id="applicationStatus" style="margin-top: 15px; display: none;">
+            <!-- Application status will be shown here -->
+          </div>
+        </form>
+      </div>
+
+      <!-- Approved Consultants Section -->
+      <div class="consultant-list-section">
+        <div class="section-header">
+          <h2><i class="bi bi-people"></i> Approved Consultants</h2>
+          <span id="consultantCount" class="badge">0 consultants</span>
+        </div>
+        <div id="consultantList">
+          <p>No consultants found.</p>
+        </div>
+      </div>
+
+      <!-- Admin Panel Section (Visible only to admins) -->
+      <div id="adminPanel" style="display: none; margin-top: 30px;">
+        <div class="admin-panel-header">
+          <h2><i class="bi bi-shield-check"></i> Admin Panel</h2>
+          <button class="btn-secondary" id="refreshAdminData">
+            <i class="bi bi-arrow-clockwise"></i> Refresh
+          </button>
+        </div>
+
+        <!-- Pending Applications -->
+        <div class="admin-section">
+          <h3><i class="bi bi-clock-history"></i> Pending Applications</h3>
+          <div id="pendingApplications">
+            <p>No pending applications</p>
+          </div>
+        </div>
+
+        <!-- Category Management -->
+        <div class="admin-section">
+          <h3><i class="bi bi-tags"></i> Category Management</h3>
+          <div class="category-management">
+            <div class="add-category-form">
+              <input type="text" id="newCategoryName" placeholder="New category name" />
+              <button class="btn-success" id="addCategoryBtn">
+                <i class="bi bi-plus-circle"></i> Add Category
+              </button>
+            </div>
+            <div id="categoriesList">
+              <p>Loading categories...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</section>
+
+<!-- Modal for Application Review -->
+<div id="reviewModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Review Consultant Application</h3>
+      <span class="close">&times;</span>
+    </div>
+    <div class="modal-body">
+      <div id="applicantInfo">
+        <!-- Applicant information will be loaded here -->
+      </div>
+      <div class="review-actions">
+        <div class="form-group">
+          <label>Change Category (Optional)</label>
+          <select id="reviewCategorySelect">
+            <option value="">Keep original category</option>
+            <!-- Categories will be populated dynamically -->
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="declineReason">Decline Reason (if declining)</label>
+          <textarea id="declineReason" placeholder="Optional reason for declining..." rows="3"></textarea>
+        </div>
+        <div class="action-buttons">
+          <button class="btn-success" id="approveBtn">
+            <i class="bi bi-check-circle"></i> Approve
+          </button>
+          <button class="btn-danger" id="declineBtn">
+            <i class="bi bi-x-circle"></i> Decline
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Wether and crop Recomendatation -->
+<!-- ======= Weather Forecast Section ======= -->
+<section id="weather-forecast" class="weather-section">
+    <div class="weather-container">
+        <div class="weather-header">
+            <h2><i class="fas fa-cloud-sun-rain"></i> Farm Weather Intelligence</h2>
+            <p>Real-time weather data and smart crop management</p>
+        </div>
+
+        <!-- Current Weather -->
+        <div class="current-weather">
+            <div class="weather-card current">
+                <h3><i class="fas fa-location-dot"></i> Current Weather</h3>
+                <div class="weather-info">
+                    <div class="weather-icon">
+                        <i class="fas fa-sun" id="current-weather-icon"></i>
+                    </div>
+                    <div class="weather-details">
+                        <div class="temp" id="current-temp">25°C</div>
+                        <div class="condition" id="current-condition">Sunny</div>
+                        <div class="location" id="current-location">AgroFarm Main Field</div>
+                    </div>
+                </div>
+                <div class="weather-stats">
+                    <div class="stat">
+                        <i class="fas fa-wind"></i>
+                        <span id="wind-speed">15 km/h</span>
+                    </div>
+                    <div class="stat">
+                        <i class="fas fa-tint"></i>
+                        <span id="humidity">65%</span>
+                    </div>
+                    <div class="stat">
+                        <i class="fas fa-gauge-high"></i>
+                        <span id="pressure">1013 hPa</span>
+                    </div>
+                    <div class="stat">
+                        <i class="fas fa-eye"></i>
+                        <span id="visibility">10 km</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Weather Forecast -->
+        <div class="forecast-section">
+            <h3><i class="fas fa-calendar-week"></i> 5-Day Forecast</h3>
+            <div class="forecast-container" id="forecast-container">
+                <!-- Forecast cards will be dynamically added here -->
+            </div>
+        </div>
+
+        <!-- Current Farm Crops -->
+        <div class="current-crops-section">
+            <h3><i class="fas fa-tractor"></i> My Farm Crops</h3>
+            <div class="crops-stats">
+                <div class="crop-stat">
+                    <i class="fas fa-seedling"></i>
+                    <span id="total-crops">0</span>
+                    <small>Total Crops</small>
+                </div>
+                <div class="crop-stat">
+                    <i class="fas fa-check-circle"></i>
+                    <span id="ready-crops">0</span>
+                    <small>Ready to Harvest</small>
+                </div>
+                <div class="crop-stat">
+                    <i class="fas fa-chart-line"></i>
+                    <span id="growth-progress">0%</span>
+                    <small>Average Growth</small>
+                </div>
+            </div>
+            <div class="current-crops-container" id="current-crops-container">
+                <!-- Current crops will be dynamically added here -->
+                <div class="no-crops-message">
+                    <i class="fas fa-seedling"></i>
+                    <p>No crops planted yet. Add some crops to get started!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Crop Recommendations -->
+        <div class="crop-recommendations">
+            <h3><i class="fas fa-seedling"></i> Recommended Crops for Current Weather</h3>
+            <div class="crops-container" id="crops-container">
+                <!-- Crop cards will be dynamically added here -->
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="weather-actions">
+            <button class="btn btn-primary" onclick="addCrops()">
+                <i class="fas fa-plus-circle"></i> Add Recommended Crops
+            </button>
+            <button class="btn btn-success" onclick="harvestCrops()">
+                <i class="fas fa-harvest"></i> Harvest Ready Crops
+            </button>
+            <button class="btn btn-info" onclick="refreshWeather()">
+                <i class="fas fa-sync-alt"></i> Refresh Weather
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- Modals -->
+<div id="addCropsModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3><i class="fas fa-seedling"></i> Add Crops to Farm</h3>
+        <div id="crop-selection">
+            <!-- Crop selection will be populated dynamically -->
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="confirmAddCrops()">Add Selected Crops</button>
+        </div>
+    </div>
+</div>
+
+<div id="harvestModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3><i class="fas fa-harvest"></i> Harvest Confirmation</h3>
+        <p id="harvest-message">Are you sure you want to harvest ready crops?</p>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+            <button class="btn btn-success" onclick="confirmHarvest()">Confirm Harvest</button>
+        </div>
+    </div>
+</div>
+
+<div id="cropDetailsModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3><i class="fas fa-info-circle"></i> Crop Details</h3>
+        <div id="crop-details-content">
+            <!-- Crop details will be populated dynamically -->
+        </div>
+    </div>
+</div>
+
+<!-- Video/audio/cahhtin -->
+<!-- ======= Real-Time Video Consultation Section ======= -->
+<section id="video-consultation" class="consultation-section">
+    <div class="consultation-container">
+        <div class="consultation-header">
+            <h2><i class="fas fa-video"></i> Live Farm Consultation</h2>
+            <p>Connect with agricultural experts in real-time for crop issues and advice</p>
+        </div>
+
+        <!-- Consultation Stats -->
+        <div class="consultation-stats">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="online-experts">12</h3>
+                    <p>Online Experts</p>
+                </div>
+                <div class="stat-glow"></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="avg-wait">2 min</h3>
+                    <p>Avg Wait Time</p>
+                </div>
+                <div class="stat-glow"></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="rating">4.8</h3>
+                    <p>Expert Rating</p>
+                </div>
+                <div class="stat-glow"></div>
+            </div>
+        </div>
+
+        <!-- Main Consultation Interface -->
+        <div class="consultation-interface">
+            <!-- Video Call Container -->
+            <div class="video-container">
+                <div class="video-header">
+                    <h3><i class="fas fa-video"></i> Live Video Call</h3>
+                    <div class="call-controls">
+                        <button class="control-btn video-btn active" onclick="toggleVideo()">
+                            <i class="fas fa-video"></i>
+                        </button>
+                        <button class="control-btn audio-btn active" onclick="toggleAudio()">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                        <button class="control-btn screen-btn" onclick="toggleScreenShare()">
+                            <i class="fas fa-desktop"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="video-window">
+                    <!-- Local Video -->
+                    <div class="video-local">
+                        <video id="localVideo" autoplay muted></video>
+                        <div class="video-overlay">
+                            <span class="video-label">You</span>
+                            <div class="video-status">
+                                <i class="fas fa-video status-on"></i>
+                                <i class="fas fa-microphone status-on"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Remote Video -->
+                    <div class="video-remote">
+                        <div class="video-placeholder" id="remotePlaceholder">
+                            <div class="placeholder-content">
+                                <i class="fas fa-user-tie"></i>
+                                <h4>Waiting for Expert</h4>
+                                <p>Connect with an agricultural specialist</p>
+                                <div class="pulse-animation"></div>
+                            </div>
+                        </div>
+                        <video id="remoteVideo" autoplay style="display: none;"></video>
+                        <div class="video-overlay remote-overlay" style="display: none;">
+                            <span class="video-label">Agricultural Expert</span>
+                            <div class="expert-info">
+                                <span class="expert-name">Dr. Green</span>
+                                <span class="expert-specialty">Plant Pathology</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Call Actions -->
+                <div class="call-actions">
+                    <button class="btn-call btn-call-start" onclick="startCall()">
+                        <i class="fas fa-phone"></i>
+                        <span>Start Consultation</span>
+                        <div class="btn-glow"></div>
+                    </button>
+                    <button class="btn-call btn-call-end" onclick="endCall()" style="display: none;">
+                        <i class="fas fa-phone-slash"></i>
+                        <span>End Call</span>
+                    </button>
+                    <button class="btn-call btn-call-request" onclick="requestConsultant()">
+                        <i class="fas fa-user-tie"></i>
+                        <span>Request Specialist</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Chat Container -->
+            <div class="chat-container">
+                <div class="chat-header">
+                    <h3><i class="fas fa-comments"></i> Live Chat</h3>
+                    <div class="chat-status">
+                        <span class="status-dot online"></span>
+                        <span>Online</span>
+                    </div>
+                </div>
+                
+                <div class="chat-messages" id="chatMessages">
+                    <!-- System Messages -->
+                    <div class="message system">
+                        <div class="message-content">
+                            <i class="fas fa-info-circle"></i>
+                            Welcome to AgroFarm Consultation! Connect with experts for real-time advice.
+                        </div>
+                    </div>
+                    
+                    <!-- Example Messages -->
+                    <div class="message expert">
+                        <div class="message-avatar">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <div class="message-content">
+                            <div class="message-sender">Dr. Green</div>
+                            <div class="message-text">Hello! I'm here to help with your crop issues. What seems to be the problem?</div>
+                            <div class="message-time">10:30 AM</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chat-input-container">
+                    <div class="chat-input">
+                        <input type="text" id="chatInput" placeholder="Type your message...">
+                        <button class="btn-send" onclick="sendMessage()">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                    <div class="chat-actions">
+                        <button class="chat-action-btn" onclick="attachImage()">
+                            <i class="fas fa-image"></i>
+                        </button>
+                        <button class="chat-action-btn" onclick="recordAudio()">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                        <button class="chat-action-btn" onclick="shareScreen()">
+                            <i class="fas fa-share"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Available Experts -->
+        <div class="experts-section">
+            <h3><i class="fas fa-user-tie"></i> Available Experts</h3>
+            <div class="experts-grid" id="expertsGrid">
+                <!-- Experts will be dynamically added here -->
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+            <div class="action-grid">
+                <div class="action-card" onclick="quickConnect('plant_disease')">
+                    <div class="action-icon">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <h4>Plant Disease</h4>
+                    <p>Get help with crop diseases</p>
+                    <div class="action-glow"></div>
+                </div>
+                <div class="action-card" onclick="quickConnect('pest_control')">
+                    <div class="action-icon">
+                        <i class="fas fa-bug"></i>
+                    </div>
+                    <h4>Pest Control</h4>
+                    <p>Manage pests and insects</p>
+                    <div class="action-glow"></div>
+                </div>
+                <div class="action-card" onclick="quickConnect('soil_health')">
+                    <div class="action-icon">
+                        <i class="fas fa-seedling"></i>
+                    </div>
+                    <h4>Soil Health</h4>
+                    <p>Soil testing and improvement</p>
+                    <div class="action-glow"></div>
+                </div>
+                <div class="action-card" onclick="quickConnect('irrigation')">
+                    <div class="action-icon">
+                        <i class="fas fa-tint"></i>
+                    </div>
+                    <h4>Irrigation</h4>
+                    <p>Water management advice</p>
+                    <div class="action-glow"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Consultation Requests (Visible to Users) -->
+        <div class="user-requests-section" id="userRequestsSection" style="display: none;">
+            <h3><i class="fas fa-history"></i> My Consultation Requests</h3>
+            <div class="user-requests-grid" id="userRequestsGrid">
+                <!-- User requests will be dynamically added here -->
+            </div>
+        </div>
+
+        <!-- Consultation History Section (Visible to Users) -->
+        <div class="consultation-history-section" id="consultationHistorySection" style="display: none;">
+            <h3><i class="fas fa-history"></i> Consultation History</h3>
+            <div class="history-grid" id="historyGrid">
+                <!-- Consultation history will be dynamically added here -->
+            </div>
+        </div>
+
+        <!-- Expert Controls Section (Visible to Experts) -->
+        <div class="expert-controls-section" id="expertControlsSection" style="display: none;">
+            <h3><i class="fas fa-cogs"></i> Expert Controls</h3>
+            
+            <!-- Bulk Actions -->
+            <div class="bulk-actions">
+                <h4><i class="fas fa-layer-group"></i> Bulk Actions</h4>
+                <div class="bulk-buttons">
+                    <button class="btn-bulk btn-bulk-accept" onclick="acceptAllRequests()">
+                        <i class="fas fa-check-double"></i> Accept All Pending
+                    </button>
+                    <button class="btn-bulk btn-bulk-decline" onclick="declineAllRequests()">
+                        <i class="fas fa-times-circle"></i> Decline All Pending
+                    </button>
+                </div>
+            </div>
+
+            <!-- Urgency Filter -->
+            <div class="urgency-filter">
+                <h4><i class="fas fa-filter"></i> Filter by Urgency</h4>
+                <div class="filter-options">
+                    <label class="filter-option">
+                        <input type="checkbox" name="urgencyFilter" value="low" checked onchange="filterRequests()">
+                        <span class="urgency-dot low"></span>
+                        Low
+                    </label>
+                    <label class="filter-option">
+                        <input type="checkbox" name="urgencyFilter" value="medium" checked onchange="filterRequests()">
+                        <span class="urgency-dot medium"></span>
+                        Medium
+                    </label>
+                    <label class="filter-option">
+                        <input type="checkbox" name="urgencyFilter" value="high" checked onchange="filterRequests()">
+                        <span class="urgency-dot high"></span>
+                        High
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Requests Section (Visible to Experts) -->
+        <div class="pending-requests-section" id="pendingRequestsSection" style="display: none;">
+            <h3><i class="fas fa-clock"></i> Pending Consultation Requests</h3>
+            <div class="requests-grid" id="requestsGrid">
+                <!-- Requests will be dynamically added here -->
+            </div>
+        </div>
+
+        <!-- Accepted Requests Section (Visible to Experts) -->
+        <div class="accepted-requests-section" id="acceptedRequestsSection" style="display: none;">
+            <h3><i class="fas fa-check-circle"></i> My Accepted Consultations</h3>
+            <div class="requests-grid" id="acceptedRequestsGrid">
+                <!-- Accepted requests will be dynamically added here -->
+            </div>
+        </div>
+
+        <!-- Admin Panel Section (Visible to Admins) -->
+        <div class="admin-panel-section" id="adminPanelSection" style="display: none;">
+            <h3><i class="fas fa-cog"></i> Admin Panel - Consultation Overview</h3>
+            
+            <!-- Admin Statistics -->
+            <div class="admin-stats">
+                <h4><i class="fas fa-chart-bar"></i> Request Statistics</h4>
+                <div class="stats-grid">
+                    <div class="stat-card admin-stat">
+                        <div class="stat-icon">
+                            <i class="fas fa-inbox"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalRequests">0</h3>
+                            <p>Total Requests</p>
+                        </div>
+                    </div>
+                    <div class="stat-card admin-stat">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="pendingRequests">0</h3>
+                            <p>Pending</p>
+                        </div>
+                    </div>
+                    <div class="stat-card admin-stat">
+                        <div class="stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="acceptedRequests">0</h3>
+                            <p>Accepted</p>
+                        </div>
+                    </div>
+                    <div class="stat-card admin-stat">
+                        <div class="stat-icon">
+                            <i class="fas fa-times-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="rejectedRequests">0</h3>
+                            <p>Rejected</p>
+                        </div>
+                    </div>
+                    <div class="stat-card admin-stat">
+                        <div class="stat-icon">
+                            <i class="fas fa-check-double"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="completedRequests">0</h3>
+                            <p>Completed</p>
+                        </div>
+                    </div>
+                    <div class="stat-card admin-stat">
+                        <div class="stat-icon">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="expertAccepted">0</h3>
+                            <p>Expert Accepted</p>
+                        </div>
+                    </div>
+                    <div class="stat-card admin-stat">
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="completionRate">0%</h3>
+                            <p>Completion Rate</p>
+                        </div>
+                    </div>
+                    <div class="stat-card admin-stat">
+                        <div class="stat-icon">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="acceptanceRate">0%</h3>
+                            <p>Acceptance Rate</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Statistics -->
+                <div class="detailed-stats">
+                    <div class="stat-column">
+                        <h5>Urgency Distribution</h5>
+                        <div class="urgency-stats">
+                            <div class="urgency-stat">
+                                <span class="urgency-dot low"></span>
+                                <span>Low: </span>
+                                <strong id="lowUrgency">0</strong>
+                            </div>
+                            <div class="urgency-stat">
+                                <span class="urgency-dot medium"></span>
+                                <span>Medium: </span>
+                                <strong id="mediumUrgency">0</strong>
+                            </div>
+                            <div class="urgency-stat">
+                                <span class="urgency-dot high"></span>
+                                <span>High: </span>
+                                <strong id="highUrgency">0</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-column">
+                        <h5>Issue Types</h5>
+                        <div class="issue-type-stats" id="issueTypeStats">
+                            <!-- Dynamic content -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- All Requests (View Only) -->
+            <div class="admin-requests">
+                <h4><i class="fas fa-list"></i> All Consultation Requests (View Only)</h4>
+                <div class="view-only-notice">
+                    <i class="fas fa-eye"></i>
+                    <span>Admin View Only - No actions permitted</span>
+                </div>
+                <div class="admin-requests-grid" id="adminRequestsGrid">
+                    <!-- Dynamic content -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Consultation Records Section -->
+        <div class="admin-records-section" id="adminRecordsSection" style="display: none;">
+            <h3><i class="fas fa-database"></i> Complete Consultation Records</h3>
+            <div class="records-filters">
+                <div class="filter-group">
+                    <label for="dateFilter">Date Range:</label>
+                    <select id="dateFilter" onchange="filterAdminRecords()">
+                        <option value="all">All Time</option>
+                        <option value="today">Today</option>
+                        <option value="week">This Week</option>
+                        <option value="month">This Month</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="statusFilter">Status:</label>
+                    <select id="statusFilter" onchange="filterAdminRecords()">
+                        <option value="all">All Status</option>
+                        <option value="completed">Completed</option>
+                        <option value="accepted">Accepted</option>
+                        <option value="rejected">Rejected</option>
+                        <option value="pending">Pending</option>
+                    </select>
+                </div>
+            </div>
+            <div class="records-grid" id="recordsGrid">
+                <!-- Complete records will be dynamically added here -->
+            </div>
+        </div>
+
+        <!-- Role Switcher (for testing) -->
+        <div class="role-switcher" style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 10px; text-align: center;">
+            <h4><i class="fas fa-user-shield"></i> Role Switcher (Testing Only)</h4>
+            <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                <button class="btn-call" onclick="switchToUserView()" style="background: #4CAF50;">
+                    <i class="fas fa-user"></i> User View
+                </button>
+                <button class="btn-call" onclick="switchToExpertView()" style="background: #ffc107; color: #212529;">
+                    <i class="fas fa-user-tie"></i> Expert View
+                </button>
+                <button class="btn-call" onclick="switchToAdminView()" style="background: #6c757d;">
+                    <i class="fas fa-cog"></i> Admin View
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Consultation Modals -->
+<div id="consultantModal" class="modal consultation-modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <div class="consultant-profile">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <div class="profile-info">
+                    <h3 id="consultantName">Dr. Green</h3>
+                    <p id="consultantSpecialty">Plant Pathology Expert</p>
+                    <div class="profile-rating">
+                        <i class="fas fa-star"></i>
+                        <span id="consultantRating">4.8</span>
+                        <span class="rating-count">(127 reviews)</span>
+                    </div>
+                </div>
+            </div>
+            <div class="profile-details">
+                <div class="detail-item">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>PhD in Agriculture</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-briefcase"></i>
+                    <span>15 years experience</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-clock"></i>
+                    <span>Available Now</span>
+                </div>
+            </div>
+            <div class="profile-skills">
+                <h4>Specializations</h4>
+                <div class="skills-list">
+                    <span class="skill-tag">Plant Diseases</span>
+                    <span class="skill-tag">Soil Health</span>
+                    <span class="skill-tag">Organic Farming</span>
+                    <span class="skill-tag">Pest Management</span>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="connectToConsultant()">
+                    <i class="fas fa-phone"></i> Start Consultation
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="callRequestModal" class="modal consultation-modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3><i class="fas fa-user-tie"></i> Request Specialist</h3>
+        <div class="request-form">
+            <div class="form-group">
+                <label for="issueType">Issue Type</label>
+                <select id="issueType" class="form-select">
+                    <option value="plant_disease">Plant Disease</option>
+                    <option value="pest_control">Pest Control</option>
+                    <option value="soil_health">Soil Health</option>
+                    <option value="irrigation">Irrigation</option>
+                    <option value="fertilizer">Fertilizer Use</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="issueDescription">Describe Your Issue</label>
+                <textarea id="issueDescription" class="form-textarea" placeholder="Please describe your crop issue in detail..." rows="4"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="urgencyLevel">Urgency Level</label>
+                <div class="urgency-options">
+                    <label class="urgency-option">
+                        <input type="radio" name="urgency" value="low" checked>
+                        <span class="urgency-dot low"></span>
+                        Low
+                    </label>
+                    <label class="urgency-option">
+                        <input type="radio" name="urgency" value="medium">
+                        <span class="urgency-dot medium"></span>
+                        Medium
+                    </label>
+                    <label class="urgency-option">
+                        <input type="radio" name="urgency" value="high">
+                        <span class="urgency-dot high"></span>
+                        High
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="submitRequest()">
+                <i class="fas fa-paper-plane"></i> Send Request
+            </button>
+        </div>
+    </div>
+</div>
+<!-- E-commerce store -->
+<!-- Enhanced Agriculture Marketplace -->
+<section id="agriculture-marketplace" class="section-wrapper">
+  <div class="container">
+    <!-- Header Section -->
+    <header class="marketplace-header">
+      <div class="header-top">
+        <h1><i class="bi bi-tree-fill"></i> Agriculture Marketplace</h1>
+        <div class="admin-controls">
+          <div class="admin-info">
+            <img class="admin-avatar" src="https://ui-avatars.com/api/?name=Admin+User&background=4CAF50&color=fff" alt="Admin">
+            <div class="admin-details">
+              <span class="admin-name" id="userName">Loading...</span>
+              <span class="admin-role" id="userRole">Loading...</span>
+            </div>
+          </div>
+          <div class="header-icons">
+            <button class="header-btn" id="notificationBtn">
+              <i class="bi bi-bell-fill"></i><span class="badge" id="notificationCount">0</span>
+            </button>
+            <button class="header-btn" id="cartBtn" style="display: none;">
+              <i class="bi bi-cart-fill"></i><span class="badge" id="cartBadge">0</span>
+            </button>
+            <button class="header-btn" id="settingsBtn"><i class="bi bi-gear-fill"></i></button>
+            <button class="header-btn" id="logoutBtn"><i class="bi bi-box-arrow-right"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="header-search">
+        <input type="text" id="searchInput" placeholder="Search products, orders, farmers, customers...">
+        <button class="search-btn" id="searchBtn"><i class="bi bi-search"></i></button>
+      </div>
+
+      <!-- Quick Stats -->
+      <div class="quick-stats" id="quickStats">
+        <div class="stat-card" data-type="products">
+          <i class="bi bi-basket-fill"></i>
+          <div>
+            <span>Total Products</span>
+            <h3 id="totalProducts">0</h3>
+          </div>
+        </div>
+        <div class="stat-card" data-type="orders">
+          <i class="bi bi-cart-check-fill"></i>
+          <div>
+            <span>Total Orders</span>
+            <h3 id="totalOrders">0</h3>
+          </div>
+        </div>
+        <div class="stat-card" data-type="farmers">
+          <i class="bi bi-people-fill"></i>
+          <div>
+            <span>Total Farmers</span>
+            <h3 id="totalFarmers">0</h3>
+          </div>
+        </div>
+        <div class="stat-card" data-type="customers">
+          <i class="bi bi-person-fill"></i>
+          <div>
+            <span>Total Customers</span>
+            <h3 id="totalCustomers">0</h3>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Layout -->
+    <div class="marketplace-layout">
+      <!-- Sidebar Navigation -->
+      <aside class="marketplace-sidebar" id="sidebar">
+        <ul class="sidebar-menu">
+          <li class="active" data-section="dashboard"><i class="bi bi-speedometer2"></i> Dashboard</li>
+          <li data-section="products"><i class="bi bi-box-seam"></i> Products</li>
+          <li data-section="cart" id="cartMenuItem" style="display: none;"><i class="bi bi-cart-fill"></i> Cart</li>
+          <li data-section="categories"><i class="bi bi-tags-fill"></i> Categories</li>
+          <li data-section="orders"><i class="bi bi-cart-fill"></i> Orders</li>
+          <li data-section="farmers"><i class="bi bi-person-badge"></i> Farmers</li>
+          <li data-section="customers" id="customersMenuItem"><i class="bi bi-people-fill"></i> Customers</li>
+          <li data-section="analytics" id="analyticsMenuItem"><i class="bi bi-graph-up"></i> Analytics</li>
+          <li data-section="reports" id="reportsMenuItem"><i class="bi bi-file-earmark-bar-graph"></i> Reports</li>
+          <li data-section="settings" id="settingsMenuItem"><i class="bi bi-gear-fill"></i> Settings</li>
+        </ul>
+      </aside>
+
+      <!-- Main Content Area -->
+      <div class="marketplace-main-content">
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="content-section active">
+          <div class="dashboard-cards">
+            <div class="dashboard-card" data-type="products">
+              <i class="bi bi-basket3-fill"></i>
+              <h4>Total Products</h4>
+              <p id="dashProducts">0</p>
+            </div>
+            <div class="dashboard-card" data-type="orders">
+              <i class="bi bi-cart4"></i>
+              <h4>Total Orders</h4>
+              <p id="dashOrders">0</p>
+            </div>
+            <div class="dashboard-card" data-type="farmers">
+              <i class="bi bi-person-lines-fill"></i>
+              <h4>Total Farmers</h4>
+              <p id="dashFarmers">0</p>
+            </div>
+            <div class="dashboard-card" data-type="customers">
+              <i class="bi bi-people-fill"></i>
+              <h4>Total Customers</h4>
+              <p id="dashCustomers">0</p>
+            </div>
+          </div>
+          
+          <!-- Recent Activity -->
+          <div class="recent-activity">
+            <h3>Recent Activity</h3>
+            <div id="recentActivity" class="activity-list">
+              <div class="activity-item">
+                <i class="bi bi-info-circle"></i>
+                <span>System initialized. No recent activity yet.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Products Section -->
+        <div id="products" class="content-section">
+          <div class="section-header">
+            <button class="add-product-btn" id="addProductBtn">
+              <i class="bi bi-plus-circle-fill"></i> Add Product
+            </button>
+            <div class="filter-controls">
+              <select id="categoryFilter">
+                <option value="">All Categories</option>
+              </select>
+              <select id="statusFilter">
+                <option value="all">All Status</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
+          </div>
+          <div class="products-grid" id="productGrid">
+            <div class="loading-products">Loading products...</div>
+          </div>
+        </div>
+
+        <!-- Cart Section -->
+        <div id="cart" class="content-section">
+          <div class="section-header">
+            <h2><i class="bi bi-cart-fill"></i> Shopping Cart</h2>
+            <div class="cart-summary">
+              <span id="cartItemCount">0 items</span>
+              <span id="cartTotalAmount">Total: $0.00</span>
+            </div>
+          </div>
+          
+          <div class="cart-container">
+            <div class="cart-items" id="cartItems">
+              <div class="empty-cart" id="emptyCart">
+                <i class="bi bi-cart-x"></i>
+                <h3>Your cart is empty</h3>
+                <p>Add some products to get started!</p>
+              </div>
+            </div>
+            
+            <div class="cart-summary-card">
+              <h3>Order Summary</h3>
+              <div class="summary-details">
+                <div class="summary-row">
+                  <span>Subtotal:</span>
+                  <span id="cartSubtotal">$0.00</span>
+                </div>
+                <div class="summary-row">
+                  <span>Shipping:</span>
+                  <span id="cartShipping">$5.00</span>
+                </div>
+                <div class="summary-row total">
+                  <span>Total:</span>
+                  <span id="cartFinalTotal">$5.00</span>
+                </div>
+              </div>
+              <button class="place-order-btn" id="placeOrderFromCart">
+                <i class="bi bi-bag-check"></i> Place Order
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Categories Section -->
+        <div id="categories" class="content-section">
+          <div class="section-header">
+            <button class="add-category-btn" id="addCategoryBtn">
+              <i class="bi bi-plus-circle-fill"></i> Add Category
+            </button>
+          </div>
+          
+          <div class="categories-grid" id="categoriesGrid">
+            <div class="loading-categories">Loading categories...</div>
+          </div>
+        </div>
+
+        <!-- Orders Section -->
+        <div id="orders" class="content-section">
+          <div class="section-header">
+            <h2><i class="bi bi-cart-fill"></i> Orders Management</h2>
+            <div class="order-filters">
+              <select id="orderStatusFilter">
+                <option value="all">All Orders</option>
+                <option value="pending">Pending</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="shipped">Shipped</option>
+                <option value="delivered">Delivered</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="orders-container" id="ordersContainer">
+            <div class="loading-orders">Loading orders...</div>
+          </div>
+        </div>
+
+        <!-- Farmers Section -->
+        <div id="farmers" class="content-section">
+          <div class="section-header">
+            <button class="add-farmer-btn" id="addFarmerBtn">
+              <i class="bi bi-person-plus-fill"></i> Add Farmer
+            </button>
+          </div>
+          
+          <div class="farmers-grid" id="farmersGrid">
+            <div class="loading-farmers">Loading farmers...</div>
+          </div>
+        </div>
+
+        <!-- Customers Section -->
+        <div id="customers" class="content-section">
+          <div class="section-header">
+            <h2><i class="bi bi-people-fill"></i> Customers Management</h2>
+            <div class="customer-stats">
+              <span>Total Customers: <strong id="totalCustomersCount">0</strong></span>
+            </div>
+          </div>
+          
+          <div class="customers-table-container">
+            <table class="customers-table">
+              <thead>
+                <tr>
+                  <th>Customer ID</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Orders</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="customersTableBody">
+                <tr>
+                  <td colspan="7" class="no-data">No customers found</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Analytics Section -->
+        <div id="analytics" class="content-section">
+          <div class="section-header">
+            <h2><i class="bi bi-graph-up"></i> Analytics Dashboard</h2>
+          </div>
+          <div class="analytics-grid">
+            <div class="analytics-card">
+              <h4>Sales Overview</h4>
+              <div class="chart-placeholder">Sales Chart - Coming Soon</div>
+            </div>
+            <div class="analytics-card">
+              <h4>Top Products</h4>
+              <div class="chart-placeholder">Products Chart - Coming Soon</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reports Section -->
+        <div id="reports" class="content-section">
+          <div class="section-header">
+            <h2><i class="bi bi-file-earmark-bar-graph"></i> Reports</h2>
+          </div>
+          <div class="reports-container">
+            <div class="report-card">
+              <h4>Sales Report</h4>
+              <p>Generate detailed sales reports</p>
+              <button class="btn btn-primary">Generate Report</button>
+            </div>
+            <div class="report-card">
+              <h4>Inventory Report</h4>
+              <p>View current inventory status</p>
+              <button class="btn btn-primary">View Report</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Settings Section -->
+        <div id="settings" class="content-section">
+          <div class="section-header">
+            <h2><i class="bi bi-gear-fill"></i> Settings</h2>
+          </div>
+          <div class="settings-container">
+            <div class="setting-group">
+              <h4>Store Settings</h4>
+              <div class="setting-item">
+                <label>Store Name</label>
+                <input type="text" value="Agriculture Marketplace" class="form-control">
+              </div>
+              <div class="setting-item">
+                <label>Store Description</label>
+                <textarea class="form-control">Fresh agricultural products from local farmers</textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Seller Registration Modal -->
+<div id="sellerModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Become a Seller</h3>
+      <span class="close-modal">&times;</span>
+    </div>
+    <div class="modal-body">
+      <form id="sellerForm">
+        <div class="form-group">
+          <label for="storeName">Store Name *</label>
+          <input type="text" id="storeName" name="storeName" required placeholder="Enter your store name">
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="storeCategory">Store Category *</label>
+            <select id="storeCategory" name="storeCategory" required>
+              <option value="">Select Category</option>
+              <option value="vegetables">Vegetables</option>
+              <option value="fruits">Fruits</option>
+              <option value="grains">Grains</option>
+              <option value="dairy">Dairy Products</option>
+              <option value="poultry">Poultry</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="storePhone">Phone Number *</label>
+            <input type="tel" id="storePhone" name="storePhone" required placeholder="+1-555-0123">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="storeAddress">Store Address *</label>
+          <textarea id="storeAddress" name="storeAddress" rows="3" required placeholder="Enter your store address"></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="storeDescription">Store Description</label>
+          <textarea id="storeDescription" name="storeDescription" rows="3" placeholder="Describe your store and products..."></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="agreeTerms" name="agreeTerms" required>
+            <span class="checkmark"></span>
+            I agree to the terms and conditions
+          </label>
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel">Cancel</button>
+          <button type="submit" class="btn-save">Submit Application</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Product Modal -->
+<div id="productModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="productModalTitle">Add New Product</h3>
+      <span class="close-modal">&times;</span>
+    </div>
+    <div class="modal-body">
+      <form id="productForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="productName">Product Name *</label>
+            <input type="text" id="productName" name="productName" required>
+          </div>
+          <div class="form-group">
+            <label for="productPrice">Price ($) *</label>
+            <input type="number" id="productPrice" name="productPrice" step="0.01" required>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="productCategory">Category *</label>
+            <select id="productCategory" name="productCategory" required>
+              <option value="">Select Category</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="productStock">Stock Quantity *</label>
+            <input type="number" id="productStock" name="productStock" required>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="productDescription">Description</label>
+          <textarea id="productDescription" name="productDescription" rows="3"></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="productImage">Image URL</label>
+          <input type="text" id="productImage" name="productImage" placeholder="https://example.com/image.jpg">
+        </div>
+        
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="productStatus" name="productStatus" checked>
+            <span class="checkmark"></span>
+            Active Product
+          </label>
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel">Cancel</button>
+          <button type="submit" class="btn-save">Save Product</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Order Modal -->
+<div id="orderModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Place Your Order</h3>
+      <span class="close-modal">&times;</span>
+    </div>
+    <div class="modal-body">
+      <form id="orderForm">
+        <div class="form-group">
+          <label for="customerName">Full Name *</label>
+          <input type="text" id="customerName" name="customerName" required>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="customerEmail">Email *</label>
+            <input type="email" id="customerEmail" name="customerEmail" required>
+          </div>
+          <div class="form-group">
+            <label for="customerPhone">Phone *</label>
+            <input type="tel" id="customerPhone" name="customerPhone" required>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="shippingAddress">Shipping Address *</label>
+          <textarea id="shippingAddress" name="shippingAddress" rows="3" required></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label>Payment Method *</label>
+          <div class="payment-options">
+            <label class="payment-option">
+              <input type="radio" name="paymentMethod" value="cod" checked>
+              <span class="payment-label">
+                <i class="bi bi-cash"></i>
+                Cash on Delivery
+              </span>
+            </label>
+            <label class="payment-option">
+              <input type="radio" name="paymentMethod" value="card">
+              <span class="payment-label">
+                <i class="bi bi-credit-card"></i>
+                Credit Card
+              </span>
+            </label>
+          </div>
+        </div>
+        
+        <div class="order-summary">
+          <h4>Order Summary</h4>
+          <div id="orderSummaryDetails">
+            <!-- Order summary will be dynamically inserted here -->
+          </div>
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel">Cancel</button>
+          <button type="submit" class="btn-confirm-order">
+            <i class="bi bi-bag-check"></i> Place Order
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Category Modal -->
+<div id="categoryModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="categoryModalTitle">Add New Category</h3>
+      <span class="close-modal">&times;</span>
+    </div>
+    <div class="modal-body">
+      <form id="categoryForm">
+        <div class="form-group">
+          <label for="categoryName">Category Name *</label>
+          <input type="text" id="categoryName" name="categoryName" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="categoryDescription">Description</label>
+          <textarea id="categoryDescription" name="categoryDescription" rows="3"></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="categoryImage">Image URL</label>
+          <input type="text" id="categoryImage" name="categoryImage" placeholder="https://example.com/image.jpg">
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel">Cancel</button>
+          <button type="submit" class="btn-save">Save Category</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Farmer Modal -->
+<div id="farmerModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="farmerModalTitle">Add New Farmer</h3>
+      <span class="close-modal">&times;</span>
+    </div>
+    <div class="modal-body">
+      <form id="farmerForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="farmerName">Farmer Name *</label>
+            <input type="text" id="farmerName" name="farmerName" required>
+          </div>
+          <div class="form-group">
+            <label for="farmerPhone">Phone *</label>
+            <input type="tel" id="farmerPhone" name="farmerPhone" required>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="farmerAddress">Address *</label>
+          <textarea id="farmerAddress" name="farmerAddress" rows="2" required></textarea>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="farmerWork">Work Type *</label>
+            <input type="text" id="farmerWork" name="farmerWork" required>
+          </div>
+          <div class="form-group">
+            <label for="farmerSalary">Salary ($)</label>
+            <input type="number" id="farmerSalary" name="farmerSalary" step="0.01">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="farmerExperience">Experience (Years)</label>
+          <input type="number" id="farmerExperience" name="farmerExperience">
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel">Cancel</button>
+          <button type="submit" class="btn-save">Save Farmer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Success Notification -->
+<div id="successNotification" class="success-notification">
+  <div class="notification-content">
+    <i class="bi bi-check-circle-fill"></i>
+    <span id="successMessage">Operation completed successfully!</span>
+  </div>
+</div>
+
+<!-- User Role Toggle -->
+<div class="user-role-toggle">
+  <button id="toggleUserRole" class="role-toggle-btn">
+    <i class="bi bi-person-badge"></i> Switch to User View
+  </button>
+  <button id="becomeSellerBtn" class="seller-toggle-btn" style="display: none;">
+    <i class="bi bi-shop"></i> Become a Seller
+  </button>
+</div> 
+<!-- E-Commerse Store end  -->
+   <!-- Ai Powerd Plant Docter -->
+    <!-- AI Plant Doctor Section -->
+<section class="ai-plant-doctor" id="aiPlantDoctor">
+    <div class="container">
+        <div class="section-header">
+            <h2><i class="fas fa-robot"></i> AI Plant Doctor</h2>
+            <p>Upload photos of diseased crops and get instant AI-powered diagnosis with treatment recommendations</p>
+        </div>
+
+        <div class="doctor-container">
+            <!-- Chat History Sidebar -->
+            <div class="chat-history">
+                <div class="history-header">
+                    <h3><i class="fas fa-history"></i> Recent Chats</h3>
+                    <div class="history-actions">
+                        <button id="refreshHistory" class="icon-btn" title="Refresh History">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                        <button id="clearAllHistory" class="icon-btn" title="Clear All">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="history-list" id="historyList">
+                    <div class="empty-history">
+                        <i class="fas fa-comments"></i>
+                        <p>No recent chats</p>
+                        <span>Start a conversation to see history</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Chat Area -->
+            <div class="chat-main">
+                <div class="chat-header">
+                    <div class="bot-info">
+                        <div class="bot-avatar">
+                            <i class="fas fa-robot"></i>
+                            <div class="status-indicator"></div>
+                        </div>
+                        <div class="bot-details">
+                            <h3>AgroBot AI</h3>
+                            <span class="status">Online • Plant Specialist</span>
+                        </div>
+                    </div>
+                    <div class="chat-actions">
+                        <button id="newChat" class="btn-outline">
+                            <i class="fas fa-plus"></i> New Chat
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Chat Messages -->
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message bot-message">
+                        <div class="message-avatar">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="message-content">
+                            <div class="message-text">
+                                <p>Hello! I'm AgroBot, your AI plant doctor 🌱</p>
+                                <p>I can help you identify plant diseases and provide treatment recommendations. You can:</p>
+                                <ul>
+                                    <li><i class="fas fa-camera"></i> Upload photos of diseased plants</li>
+                                    <li><i class="fas fa-search"></i> Get instant AI diagnosis</li>
+                                    <li><i class="fas fa-pills"></i> Receive treatment plans</li>
+                                    <li><i class="fas fa-history"></i> Save chat history</li>
+                                </ul>
+                                <p><strong>Upload a photo or describe your plant issue to get started!</strong></p>
+                            </div>
+                            <div class="message-time">Just now</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upload Preview Section -->
+                <div class="upload-preview-section" id="uploadPreviewSection" style="display: none;">
+                    <div class="upload-preview-container">
+                        <div class="preview-header">
+                            <h4><i class="fas fa-image"></i> Image Preview</h4>
+                            <button class="close-preview" onclick="plantDoctor.cancelUpload()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="preview-content">
+                            <div class="image-preview" id="imagePreview">
+                                <img id="previewImage" src="" alt="Preview">
+                                <button class="remove-image-btn" onclick="plantDoctor.removeUploadedImage()">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                            <div class="preview-actions">
+                                <button class="btn-primary" onclick="plantDoctor.analyzeUploadedImage()">
+                                    <i class="fas fa-search"></i> Analyze Image
+                                </button>
+                                <button class="btn-outline" onclick="plantDoctor.cancelUpload()">
+                                    <i class="fas fa-times"></i> Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Input -->
+                <div class="chat-input-container">
+                    <div class="input-group">
+                        <div class="input-wrapper">
+                            <button class="attachment-btn" id="attachmentBtn" title="Upload Image">
+                                <i class="fas fa-image"></i>
+                            </button>
+                            <input type="text" id="chatInput" placeholder="Type your message or describe plant issue...">
+                            <button id="sendButton" class="send-btn" title="Send Message">
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                        <input type="file" id="plantImage" accept="image/*" hidden>
+                    </div>
+                    <div class="quick-actions">
+                        <button class="quick-action-btn" onclick="plantDoctor.triggerImageUpload()">
+                            <i class="fas fa-camera"></i> Upload Photo
+                        </button>
+                        <button class="quick-action-btn" onclick="plantDoctor.showCommonDiseases()">
+                            <i class="fas fa-bug"></i> Common Issues
+                        </button>
+                        <button class="quick-action-btn" onclick="plantDoctor.showPreventionTips()">
+                            <i class="fas fa-shield-alt"></i> Prevention Tips
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Include these in your HTML head -->
+
+   <!-- Ai Powerd Plant Docter End -->
+<!-- ======= Field Command Center Section ======= -->
+<section id="field-command-center" class="command-center-section">
+    <div class="command-center-container">
+        <div class="command-center-header">
+            <div class="header-content">
+                <h2><i class="fas fa-satellite-dish"></i> Field Command Center</h2>
+                <p>Real-Time Monitoring & Precision Management</p>
+            </div>
+            <div class="header-stats">
+                <div class="stat-badge online">
+                    <i class="fas fa-wifi"></i>
+                    <span>24 Sensors Online</span>
+                </div>
+                <div class="stat-badge healthy">
+                    <i class="fas fa-leaf"></i>
+                    <span>85% Field Health</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Dashboard -->
+        <div class="dashboard-grid">
+            <!-- Field Map -->
+            <div class="dashboard-card field-map-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-map-marked-alt"></i> Live Field Map</h3>
+                    <div class="card-actions">
+                        <button class="btn-icon" onclick="toggleSatelliteView()">
+                            <i class="fas fa-satellite"></i>
+                        </button>
+                        <button class="btn-icon" onclick="refreshFieldData()">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="field-map-container">
+                    <div class="field-grid" id="fieldGrid">
+                        <!-- Dynamic field blocks will be generated here -->
+                    </div>
+                    <div class="map-legend">
+                        <div class="legend-item">
+                            <span class="legend-color excellent"></span>
+                            <span>Excellent</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color good"></span>
+                            <span>Good</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color warning"></span>
+                            <span>Needs Attention</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color critical"></span>
+                            <span>Critical</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sensor Dashboard -->
+            <div class="dashboard-card sensors-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-microchip"></i> Live Sensor Data</h3>
+                    <div class="time-indicator">
+                        <i class="fas fa-circle live-dot"></i>
+                        <span>LIVE</span>
+                    </div>
+                </div>
+                <div class="sensors-grid">
+                    <div class="sensor-category">
+                        <h4>Soil Conditions</h4>
+                        <div class="sensor-metrics">
+                            <div class="sensor-metric" onclick="showSensorDetails('Soil Temperature', '24°C')">
+                                <div class="metric-header">
+                                    <i class="fas fa-temperature-high"></i>
+                                    <span class="metric-label">Soil Temp</span>
+                                    <div class="live-pulse-indicator"></div>
+                                </div>
+                                <div class="metric-value" id="soilTemp">--°C</div>
+                                <div class="metric-trend up">+2.1°</div>
+                            </div>
+                            <div class="sensor-metric" onclick="showSensorDetails('Soil Moisture', '65%')">
+                                <div class="metric-header">
+                                    <i class="fas fa-tint"></i>
+                                    <span class="metric-label">Moisture</span>
+                                    <div class="live-pulse-indicator"></div>
+                                </div>
+                                <div class="metric-value" id="soilMoisture">--%</div>
+                                <div class="metric-trend down">-5%</div>
+                            </div>
+                            <div class="sensor-metric" onclick="showSensorDetails('Soil pH Level', '6.8')">
+                                <div class="metric-header">
+                                    <i class="fas fa-flask"></i>
+                                    <span class="metric-label">pH Level</span>
+                                    <div class="live-pulse-indicator"></div>
+                                </div>
+                                <div class="metric-value" id="soilPH">--</div>
+                                <div class="metric-status optimal">Optimal</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sensor-category">
+                        <h4>Nutrients & Health</h4>
+                        <div class="sensor-metrics">
+                            <div class="sensor-metric" onclick="showSensorDetails('Nitrogen Levels', '45 ppm')">
+                                <div class="metric-header">
+                                    <i class="fas fa-atom"></i>
+                                    <span class="metric-label">Nitrogen</span>
+                                    <div class="live-pulse-indicator"></div>
+                                </div>
+                                <div class="metric-value" id="nitrogenLevel">-- ppm</div>
+                                <div class="metric-gauge">
+                                    <div class="gauge-fill" style="width: 65%"></div>
+                                </div>
+                            </div>
+                            <div class="sensor-metric" onclick="showSensorDetails('Phosphorus Levels', '32 ppm')">
+                                <div class="metric-header">
+                                    <i class="fas fa-bolt"></i>
+                                    <span class="metric-label">Phosphorus</span>
+                                    <div class="live-pulse-indicator"></div>
+                                </div>
+                                <div class="metric-value" id="phosphorusLevel">-- ppm</div>
+                                <div class="metric-gauge">
+                                    <div class="gauge-fill" style="width: 45%"></div>
+                                </div>
+                            </div>
+                            <div class="sensor-metric" onclick="showSensorDetails('Potassium Levels', '58 ppm')">
+                                <div class="metric-header">
+                                    <i class="fas fa-fire"></i>
+                                    <span class="metric-label">Potassium</span>
+                                    <div class="live-pulse-indicator"></div>
+                                </div>
+                                <div class="metric-value" id="potassiumLevel">-- ppm</div>
+                                <div class="metric-gauge">
+                                    <div class="gauge-fill" style="width: 75%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Predictions -->
+            <div class="dashboard-card predictions-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-brain"></i> AI Predictions</h3>
+                    <div class="prediction-accuracy">94% Accurate</div>
+                </div>
+                <div class="predictions-list">
+                    <div class="prediction-item positive">
+                        <div class="prediction-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="prediction-content">
+                            <div class="prediction-title">Optimal Growth Conditions</div>
+                            <div class="prediction-desc">Perfect weather for next 7 days</div>
+                        </div>
+                        <div class="prediction-time">3 days</div>
+                    </div>
+                    <div class="prediction-item warning">
+                        <div class="prediction-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="prediction-content">
+                            <div class="prediction-title">Water Stress Alert</div>
+                            <div class="prediction-desc">Block B3 needs irrigation in 36h</div>
+                        </div>
+                        <div class="prediction-time">36 hours</div>
+                    </div>
+                    <div class="prediction-item info">
+                        <div class="prediction-icon">
+                            <i class="fas fa-seedling"></i>
+                        </div>
+                        <div class="prediction-content">
+                            <div class="prediction-title">Growth Acceleration</div>
+                            <div class="prediction-desc">Expected 15% growth spike</div>
+                        </div>
+                        <div class="prediction-time">5 days</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alerts Panel -->
+            <div class="dashboard-card alerts-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-bell"></i> Active Alerts</h3>
+                    <div class="alert-count">3</div>
+                </div>
+                <div class="alerts-list horizontal">
+                    <div class="alert-item critical">
+                        <div class="alert-icon">
+                            <i class="fas fa-skull-crossbones"></i>
+                        </div>
+                        <div class="alert-content">
+                            <div class="alert-title">Pest Detection</div>
+                            <div class="alert-desc">Corn borers detected in Block A2</div>
+                            <div class="alert-action">
+                                <button class="btn-sm btn-primary" onclick="connectToExpert('pest_control')">
+                                    <i class="fas fa-user-tie"></i> Connect Expert
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="alert-item warning">
+                        <div class="alert-icon">
+                            <i class="fas fa-tint"></i>
+                        </div>
+                        <div class="alert-content">
+                            <div class="alert-title">Low Moisture</div>
+                            <div class="alert-desc">Block C1 moisture at 25%</div>
+                            <div class="alert-action">
+                                <button class="btn-sm btn-secondary" onclick="scheduleIrrigation('C1')">
+                                    <i class="fas fa-water"></i> Schedule
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="alert-item info">
+                        <div class="alert-icon">
+                            <i class="fas fa-cloud-sun-rain"></i>
+                        </div>
+                        <div class="alert-content">
+                            <div class="alert-title">Weather Advisory</div>
+                            <div class="alert-desc">Heavy rain expected tomorrow</div>
+                            <div class="alert-action">
+                                <button class="btn-sm btn-outline" onclick="showWeatherDetails()">
+                                    <i class="fas fa-info"></i> Details
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions-panel">
+            <h4><i class="fas fa-bolt"></i> Quick Actions</h4>
+            <div class="action-buttons">
+                <button class="action-btn" onclick="dispatchDrone()">
+                    <i class="fas fa-drone"></i>
+                    <span>Dispatch Drone</span>
+                </button>
+                <button class="action-btn" onclick="runSoilAnalysis()">
+                    <i class="fas fa-vial"></i>
+                    <span>Soil Analysis</span>
+                </button>
+                <button class="action-btn" onclick="generateReport()">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Generate Report</span>
+                </button>
+                <button class="action-btn" onclick="connectToAgronomist()">
+                    <i class="fas fa-user-tie"></i>
+                    <span>Call Agronomist</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Field Block Details Modal -->
+<div id="fieldBlockModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3><i class="fas fa-map-marker-alt"></i> Field Block Details</h3>
+      <span class="close">&times;</span>
+    </div>
+    <div class="modal-body">
+      <div class="block-info">
+        <div class="block-header">
+          <h4 id="blockTitle">Block A1</h4>
+          <span class="status-badge" id="blockStatus">Excellent</span>
+        </div>
+        <div class="block-data">
+          <div class="data-grid">
+            <div class="data-item">
+              <label>Soil Temperature</label>
+              <span id="blockTemp">24°C</span>
+            </div>
+            <div class="data-item">
+              <label>Moisture Level</label>
+              <span id="blockMoisture">65%</span>
+            </div>
+            <div class="data-item">
+              <label>pH Level</label>
+              <span id="blockPH">6.8</span>
+            </div>
+            <div class="data-item">
+              <label>Nitrogen</label>
+              <span id="blockNitrogen">45 ppm</span>
+            </div>
+          </div>
+        </div>
+        <div class="issues-section" id="issuesSection">
+          <h5><i class="fas fa-exclamation-triangle"></i> Issues Detected</h5>
+          <div class="issue-list">
+            <div class="issue-item">
+              <i class="fas fa-bug"></i>
+              <span>Minor pest activity detected</span>
+            </div>
+          </div>
+        </div>
+        <div class="recommendations">
+          <h5><i class="fas fa-lightbulb"></i> Recommendations</h5>
+          <ul id="recommendationsList">
+            <li>Monitor pest activity for next 48 hours</li>
+            <li>Consider organic pesticide if activity increases</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Drone Dispatch Modal -->
+<div id="droneModal" class="modal">
+  <div class="modal-content large">
+    <div class="modal-header">
+      <h3><i class="fas fa-drone"></i> Drone Survey in Progress</h3>
+      <span class="close">&times;</span>
+    </div>
+    <div class="modal-body">
+      <div class="drone-animation">
+        <div class="drone-map">
+          <div class="drone-icon" id="droneIcon">
+            <i class="fas fa-drone"></i>
+          </div>
+          <div class="field-grid-mini" id="droneFieldGrid"></div>
+        </div>
+        <div class="drone-status">
+          <div class="status-item">
+            <span class="label">Progress:</span>
+            <div class="progress-bar">
+              <div class="progress-fill" id="droneProgress"></div>
+            </div>
+            <span class="progress-text" id="droneProgressText">0%</span>
+          </div>
+          <div class="status-item">
+            <span class="label">Current Block:</span>
+            <span id="currentBlock">A1</span>
+          </div>
+          <div class="detections">
+            <h5>Detections:</h5>
+            <div class="detection-list">
+              <div class="detection-item animal">
+                <i class="fas fa-crow"></i>
+                <span>Wild birds detected</span>
+              </div>
+              <div class="detection-item human">
+                <i class="fas fa-user"></i>
+                <span>Field worker in sector B2</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Soil Analysis Modal -->
+<div id="soilAnalysisModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3><i class="fas fa-vial"></i> Soil Analysis</h3>
+      <span class="close">&times;</span>
+    </div>
+    <div class="modal-body">
+      <div class="analysis-progress" id="analysisProgress">
+        <div class="progress-steps">
+          <div class="step active">
+            <i class="fas fa-sync fa-spin"></i>
+            <span>Collecting Samples</span>
+          </div>
+          <div class="step">
+            <i class="fas fa-flask"></i>
+            <span>Analyzing Composition</span>
+          </div>
+          <div class="step">
+            <i class="fas fa-chart-line"></i>
+            <span>Generating Report</span>
+          </div>
+        </div>
+      </div>
+      <div class="analysis-results" id="analysisResults" style="display: none;">
+        <div class="result-item critical">
+          <i class="fas fa-exclamation-triangle"></i>
+          <div class="result-content">
+            <h5>Low Nutrient Levels Detected</h5>
+            <p>Nitrogen and phosphorus levels below optimal range</p>
+            <div class="prevention-tips">
+              <strong>Prevention Tips:</strong>
+              <ul>
+                <li>Apply organic fertilizer within 48 hours</li>
+                <li>Increase irrigation frequency by 20%</li>
+                <li>Monitor soil pH daily</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Agronomist Call Modal -->
+<div id="agronomistModal" class="modal">
+  <div class="modal-content small">
+    <div class="modal-header">
+      <h3><i class="fas fa-phone"></i> Calling Agronomist</h3>
+      <span class="close">&times;</span>
+    </div>
+    <div class="modal-body">
+      <div class="calling-animation">
+        <div class="call-icon">
+          <i class="fas fa-phone-alt"></i>
+        </div>
+        <div class="call-status">
+          <p>Connecting to Dr. Sarah Chen...</p>
+          <div class="pulse-dots">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Sensor Details Modal -->
+<div id="sensorDetailsModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3><i class="fas fa-chart-line"></i> Sensor Details</h3>
+      <span class="close">&times;</span>
+    </div>
+    <div class="modal-body">
+      <div class="sensor-details">
+        <h4 id="sensorDetailTitle">Soil Temperature</h4>
+        <div class="sensor-chart">
+          <div class="chart-placeholder">
+            <i class="fas fa-chart-line"></i>
+            <p>Live data visualization</p>
+          </div>
+        </div>
+        <div class="sensor-stats">
+          <div class="stat">
+            <span class="label">Current Value</span>
+            <span class="value" id="sensorCurrentValue">24°C</span>
+          </div>
+          <div class="stat">
+            <span class="label">24h Trend</span>
+            <span class="value positive">+2.1°</span>
+          </div>
+          <div class="stat">
+            <span class="label">Optimal Range</span>
+            <span class="value">18-28°C</span>
+          </div>
+        </div>
+        <div class="sensor-recommendations">
+          <h5>Recommendations</h5>
+          <ul>
+            <li>Maintain current temperature range</li>
+            <li>Monitor for sudden changes</li>
+            <li>Consider shade if temperature exceeds 30°C</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Weather Details Modal -->
+<div id="weatherDetailsModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3><i class="fas fa-cloud-sun-rain"></i> Weather Advisory Details</h3>
+      <span class="close">&times;</span>
+    </div>
+    <div class="modal-body">
+      <div class="weather-details">
+        <div class="weather-alert warning">
+          <i class="fas fa-exclamation-triangle"></i>
+          <div class="alert-content">
+            <h4>Heavy Rain Expected</h4>
+            <p>Tomorrow: 80% chance of heavy rainfall (25-40mm)</p>
+          </div>
+        </div>
+        <div class="weather-forecast">
+          <h5>7-Day Forecast</h5>
+          <div class="forecast-grid">
+            <div class="forecast-day">
+              <span class="day">Today</span>
+              <i class="fas fa-sun"></i>
+              <span class="temp">28°C</span>
+            </div>
+            <div class="forecast-day">
+              <span class="day">Tomorrow</span>
+              <i class="fas fa-cloud-rain"></i>
+              <span class="temp">22°C</span>
+            </div>
+            <div class="forecast-day">
+              <span class="day">Day 3</span>
+              <i class="fas fa-cloud-sun"></i>
+              <span class="temp">25°C</span>
+            </div>
+          </div>
+        </div>
+        <div class="weather-recommendations">
+          <h5>Agricultural Impact</h5>
+          <ul>
+            <li>Delay irrigation scheduled for tomorrow</li>
+            <li>Ensure proper drainage in low-lying areas</li>
+            <li>Monitor for soil erosion in sloped sections</li>
+            <li>Consider covering sensitive crops</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+  <!-- Contact US -->
+  <section id="contact" class="agro-contact-section">
+    <div class="agro-container">
+      <h2 class="agro-section-title">Creator & Designer</h2>
+      <p class="agro-section-subtitle">Get in touch for collaborations, projects, or just to say hello!</p>
+
+      <div class="agro-contact-content">
+        <!-- Creator Card -->
+        <div class="agro-creator-card">
+          <div class="agro-creator-image">
+            <div class="agro-image-container">
+              <img
+                src="https://media.istockphoto.com/id/1446934118/photo/happy-business-man-listening-to-a-discussion-in-an-office.webp?b=1&s=612x612&w=0&k=20&c=6CGz0oF0bra0Yiyn0PR2Sy31cA3CidlbsZlYZJx1nxg="
+                alt="Ahsan Raza Talpur" class="agro-creator-img">
+              <div class="agro-image-overlay">
+                <i class="bi bi-camera-fill"></i>
+              </div>
+            </div>
+            <div class="agro-creator-badge">
+              <i class="bi bi-check-circle-fill"></i>
+              Available for Projects
+            </div>
+          </div>
+          
+          <div class="agro-creator-info">
+            <h3 class="agro-creator-name">Ahsan Raza Talpur</h3>
+            <div class="agro-creator-role">
+              <i class="bi bi-code-slash"></i>
+              Designer & Full Stack Developer
+            </div>
+            <p class="agro-creator-passions">Frontend Specialist | UI/UX Designer | Agri-Tech Enthusiast | Web Solutions Architect</p>
+            
+            <div class="agro-skills-tags">
+              <span class="agro-skill-tag">HTML5</span>
+              <span class="agro-skill-tag">CSS3</span>
+              <span class="agro-skill-tag">JavaScript</span>
+              <span class="agro-skill-tag">UI/UX</span>
+              <span class="agro-skill-tag">React</span>
+            </div>
+          </div>
+
+          <div class="agro-creator-contact">
+            <div class="agro-contact-item">
+              <div class="agro-contact-icon">
+                <i class="bi bi-telephone-fill"></i>
+              </div>
+              <div class="agro-contact-details">
+                <span class="agro-contact-label">Phone</span>
+                <span class="agro-contact-value">+92 311 3125335</span>
+              </div>
+            </div>
+            
+            <div class="agro-contact-item">
+              <div class="agro-contact-icon">
+                <i class="bi bi-envelope-fill"></i>
+              </div>
+              <div class="agro-contact-details">
+                <span class="agro-contact-label">Email</span>
+                <span class="agro-contact-value">ahsanrazatalpur01@gmail.com</span>
+              </div>
+            </div>
+            
+            <div class="agro-contact-item">
+              <div class="agro-contact-icon">
+                <i class="bi bi-geo-alt-fill"></i>
+              </div>
+              <div class="agro-contact-details">
+                <span class="agro-contact-label">Location</span>
+                <span class="agro-contact-value">Badin, Sindh, Pakistan</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="agro-social-section">
+            <h4 class="agro-social-title">Connect With Me</h4>
+            <div class="agro-social-icons">
+              <a href="#" class="agro-social-link">
+                <i class="bi bi-facebook"></i>
+                <span class="agro-social-tooltip">Facebook</span>
+              </a>
+              <a href="#" class="agro-social-link">
+                <i class="bi bi-instagram"></i>
+                <span class="agro-social-tooltip">Instagram</span>
+              </a>
+              <a href="#" class="agro-social-link">
+                <i class="bi bi-github"></i>
+                <span class="agro-social-tooltip">GitHub</span>
+              </a>
+              <a href="#" class="agro-social-link">
+                <i class="bi bi-linkedin"></i>
+                <span class="agro-social-tooltip">LinkedIn</span>
+              </a>
+              <a href="#" class="agro-social-link">
+                <i class="bi bi-twitter"></i>
+                <span class="agro-social-tooltip">Twitter</span>
+              </a>
+            </div>
+          </div>
+        </div>
+        <!-- Contact Form -->
+        <div class="agro-form-container">
+          <form id="agro-contact-form" class="agro-contact-form">
+            <div class="agro-form-header">
+              <h3 class="agro-form-title">
+                <i class="bi bi-chat-dots-fill"></i>
+                Send Message
+              </h3>
+              <p class="agro-form-subtitle">I'll get back to you within 24 hours</p>
+            </div>
+            
+            <div class="agro-form-group">
+              <label class="agro-form-label">Your Name</label>
+              <div class="agro-input-container">
+                <input type="text" name="name" placeholder="Enter your full name" required class="agro-form-input">
+                <i class="bi bi-person agro-input-icon"></i>
+              </div>
+            </div>
+            
+            <div class="agro-form-group">
+              <label class="agro-form-label">Email Address</label>
+              <div class="agro-input-container">
+                <input type="email" name="email" placeholder="Enter your email" required class="agro-form-input">
+                <i class="bi bi-envelope agro-input-icon"></i>
+              </div>
+            </div>
+            
+            <div class="agro-form-group">
+              <label class="agro-form-label">Subject</label>
+              <div class="agro-input-container">
+                <input type="text" name="subject" placeholder="What is this regarding?" class="agro-form-input">
+                <i class="bi bi-tag agro-input-icon"></i>
+              </div>
+            </div>
+            
+            <div class="agro-form-group">
+              <label class="agro-form-label">Your Message</label>
+              <div class="agro-input-container">
+                <textarea name="message" placeholder="Tell me about your project or inquiry..." rows="5" required class="agro-form-textarea"></textarea>
+                <i class="bi bi-pen agro-input-icon"></i>
+              </div>
+            </div>
+            
+            <button type="submit" class="agro-btn-submit">
+              <span class="agro-btn-text">Send Message</span>
+              <div class="agro-btn-loader">
+                <div class="agro-loader-dot"></div>
+                <div class="agro-loader-dot"></div>
+                <div class="agro-loader-dot"></div>
+              </div>
+              <i class="bi bi-send-fill agro-btn-icon"></i>
+            </button>
+          </form>
+          
+          <div class="agro-form-features">
+            <div class="agro-feature-item">
+              <i class="bi bi-shield-check"></i>
+              <span>Secure & Confidential</span>
+            </div>
+            <div class="agro-feature-item">
+              <i class="bi bi-clock"></i>
+              <span>24h Response Time</span>
+            </div>
+            <div class="agro-feature-item">
+              <i class="bi bi-headset"></i>
+              <span>Free Consultation</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Real Google Maps Section -->
+      <div class="agro-map-section">
+        <div class="agro-map-header">
+          <h3 class="agro-map-title">
+            <i class="bi bi-geo-alt-fill"></i>
+            Visit Our Office
+          </h3>
+          <p class="agro-map-subtitle">Agricultural Development Center, Badin - Where Innovation Meets Agriculture</p>
+        </div>
+        
+        <div class="agro-map-container">
+          <div class="agro-map-wrapper">
+            <!-- Real Google Maps Embed -->
+            <div class="agro-google-map">
+              <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3610.738834665635!2d68.8370!3d24.6560!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjTCsDM5JzIxLjYiTiA2OMKwNTAnMTMuMiJF!5e0!3m2!1sen!2s!4v1620000000000!5m2!1sen!2s"
+                width="100%" 
+                height="450" 
+                style="border:0;" 
+                allowfullscreen="" 
+                loading="lazy" 
+                referrerpolicy="no-referrer-when-downgrade"
+                title="AgroFarm Badin Office Location">
+              </iframe>
+              <div class="agro-map-overlay">
+                <div class="agro-map-loader">
+                  <div class="agro-map-spinner"></div>
+                  <span>Loading Map...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="agro-location-info">
+            <div class="agro-location-header">
+              <div class="agro-location-main">
+                <h4 class="agro-location-title">AgroFarm Development Center</h4>
+                <div class="agro-location-badge">
+                  <i class="bi bi-award-fill"></i>
+                  Premium Partner
+                </div>
+              </div>
+              <div class="agro-location-rating">
+                <div class="agro-stars">
+                  <i class="bi bi-star-fill"></i>
+                  <i class="bi bi-star-fill"></i>
+                  <i class="bi bi-star-fill"></i>
+                  <i class="bi bi-star-fill"></i>
+                  <i class="bi bi-star-half"></i>
+                </div>
+                <span class="agro-rating-text">4.8 (128 Reviews)</span>
+              </div>
+            </div>
+            
+            <div class="agro-location-details">
+              <div class="agro-location-item">
+                <div class="agro-location-icon">
+                  <i class="bi bi-geo-alt"></i>
+                </div>
+                <div class="agro-location-content">
+                  <strong>Office Address</strong>
+                  <p>Agricultural Development Center, Main Badin Road<br>Badin, Sindh 72200, Pakistan</p>
+                </div>
+              </div>
+              
+              <div class="agro-location-item">
+                <div class="agro-location-icon">
+                  <i class="bi bi-clock"></i>
+                </div>
+                <div class="agro-location-content">
+                  <strong>Business Hours</strong>
+                  <p>Monday - Friday: 9:00 AM - 6:00 PM<br>Saturday: 10:00 AM - 4:00 PM</p>
+                </div>
+              </div>
+              
+              <div class="agro-location-item">
+                <div class="agro-location-icon">
+                  <i class="bi bi-telephone"></i>
+                </div>
+                <div class="agro-location-content">
+                  <strong>Contact Info</strong>
+                  <p>Office: +92 123 4567890<br>Mobile: +92 311 3125335</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="agro-location-coords">
+              <div class="agro-coord-card">
+                <i class="bi bi-globe2"></i>
+                <div class="agro-coord-info">
+                  <span class="agro-coord-label">Latitude</span>
+                  <span class="agro-coord-value">24.6560° N</span>
+                </div>
+              </div>
+              <div class="agro-coord-card">
+                <i class="bi bi-compass"></i>
+                <div class="agro-coord-info">
+                  <span class="agro-coord-label">Longitude</span>
+                  <span class="agro-coord-value">68.8370° E</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="agro-map-actions">
+              <a href="https://maps.google.com/?q=24.6560,68.8370" target="_blank" class="agro-map-btn agro-map-btn-primary">
+                <i class="bi bi-geo-alt"></i>
+                Open in Maps
+                <i class="bi bi-arrow-up-right"></i>
+              </a>
+              <a href="https://www.google.com/maps/dir//24.6560,68.8370" target="_blank" class="agro-map-btn agro-map-btn-secondary">
+                <i class="bi bi-signpost"></i>
+                Get Directions
+              </a>
+              <button class="agro-map-btn agro-map-btn-outline" onclick="agroCopyCoordinates()">
+                <i class="bi bi-clipboard"></i>
+                Copy Coordinates
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact US End -->
+
+  <!-- JavaScript for Contact Section -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Contact form handling with enhanced animations
+      const contactForm = document.getElementById('agro-contact-form');
+      if (contactForm) {
+        contactForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          
+          const submitBtn = this.querySelector('.agro-btn-submit');
+          const btnText = submitBtn.querySelector('.agro-btn-text');
+          const btnLoader = submitBtn.querySelector('.agro-btn-loader');
+          const btnIcon = submitBtn.querySelector('.agro-btn-icon');
+          
+          // Show loading state
+          btnText.style.opacity = '0';
+          btnLoader.style.display = 'flex';
+          btnIcon.style.opacity = '0';
+          submitBtn.disabled = true;
+          
+          // Simulate form submission
+          setTimeout(() => {
+            agroShowNotification('Message sent successfully! I will get back to you within 24 hours.', 'success');
+            contactForm.reset();
+            
+            // Reset button state
+            setTimeout(() => {
+              btnText.style.opacity = '1';
+              btnLoader.style.display = 'none';
+              btnIcon.style.opacity = '1';
+              submitBtn.disabled = false;
+            }, 1000);
+          }, 2000);
+        });
+
+        // Enhanced input animations
+        const inputs = contactForm.querySelectorAll('.agro-form-input, .agro-form-textarea');
+        inputs.forEach(input => {
+          input.addEventListener('focus', function() {
+            this.parentElement.classList.add('agro-focused');
+            this.parentElement.style.transform = 'translateY(-2px)';
+          });
+          
+          input.addEventListener('blur', function() {
+            this.parentElement.classList.remove('agro-focused');
+            this.parentElement.style.transform = 'translateY(0)';
+            if (!this.value) {
+              this.parentElement.classList.remove('agro-filled');
+            } else {
+              this.parentElement.classList.add('agro-filled');
+            }
+          });
+          
+          // Check initial state
+          if (input.value) {
+            input.parentElement.classList.add('agro-filled');
+          }
+        });
+      }
+
+      // Google Maps iframe enhancement
+      const mapIframe = document.querySelector('.agro-google-map iframe');
+      const mapOverlay = document.querySelector('.agro-map-overlay');
+      if (mapIframe && mapOverlay) {
+        mapIframe.addEventListener('load', function() {
+          // Animate map loading
+          setTimeout(() => {
+            mapOverlay.style.opacity = '0';
+            setTimeout(() => {
+              mapOverlay.style.display = 'none';
+              this.style.transform = 'scale(1)';
+              this.style.opacity = '1';
+            }, 500);
+          }, 1000);
+        });
+        
+        mapIframe.style.opacity = '0';
+        mapIframe.style.transform = 'scale(0.98)';
+        mapIframe.style.transition = 'all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+      }
+
+      // Skill tags animation
+      const skillTags = document.querySelectorAll('.agro-skill-tag');
+      skillTags.forEach((tag, index) => {
+        tag.style.animationDelay = `${index * 0.1}s`;
+      });
+
+      // Social icons staggered animation
+      const socialLinks = document.querySelectorAll('.agro-social-link');
+      socialLinks.forEach((link, index) => {
+        link.style.animationDelay = `${index * 0.05}s`;
+      });
+
+      // Card entrance animations
+      const cards = document.querySelectorAll('.agro-creator-card, .agro-form-container');
+      cards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.2}s`;
+      });
+    });
+
+    // Copy coordinates function
+    function agroCopyCoordinates() {
+      const coordinates = '24.6560, 68.8370';
+      navigator.clipboard.writeText(coordinates).then(() => {
+        agroShowNotification('Coordinates copied to clipboard!', 'success');
+      }).catch(() => {
+        agroShowNotification('Failed to copy coordinates', 'error');
+      });
+    }
+
+    // Enhanced notification function
+    function agroShowNotification(message, type) {
+      const existingNotifications = document.querySelectorAll('.agro-notification');
+      existingNotifications.forEach(notification => notification.remove());
+      
+      const notification = document.createElement('div');
+      notification.className = `agro-notification agro-${type}`;
+      notification.innerHTML = `
+        <div class="agro-notification-content">
+          <div class="agro-notification-icon">
+            <i class="bi ${type === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill'}"></i>
+          </div>
+          <div class="agro-notification-text">
+            <span>${message}</span>
+          </div>
+        </div>
+        <button class="agro-notification-close" onclick="this.parentElement.remove()">
+          <i class="bi bi-x"></i>
+        </button>
+        <div class="agro-notification-progress"></div>
+      `;
+      
+      document.body.appendChild(notification);
+      
+      // Animate in
+      setTimeout(() => {
+        notification.classList.add('agro-show');
+      }, 100);
+      
+      // Auto remove after 5 seconds
+      setTimeout(() => {
+        if (notification.parentElement) {
+          notification.classList.remove('agro-show');
+          setTimeout(() => {
+            if (notification.parentElement) {
+              notification.remove();
+            }
+          }, 300);
+        }
+      }, 5000);
+    }
+
+    // Make functions globally available
+    window.agroShowNotification = agroShowNotification;
+    window.agroCopyCoordinates = agroCopyCoordinates;
+  </script>
+
+  <!-- Contact US End  -->
+  <!-- ==============================
+     AgroFarm Footer Section
+============================== -->
+  <footer class="agrofarm-footer">
+    <div class="footer-container">
+
+      <!-- Brand Info -->
+      <div class="footer-column about">
+        <h2 class="footer-logo"><i class="bi bi-tree-fill"></i> AgroFarm</h2>
+        <p class="footer-description">
+          Empowering farmers through technology and innovation.
+          Join us to cultivate a sustainable future with smarter farming solutions.
+        </p>
+        <div class="social-links">
+          <a href="#"><i class="bi bi-facebook"></i></a>
+          <a href="#"><i class="bi bi-instagram"></i></a>
+          <a href="#"><i class="bi bi-github"></i></a>
+          <a href="#"><i class="bi bi-linkedin"></i></a>
+        </div>
+      </div>
+
+      <!-- Quick Links Column -->
+      <div class="footer-column links">
+        <h3>Quick Links</h3>
+        <ul>
+          <li><a href="#"><i class="bi bi-house-door-fill"></i> Home</a></li>
+          <li><a href="#about"><i class="bi bi-info-circle-fill"></i> About</a></li>
+          <li><a href="#forum"><i class="bi bi-chat-dots-fill"></i> Forum</a></li>
+          <li><a href="#knowledgeBase"><i class="bi bi-journal-text"></i> Blog</a></li>
+          <li><a href="#marketplace"><i class="bi bi-shop"></i> Marketplace</a></li>
+          <li><a href="#consultancyServices"><i class="bi bi-person-video2"></i> Consultancy</a></li>
+          <li><a href="#contact"><i class="bi bi-envelope-fill"></i> Contact</a></li>
+        </ul>
+      </div>
+
+      <!-- Shop Links Column -->
+      <div class="footer-column shop-links">
+        <h3>Shop Links</h3>
+        <ul>
+          <li><a href="#fruits"><i class="bi bi-apple"></i> Fruits</a></li>
+          <li><a href="#vegetables"><i class="bi bi-egg-fried"></i> Vegetables</a></li>
+          <li><a href="#seeds"><i class="bi bi-flower1"></i> Seeds</a></li>
+          <li><a href="#fertilizers"><i class="bi bi-droplet-half"></i> Fertilizers</a></li>
+          <li><a href="#equipment"><i class="bi bi-gear-fill"></i> Equipment</a></li>
+          <li><a href="#pesticides"><i class="bi bi-beaker"></i> Pesticides</a></li>
+          <li><a href="#tools"><i class="bi bi-wrench-adjustable"></i> Tools</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact / Creator Info -->
+      <div class="footer-column contact">
+        <h3>Creator & Designer</h3>
+        <div class="creator-info">
+          <img
+            src="https://media.istockphoto.com/id/1446934118/photo/happy-business-man-listening-to-a-discussion-in-an-office.webp?b=1&s=612x612&w=0&k=20&c=6CGz0oF0bra0Yiyn0PR2Sy31cA3CidlbsZlYZJx1nxg="
+            alt="Ahsan Raza Talpur" />
+          <div>
+            <h4>Ahsan Raza Talpur</h4>
+            <p>Frontend Developer | UI Designer | Agri Web Manager</p>
+            <p>📞 +92 311 3125335 <br />📧 ahsanrazatalpur01@gmail.com</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Bottom -->
+    <div class="footer-bottom">
+      <p>© 2025 AgroFarm. All rights reserved. | Designed with ❤️ by Ahsan Raza Talpur</p>
+    </div>
+  </footer>
+  <!-- Footer End -->
+
+  <!-- consultancy-services end -->
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+
+</html>

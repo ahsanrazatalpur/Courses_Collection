@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | AgroFarm</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    /* Inline flash message styling */
+    #loginPopup {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      padding: 10px 20px;
+      background: #4caf50;
+      color: white;
+      border-radius: 5px;
+      display: none;
+      z-index: 999;
+    }
+    #loginPopup.error { background: #f44336; }
+  </style>
+</head>
+<body>
+
+  <!-- Popup Message -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div id="loginPopup" class="{{ messages[0][0] }}">{{ messages[0][1] }}</div>
+    {% endif %}
+  {% endwith %}
+
+  <!-- LOGIN SECTION -->
+  <section class="auth-section" id="authSection">
+    <div class="auth-container" id="authContainer">
+
+      <!-- Close Button -->
+      <button class="close-btn" id="closeAuthBtn" aria-label="Close">&times;</button>
+
+      <!-- Header -->
+      <div class="auth-header">
+        <h2 id="authTitle">Login</h2>
+      </div>
+
+      <!-- Login Form -->
+      <form id="loginForm" method="POST" action="{{ url_for('login') }}">
+        <div class="form-group full">
+          <label for="loginEmail">Email</label>
+          <input type="email" id="loginEmail" name="email" required placeholder="Enter email">
+        </div>
+
+        <div class="form-group full">
+          <label for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" name="password" required placeholder="Enter password">
+        </div>
+
+        <div class="form-group full text-right">
+          <a href="#" id="resetPasswordLink" class="reset-link">Forgot Password?</a>
+        </div>
+
+        <div class="form-group full">
+          <button type="submit" class="auth-btn">Login</button>
+        </div>
+
+        <p class="auth-switch">Don’t have an account? 
+          <a href="{{ url_for('register') }}" id="showRegister">Register</a>
+        </p>
+      </form>
+    </div>
+  </section>
+
+  <!-- USER PROFILE DROPDOWN -->
+  <div id="userProfileDropdown" class="user-dropdown" style="display:none;">
+    <p id="userEmailDisplay">Logged in as: user@example.com</p>
+    <form method="POST" action="{{ url_for('logout') }}">
+      <button type="submit" class="auth-btn logout-btn">Logout</button>
+    </form>
+  </div>
+
+  <script>
+    // Close button redirect
+    const closeBtn = document.getElementById('closeAuthBtn');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => {
+        window.location.href = "{{ url_for('index') }}";
+      });
+    }
+
+    // Flash message display
+    const flash = document.getElementById('loginPopup');
+    if(flash){
+      flash.style.display = 'block';
+      setTimeout(() => flash.style.display = 'none', 4000);
+    }
+  </script>
+
+  <script src="{{ url_for('static', filename='js/login.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Profile | AgroFarm</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <section class="profile-section">
+    <div class="profile-container">
+      
+      <!-- Cross Button (Back to Index) -->
+      <button class="close-btn" onclick="window.location.href='/'">&times;</button>
+      
+      <!-- Profile Header -->
+      <div class="profile-header">
+        <img id="profilePicDisplay" src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="Profile Picture">
+        <h2 id="profileName">{{ user.full_name }}</h2>
+        <p id="professionLevel">{{ user.profession }} | {{ user.expertise }}</p>
+      </div>
+
+      <!-- Profile Info -->
+      <div class="profile-info">
+        <p><strong>Email:</strong> <span id="profileEmail">{{ user.email }}</span></p>
+        <p><strong>Mobile:</strong> <span id="profileMobile">{{ user.mobile }}</span></p>
+        <p><strong>Location:</strong> <span id="profileLocation">{{ user.location }}</span></p>
+        <p><strong>Join Date:</strong> <span id="joinDate">{{ user.created_at.strftime('%b %d, %Y') if user.created_at else 'N/A' }}</span></p>
+        <p><strong>Posts:</strong> <span id="postCount">14</span> | <strong>Likes:</strong> <span id="likeCount">230</span></p>
+      </div>
+
+      <!-- Recent Posts -->
+      <div class="profile-posts">
+        <h3>Recent Posts</h3>
+        <ul id="recentPosts">
+          <li><a href="#">Improving Soil Health with Organic Fertilizers</a></li>
+          <li><a href="#">Modern Irrigation Methods</a></li>
+          <li><a href="#">How to Grow Wheat in Semi-Arid Regions</a></li>
+        </ul>
+      </div>
+
+      <!-- Logout Button -->
+      <form action="{{ url_for('logout') }}" method="post">
+        <button type="submit" class="auth-btn edit-btn">Logout</button>
+      </form>
+
+    </div>
+  </section>
+</body>
+</html>
