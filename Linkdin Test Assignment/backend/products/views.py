@@ -1,37 +1,24 @@
-from rest_framework import generics, permissions
+from rest_framework import generics
 from .models import Product
 from .serializers import ProductSerializer
+from rest_framework.permissions import IsAuthenticated
 
-# ---------------------------
-# Public APIs
-# ---------------------------
-class ProductListAPIView(generics.ListAPIView):
+# ===================== LIST + CREATE =====================
+class ProductListCreateAPIView(generics.ListCreateAPIView):
+    queryset = Product.objects.all().order_by('-created_at')
+    serializer_class = ProductSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_serializer_context(self):
+        return {'request': self.request}
+
+
+# ===================== RETRIEVE + UPDATE + DELETE =====================
+class ProductRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [permissions.AllowAny]
-
-class ProductDetailAPIView(generics.RetrieveAPIView):
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
+    permission_classes = [IsAuthenticated]
     lookup_field = 'id'
-    permission_classes = [permissions.AllowAny]
 
-# ---------------------------
-# Admin-only APIs
-# ---------------------------
-class ProductCreateAPIView(generics.CreateAPIView):
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
-    permission_classes = [permissions.IsAdminUser]
-
-class ProductUpdateAPIView(generics.RetrieveUpdateAPIView):
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
-    lookup_field = 'id'
-    permission_classes = [permissions.IsAdminUser]
-
-class ProductDeleteAPIView(generics.DestroyAPIView):
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
-    lookup_field = 'id'
-    permission_classes = [permissions.IsAdminUser]
+    def get_serializer_context(self):
+        return {'request': self.request}

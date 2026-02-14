@@ -1,3 +1,5 @@
+# backend/settings.py - UPDATED WITH REVIEWS
+
 from pathlib import Path
 import os
 from datetime import timedelta
@@ -11,8 +13,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Security
 # =============================
 SECRET_KEY = 'django-insecure-7!#h1@+%*!dp5m$$(yi7gg472*q25vme%ke$1hqg4^p^5b#m%_'
-DEBUG = True  # Keep True for local dev
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']  # Add your domain for production
+DEBUG = True
+
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '192.168.1.106']
 
 # =============================
 # Installed apps
@@ -30,20 +33,23 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'rest_framework_simplejwt',
+    'corsheaders',
 
-    # Your project apps
+    # Project apps
     'products',
     'cart',
     'orders',
     'coupons',
     'dashboard',
     'users',
+    'reviews',  # ✅ ADDED
 ]
 
 # =============================
 # Middleware
 # =============================
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',  # Must be first
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -82,7 +88,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'backend.wsgi.application'
 
 # =============================
-# Database (SQLite for development)
+# Database
 # =============================
 DATABASES = {
     'default': {
@@ -110,7 +116,7 @@ USE_I18N = True
 USE_TZ = True
 
 # =============================
-# Static & media files
+# Static & Media
 # =============================
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
@@ -119,33 +125,51 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # =============================
-# Default primary key field
+# Default PK
 # =============================
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # =============================
-# Django REST Framework + JWT
+# Django REST Framework
 # =============================
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',  # Require auth by default
+        'rest_framework.permissions.IsAuthenticated',
     ),
 }
 
-# JWT Settings
+# =============================
+# JWT Configuration
+# =============================
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-    'AUTH_HEADER_TYPES': ('Bearer',),  # Important for "Authorization: Bearer <token>"
+    'AUTH_HEADER_TYPES': ('Bearer',),
     'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
     'USER_ID_FIELD': 'id',
     'USER_ID_CLAIM': 'user_id',
 }
 
 # =============================
-# Optional: Custom user model (if you create one)
+# CORS Settings
 # =============================
-# AUTH_USER_MODEL = 'users.CustomUser'
+CORS_ALLOW_ALL_ORIGINS = True  # Allows Flutter/web frontend
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = [
+    'authorization',
+    'content-type',
+    'accept',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+CORS_ALLOW_METHODS = ['DELETE', 'GET', 'OPTIONS', 'PATCH', 'POST', 'PUT']
+
+# =============================
+# Custom User Model
+# =============================
+AUTH_USER_MODEL = 'users.User'  # Use our custom User model

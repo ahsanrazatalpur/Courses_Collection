@@ -1,19 +1,13 @@
 from django.urls import path
 from .views import (
-    ProductListAPIView,
-    ProductDetailAPIView,
-    ProductCreateAPIView,
-    ProductUpdateAPIView,
-    ProductDeleteAPIView
+    ProductListCreateAPIView,
+    ProductRetrieveUpdateDestroyAPIView
 )
 
 urlpatterns = [
-    # Public
-    path('', ProductListAPIView.as_view(), name='product-list'),
-    path('<int:id>/', ProductDetailAPIView.as_view(), name='product-detail'),
+    # List all products or create a new product
+    path('', ProductListCreateAPIView.as_view(), name='product-list-create'),
 
-    # Admin only
-    path('create/', ProductCreateAPIView.as_view(), name='product-create'),
-    path('update/<int:id>/', ProductUpdateAPIView.as_view(), name='product-update'),
-    path('delete/<int:id>/', ProductDeleteAPIView.as_view(), name='product-delete'),
+    # Retrieve, update, or delete a product by ID
+    path('<int:id>/', ProductRetrieveUpdateDestroyAPIView.as_view(), name='product-rud'),
 ]

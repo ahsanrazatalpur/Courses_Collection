@@ -1,0 +1,44 @@
+name: frontend
+description: A Flutter project for LinkedIn Test Assignment.
+
+publish_to: "none"
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # UI & icons
+  cupertino_icons: ^1.0.8
+
+  # Networking & auth
+  http: ^1.2.3
+  jwt_decoder: ^2.0.1
+  shared_preferences: ^2.2.15
+  mime: ^2.0.0
+  intl: ^0.18.1
+
+  # Image picker (web & mobile)
+  image_picker: ^0.8.9
+
+  # CSV export
+  csv: ^6.0.0
+  path_provider: ^2.0.17
+
+  # Share files
+  share_plus: ^12.0.1
+
+  # File picker (supports web & mobile)
+  file_picker: ^6.2.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.2
+
+flutter:
+  uses-material-design: true
