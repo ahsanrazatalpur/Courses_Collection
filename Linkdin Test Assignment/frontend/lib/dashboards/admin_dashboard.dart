@@ -1,11 +1,13 @@
 // lib/dashboards/admin_dashboard.dart
-// ✅ ENHANCED: Always show reviews, buttons never cut off, ANDROID FRIENDLY
+// ✅ COMPLETE FIX: Square cards, image picker, stock notifications, Android-perfect
 
 // ignore_for_file: use_build_context_synchronously
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../models/product.dart';
 import '../services/api_service.dart';
@@ -41,6 +43,7 @@ class AdminDashboardPage extends StatefulWidget {
 
 class _AdminDashboardPageState extends State<AdminDashboardPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final ImagePicker _picker = ImagePicker();
 
   List<Product> products = [];
   List<Product> filteredProducts = [];
@@ -187,6 +190,27 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     TopPopup.show(context, "CSV ready — integrate with universal_html for download", accentGreen);
   }
 
+  // ✅ Image picker for Android/iOS
+  Future<String?> _pickImage() async {
+    try {
+      final XFile? image = await _picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 1024,
+        maxHeight: 1024,
+        imageQuality: 85,
+      );
+      if (image != null) {
+        // TODO: Upload image to your server and return URL
+        // For now, return local path (you need to implement upload to Firebase/S3/your backend)
+        TopPopup.show(context, "Image selected! Upload to server needed.", Colors.orange);
+        return image.path;
+      }
+    } catch (e) {
+      TopPopup.show(context, "Failed to pick image: $e", Colors.red);
+    }
+    return null;
+  }
+
   Widget hoverButton({
     required Widget child,
     required VoidCallback onTap,
@@ -221,13 +245,16 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   }
 
   void showProductModal(Product? product, {bool readOnly = false}) {
-    final w       = MediaQuery.of(context).size.width;
+    final w = MediaQuery.of(context).size.width;
     final isSmall = w < 600;
     final nameCtrl  = TextEditingController(text: product?.name ?? '');
     final descCtrl  = TextEditingController(text: product?.description ?? '');
     final priceCtrl = TextEditingController(text: product?.price.toString() ?? '');
     final stockCtrl = TextEditingController(text: product?.stock.toString() ?? '');
     final imageCtrl = TextEditingController(text: product?.image ?? '');
+    
+    // Store original stock to detect changes
+    final originalStock = product?.stock ?? 0;
 
     showDialog(
       context: context,
@@ -255,16 +282,60 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                   ],
                 ),
                 SizedBox(height: isSmall ? 12 : 16),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Container(
-                    height: isSmall ? 120 : 140, color: lightGrey,
-                    child: imageCtrl.text.isNotEmpty
-                        ? Image.network(imageCtrl.text, fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Icon(Icons.shopping_bag_outlined, size: 60, color: mediumGrey))
-                        : Icon(Icons.shopping_bag_outlined, size: 80, color: mediumGrey),
-                  ),
+                
+                // ✅ Image with picker button
+                Stack(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        height: isSmall ? 140 : 160,
+                        width: double.infinity,
+                        color: lightGrey,
+                        child: imageCtrl.text.isNotEmpty
+                            ? Image.network(
+                                imageCtrl.text,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => Icon(Icons.shopping_bag_outlined, size: 60, color: mediumGrey),
+                                loadingBuilder: (_, child, loadingProgress) {
+                                  if (loadingProgress == null) return child;
+                                  return Center(child: CircularProgressIndicator(value: loadingProgress.expectedTotalBytes != null
+                                      ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                      : null));
+                                },
+                              )
+                            : Icon(Icons.shopping_bag_outlined, size: 80, color: mediumGrey),
+                      ),
+                    ),
+                    if (!readOnly)
+                      Positioned(
+                        right: 8,
+                        bottom: 8,
+                        child: Material(
+                          elevation: 4,
+                          borderRadius: BorderRadius.circular(8),
+                          child: InkWell(
+                            onTap: () async {
+                              final imagePath = await _pickImage();
+                              if (imagePath != null) {
+                                setModal(() => imageCtrl.text = imagePath);
+                              }
+                            },
+                            borderRadius: BorderRadius.circular(8),
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: primaryIndigo,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Icon(Icons.camera_alt, color: Colors.white, size: 20),
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
+                
                 SizedBox(height: isSmall ? 16 : 20),
                 buildTextField(nameCtrl,  "Product Name",   readOnly, isSmall),
                 SizedBox(height: isSmall ? 10 : 12),
@@ -274,8 +345,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                 SizedBox(height: isSmall ? 10 : 12),
                 buildTextField(stockCtrl, "Stock Quantity", readOnly, isSmall, keyboard: TextInputType.number),
                 SizedBox(height: isSmall ? 10 : 12),
-                buildTextField(imageCtrl, "Image URL",      readOnly, isSmall),
+                buildTextField(imageCtrl, "Image URL (or use camera button)", readOnly, isSmall),
                 SizedBox(height: isSmall ? 20 : 24),
+                
                 if (!readOnly) Row(children: [
                   Expanded(
                     child: hoverButton(
@@ -283,17 +355,49 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                       padding: EdgeInsets.symmetric(vertical: isSmall ? 12 : 14),
                       onTap: () async {
                         if (nameCtrl.text.isEmpty) { TopPopup.show(ctx, "Name is required", Colors.red); return; }
+                        
+                        final newStock = int.tryParse(stockCtrl.text) ?? 0;
                         final np = Product(
-                          id: product?.id, name: nameCtrl.text.trim(), description: descCtrl.text.trim(),
-                          price: double.tryParse(priceCtrl.text) ?? 0, stock: int.tryParse(stockCtrl.text) ?? 0,
+                          id: product?.id,
+                          name: nameCtrl.text.trim(),
+                          description: descCtrl.text.trim(),
+                          price: double.tryParse(priceCtrl.text) ?? 0,
+                          stock: newStock,
                           image: imageCtrl.text.trim().isEmpty ? null : imageCtrl.text.trim(),
                         );
+                        
                         final ok = product == null
                             ? await ApiService.addProduct(np, token: widget.token)
                             : await ApiService.updateProduct(np, token: widget.token);
+                        
                         if (!mounted) return;
-                        if (ok) { Navigator.pop(ctx); fetchProducts(); TopPopup.show(context, product == null ? "Product added!" : "Product updated!", accentGreen); }
-                        else { TopPopup.show(ctx, "Operation failed", Colors.red); }
+                        
+                        if (ok) {
+                          Navigator.pop(ctx);
+                          
+                          // ✅ FIX: Create notification for stock changes
+                          if (product != null) {
+                            // Check for low stock or out of stock after update
+                            if (newStock == 0 && originalStock > 0) {
+                              await NotificationService.saveNotification(
+                                'Stock Alert: ${np.name} is now OUT OF STOCK',
+                                'urgent',
+                              );
+                            } else if (newStock < kLowStockThreshold && newStock > 0 && originalStock >= kLowStockThreshold) {
+                              await NotificationService.saveNotification(
+                                'Stock Alert: ${np.name} is running LOW (${newStock} left)',
+                                'warning',
+                              );
+                            }
+                          }
+                          
+                          await fetchProducts();
+                          await _loadNotificationCount();
+                          
+                          TopPopup.show(context, product == null ? "Product added!" : "Product updated!", accentGreen);
+                        } else {
+                          TopPopup.show(ctx, "Operation failed", Colors.red);
+                        }
                       },
                       child: Text(product == null ? "Add Product" : "Update Product",
                           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: isSmall ? 14 : 16)),
@@ -358,290 +462,311 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     );
   }
 
-  // ✅ FIXED: Proper aspect ratios and spacing to show all buttons
+  // ✅ PERFECT SQUARE CARD - Like user dashboard
   Widget buildProductCard(Product product, bool isSmall) {
-    final imgH   = isSmall ? 85.0  : 110.0;
-    final pad    = isSmall ? 8.0   : 10.0;
-    final btnPad = isSmall ? 7.0   : 9.0;
-    final nameSz = isSmall ? 12.0  : 13.0;
-    final prSz   = isSmall ? 12.0  : 13.0;
-    final ratSz  = isSmall ? 9.5   : 10.0;
-    final iconSz = isSmall ? 12.0  : 13.0;
-    final btnSz  = isSmall ? 10.0  : 11.0;
+    final imgH   = isSmall ? 100.0 : 130.0;
+    final pad    = isSmall ? 10.0  : 12.0;
+    final btnPad = isSmall ? 8.0   : 10.0;
+    final nameSz = isSmall ? 13.0  : 14.0;
+    final prSz   = isSmall ? 13.0  : 14.0;
+    final ratSz  = isSmall ? 10.0  : 11.0;
+    final iconSz = isSmall ? 13.0  : 14.0;
+    final btnSz  = isSmall ? 11.0  : 12.0;
 
-    return StatefulBuilder(builder: (ctx, setCard) {
-      bool hovered = false;
-      return MouseRegion(
-        cursor: SystemMouseCursors.click,
-        onEnter: (_) => setCard(() => hovered = true),
-        onExit:  (_) => setCard(() => hovered = false),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          child: Card(
-            elevation: hovered ? 8 : 2,
-            shadowColor: primaryIndigo.withOpacity(hovered ? 0.3 : 0.1),
-            color: hovered ? white : cardGrey,
-            clipBehavior: Clip.antiAlias,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-              side: BorderSide(color: hovered ? primaryIndigo.withOpacity(0.4) : borderGrey, width: hovered ? 2 : 1),
+    return Card(
+      elevation: 2,
+      shadowColor: primaryIndigo.withOpacity(0.1),
+      color: white,
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: borderGrey, width: 1),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Image with stock badge
+          Stack(children: [
+            SizedBox(
+              height: imgH,
+              width: double.infinity,
+              child: product.image != null && product.image!.isNotEmpty
+                  ? Image.network(
+                      product.image!,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => Container(
+                        color: lightGrey,
+                        child: Icon(Icons.shopping_bag_outlined, size: isSmall ? 40 : 50, color: mediumGrey),
+                      ),
+                      loadingBuilder: (_, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Container(
+                          color: lightGrey,
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              value: loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                  : null,
+                              strokeWidth: 2,
+                            ),
+                          ),
+                        );
+                      },
+                    )
+                  : Container(
+                      color: lightGrey,
+                      child: Icon(Icons.shopping_bag_outlined, size: isSmall ? 40 : 50, color: mediumGrey),
+                    ),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Image with stock badge
-                Stack(children: [
-                  SizedBox(
-                    height: imgH, width: double.infinity,
-                    child: product.image != null && product.image!.isNotEmpty
-                        ? Image.network(product.image!, fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Container(color: lightGrey,
-                                child: Icon(Icons.shopping_bag_outlined, size: isSmall ? 36 : 48, color: mediumGrey)))
-                        : Container(color: lightGrey,
-                            child: Icon(Icons.shopping_bag_outlined, size: isSmall ? 36 : 48, color: mediumGrey)),
+            Positioned(top: 6, right: 6, child: _buildStockBadge(product)),
+          ]),
+          
+          // Product info - Compact
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.all(pad),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    product.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: nameSz, color: darkGrey),
                   ),
-                  Positioned(top: 6, right: 6, child: _buildStockBadge(product)),
-                ]),
-                
-                // Product info
-                Padding(
-                  padding: EdgeInsets.fromLTRB(pad, pad * 0.7, pad, 0),
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-                    Text(product.name, maxLines: 1, overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: nameSz, color: darkGrey)),
-                    const SizedBox(height: 3),
-                    Text("Rs ${product.price}", maxLines: 1, overflow: TextOverflow.ellipsis,
-                        style: TextStyle(color: primaryIndigo, fontWeight: FontWeight.bold, fontSize: prSz)),
-                    
-                    // ✅ ALWAYS show review count
-                    const SizedBox(height: 3),
-                    Row(mainAxisSize: MainAxisSize.min, children: [
+                  const SizedBox(height: 4),
+                  Text(
+                    "Rs ${product.price}",
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(color: primaryIndigo, fontWeight: FontWeight.bold, fontSize: prSz),
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
                       Icon(
                         product.reviewCount > 0 ? Icons.star : Icons.star_outline,
                         size: ratSz + 1,
                         color: product.reviewCount > 0 ? Colors.amber : mediumGrey,
                       ),
                       const SizedBox(width: 2),
-                      Flexible(child: Text(
-                        product.reviewCount > 0
-                            ? "${product.averageRating} (${product.reviewCount})"
-                            : "No reviews yet",
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: ratSz,
-                          color: product.reviewCount > 0 ? darkGrey : mediumGrey,
-                          fontStyle: product.reviewCount == 0 ? FontStyle.italic : FontStyle.normal,
+                      Flexible(
+                        child: Text(
+                          product.reviewCount > 0
+                              ? "${product.averageRating} (${product.reviewCount})"
+                              : "No reviews",
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: ratSz,
+                            color: product.reviewCount > 0 ? darkGrey : mediumGrey,
+                          ),
                         ),
-                      )),
-                    ]),
-                    
-                    if (!isSmall && product.description.isNotEmpty) ...[
-                      const SizedBox(height: 3),
-                      Text(product.description, maxLines: 1, overflow: TextOverflow.ellipsis,
-                          style: TextStyle(fontSize: 10, color: mediumGrey)),
+                      ),
                     ],
-                  ]),
-                ),
-                
-                const SizedBox(height: 4),
-                
-                // Action buttons - ✅ FIXED: Proper spacing and sizing
-                Padding(
-                  padding: EdgeInsets.fromLTRB(pad, 0, pad, pad),
-                  child: Column(mainAxisSize: MainAxisSize.min, children: [
-                    // Reviews button
-                    SizedBox(
-                      width: double.infinity,
-                      child: Material(
-                        color: product.reviewCount > 0 ? Colors.purple : Colors.grey.shade600,
-                        borderRadius: BorderRadius.circular(8),
-                        child: InkWell(
-                          onTap: () => Navigator.push(context, MaterialPageRoute(
+                  ),
+                  const Spacer(),
+                  
+                  // Action buttons - Compact
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Reviews button
+                      SizedBox(
+                        width: double.infinity,
+                        height: isSmall ? 32 : 36,
+                        child: ElevatedButton(
+                          onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
                               builder: (_) => ProductReviewsPage(
                                 productId: product.id!,
                                 productName: product.name,
                                 token: widget.token,
                                 isAdmin: true,
-                              ))),
-                          borderRadius: BorderRadius.circular(8),
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: btnPad),
-                            child: Row(mainAxisAlignment: MainAxisAlignment.center, mainAxisSize: MainAxisSize.min, children: [
+                              ),
+                            ),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: product.reviewCount > 0 ? Colors.purple : Colors.grey.shade600,
+                            foregroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: btnPad),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                            elevation: 0,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
                               Icon(
                                 product.reviewCount > 0 ? Icons.rate_review : Icons.rate_review_outlined,
-                                color: Colors.white,
                                 size: iconSz,
                               ),
                               const SizedBox(width: 4),
-                              Flexible(child: Text(
-                                product.reviewCount > 0
-                                    ? "Reviews (${product.reviewCount})"
-                                    : "Reviews (0)",
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: btnSz),
-                              )),
-                            ]),
+                              Flexible(
+                                child: Text(
+                                  "Reviews (${product.reviewCount})",
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: btnSz),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 6),
-                    
-                    // Edit and Delete buttons
-                    Row(children: [
-                      Expanded(
-                        child: Material(
-                          color: primaryIndigo,
-                          borderRadius: BorderRadius.circular(8),
-                          child: InkWell(
-                            onTap: () => showProductModal(product),
-                            borderRadius: BorderRadius.circular(8),
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(vertical: btnPad),
-                              child: Row(mainAxisAlignment: MainAxisAlignment.center, mainAxisSize: MainAxisSize.min, children: [
-                                Icon(Icons.edit, color: Colors.white, size: iconSz),
-                                const SizedBox(width: 3),
-                                Text("Edit", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: btnSz)),
-                              ]),
+                      const SizedBox(height: 6),
+                      
+                      // Edit and Delete - Side by side
+                      Row(
+                        children: [
+                          Expanded(
+                            child: SizedBox(
+                              height: isSmall ? 32 : 36,
+                              child: ElevatedButton(
+                                onPressed: () => showProductModal(product),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: primaryIndigo,
+                                  foregroundColor: Colors.white,
+                                  padding: EdgeInsets.symmetric(horizontal: 4, vertical: btnPad),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                  elevation: 0,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(Icons.edit, size: iconSz),
+                                    const SizedBox(width: 3),
+                                    Text("Edit", style: TextStyle(fontWeight: FontWeight.w600, fontSize: btnSz)),
+                                  ],
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      Expanded(
-                        child: Material(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(8),
-                          child: InkWell(
-                            onTap: () async {
-                              final confirm = await showDialog<bool>(context: context, builder: (_) => AlertDialog(
-                                backgroundColor: white,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                                title: Text("Confirm Delete", style: TextStyle(color: primaryIndigo, fontWeight: FontWeight.bold)),
-                                content: Text("Delete \"${product.name}\"?", style: TextStyle(color: darkGrey)),
-                                actions: [
-                                  TextButton(onPressed: () => Navigator.pop(context, false),
-                                      child: Text("Cancel", style: TextStyle(color: mediumGrey))),
-                                  ElevatedButton(
-                                    onPressed: () => Navigator.pop(context, true),
-                                    style: ElevatedButton.styleFrom(backgroundColor: Colors.red,
-                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
-                                    child: const Text("Delete"),
-                                  ),
-                                ],
-                              ));
-                              if (confirm != true) return;
-                              final ok = await ApiService.deleteProduct(product.id!, token: widget.token);
-                              if (!mounted) return;
-                              if (ok) fetchProducts();
-                            },
-                            borderRadius: BorderRadius.circular(8),
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(vertical: btnPad),
-                              child: Row(mainAxisAlignment: MainAxisAlignment.center, mainAxisSize: MainAxisSize.min, children: [
-                                Icon(Icons.delete, color: Colors.white, size: iconSz),
-                                const SizedBox(width: 3),
-                                Text("Delete", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: btnSz)),
-                              ]),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: SizedBox(
+                              height: isSmall ? 32 : 36,
+                              child: ElevatedButton(
+                                onPressed: () async {
+                                  final confirm = await showDialog<bool>(
+                                    context: context,
+                                    builder: (_) => AlertDialog(
+                                      backgroundColor: white,
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                      title: Text("Confirm Delete", style: TextStyle(color: primaryIndigo, fontWeight: FontWeight.bold)),
+                                      content: Text("Delete \"${product.name}\"?", style: TextStyle(color: darkGrey)),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () => Navigator.pop(context, false),
+                                          child: Text("Cancel", style: TextStyle(color: mediumGrey)),
+                                        ),
+                                        ElevatedButton(
+                                          onPressed: () => Navigator.pop(context, true),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.red,
+                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                          ),
+                                          child: const Text("Delete"),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                  if (confirm != true) return;
+                                  final ok = await ApiService.deleteProduct(product.id!, token: widget.token);
+                                  if (!mounted) return;
+                                  if (ok) fetchProducts();
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.red,
+                                  foregroundColor: Colors.white,
+                                  padding: EdgeInsets.symmetric(horizontal: 4, vertical: btnPad),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                  elevation: 0,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(Icons.delete, size: iconSz),
+                                    const SizedBox(width: 3),
+                                    Text("Delete", style: TextStyle(fontWeight: FontWeight.w600, fontSize: btnSz)),
+                                  ],
+                                ),
+                              ),
                             ),
                           ),
-                        ),
+                        ],
                       ),
-                    ]),
-                  ]),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget analyticsCard(String title, String value, IconData icon, Color color) {
+    return LayoutBuilder(builder: (ctx, box) {
+      final h = box.maxHeight;
+      final w = box.maxWidth;
+      final iconBox = (h * 0.30).clamp(22.0, 60.0);
+      final iconSz = iconBox * 0.55;
+      final valueSz = (h * 0.17).clamp(10.0, 22.0);
+      final titleSz = (h * 0.10).clamp(8.0, 13.0);
+      final innerPad = (w * 0.05).clamp(4.0, 12.0);
+
+      return Card(
+        elevation: 3,
+        color: color.withOpacity(0.95),
+        clipBehavior: Clip.hardEdge,
+        margin: EdgeInsets.zero,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(color: color.withOpacity(0.3), width: 1),
+        ),
+        child: SizedBox.expand(
+          child: Padding(
+            padding: EdgeInsets.all(innerPad),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: iconBox,
+                  height: iconBox,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.9),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(icon, color: color, size: iconSz),
+                ),
+                SizedBox(height: h * 0.05),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    value,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: valueSz, fontWeight: FontWeight.bold, color: Colors.white),
+                  ),
+                ),
+                SizedBox(height: h * 0.03),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    title,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: titleSz, fontWeight: FontWeight.w600, color: Colors.white.withOpacity(0.95)),
+                  ),
                 ),
               ],
             ),
           ),
-        ),
-      );
-    });
-  }
-
-  Widget analyticsCard(String title, String value, IconData icon, Color color) {
-    return StatefulBuilder(builder: (ctx, setCard) {
-      bool hovered = false;
-      return MouseRegion(
-        cursor: SystemMouseCursors.click,
-        onEnter: (_) => setCard(() => hovered = true),
-        onExit:  (_) => setCard(() => hovered = false),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          child: LayoutBuilder(builder: (ctx, box) {
-            final h = box.maxHeight;
-            final w = box.maxWidth;
-            final iconBox   = (h * 0.30).clamp(22.0, 60.0);
-            final iconSz    = iconBox * 0.55;
-            final valueSz   = (h * 0.17).clamp(10.0, 22.0);
-            final titleSz   = (h * 0.10).clamp(8.0, 13.0);
-            final innerPad  = (w * 0.05).clamp(4.0, 12.0);
-
-            return Card(
-              elevation: hovered ? 10 : 3,
-              color: hovered ? color : color.withOpacity(0.95),
-              clipBehavior: Clip.hardEdge,
-              margin: EdgeInsets.zero,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-                side: BorderSide(
-                  color: hovered ? color.withOpacity(0.8) : color.withOpacity(0.3),
-                  width: hovered ? 2 : 1,
-                ),
-              ),
-              child: SizedBox.expand(
-                child: Padding(
-                  padding: EdgeInsets.all(innerPad),
-                  child: ClipRect(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        Container(
-                          width: iconBox, height: iconBox,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.9),
-                            shape: BoxShape.circle,
-                            boxShadow: hovered
-                                ? [const BoxShadow(color: Colors.black26, blurRadius: 8, offset: Offset(0, 3))]
-                                : [],
-                          ),
-                          child: Icon(icon, color: color, size: iconSz),
-                        ),
-                        SizedBox(height: h * 0.05),
-                        SizedBox(
-                          width: w - innerPad * 2,
-                          child: FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: Text(value,
-                                textAlign: TextAlign.center,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(fontSize: valueSz, fontWeight: FontWeight.bold, color: Colors.white)),
-                          ),
-                        ),
-                        SizedBox(height: h * 0.03),
-                        SizedBox(
-                          width: w - innerPad * 2,
-                          child: FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: Text(title,
-                                textAlign: TextAlign.center,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(fontSize: titleSz, fontWeight: FontWeight.w600,
-                                    color: Colors.white.withOpacity(0.95))),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            );
-          }),
         ),
       );
     });
@@ -667,13 +792,18 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
             ]),
             if (badge != null && badge > 0)
               Positioned(
-                right: showLabel ? -4 : -6, top: -4,
+                right: showLabel ? -4 : -6,
+                top: -4,
                 child: Container(
                   padding: EdgeInsets.all(w < 350 ? 2 : 3),
                   decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
                   constraints: BoxConstraints(minWidth: w < 350 ? 14 : 16, minHeight: w < 350 ? 14 : 16),
-                  child: Center(child: Text('$badge',
-                      style: TextStyle(color: Colors.white, fontSize: w < 350 ? 8 : 9, fontWeight: FontWeight.bold))),
+                  child: Center(
+                    child: Text(
+                      '$badge',
+                      style: TextStyle(color: Colors.white, fontSize: w < 350 ? 8 : 9, fontWeight: FontWeight.bold),
+                    ),
+                  ),
                 ),
               ),
           ],
@@ -691,8 +821,11 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           children: [
             DrawerHeader(
               decoration: BoxDecoration(
-                gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight,
-                    colors: [primaryIndigo, primaryIndigo.withOpacity(0.8)]),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [primaryIndigo, primaryIndigo.withOpacity(0.8)],
+                ),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -724,7 +857,8 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
             _drawerItem(Icons.shopping_cart, "Manage Orders", () async {
               Navigator.pop(context);
               await Navigator.push(context, MaterialPageRoute(builder: (_) => AdminOrdersPage(token: widget.token)));
-              fetchNewOrdersCount(); fetchProducts();
+              fetchNewOrdersCount();
+              fetchProducts();
             }, badge: newOrdersCount),
             _drawerItem(Icons.local_offer, "Manage Coupons", () {
               Navigator.pop(context);
@@ -735,18 +869,27 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
               Navigator.push(context, MaterialPageRoute(builder: (_) => AdminReviewsPage(token: widget.token)));
             }),
             const Divider(),
-            _drawerItem(Icons.add_circle, "Add New Product", () { Navigator.pop(context); showProductModal(null); }, iconColor: accentGreen),
-            if (kIsWeb) _drawerItem(Icons.file_download, "Export Products CSV", () { Navigator.pop(context); exportCSV(); }, iconColor: Colors.blueGrey),
+            _drawerItem(Icons.add_circle, "Add New Product", () {
+              Navigator.pop(context);
+              showProductModal(null);
+            }, iconColor: accentGreen),
+            if (kIsWeb)
+              _drawerItem(Icons.file_download, "Export Products CSV", () {
+                Navigator.pop(context);
+                exportCSV();
+              }, iconColor: Colors.blueGrey),
             const Divider(),
-            _drawerItem(Icons.logout, "Logout", () { Navigator.pop(context); logout(); }, iconColor: Colors.red, textColor: Colors.red),
+            _drawerItem(Icons.logout, "Logout", () {
+              Navigator.pop(context);
+              logout();
+            }, iconColor: Colors.red, textColor: Colors.red),
           ],
         ),
       ),
     );
   }
 
-  Widget _drawerItem(IconData icon, String title, VoidCallback onTap,
-      {int? badge, Color? iconColor, Color? textColor}) {
+  Widget _drawerItem(IconData icon, String title, VoidCallback onTap, {int? badge, Color? iconColor, Color? textColor}) {
     return ListTile(
       leading: Icon(icon, color: iconColor ?? primaryIndigo),
       title: Text(title, style: TextStyle(color: textColor ?? darkGrey, fontSize: 14)),
@@ -765,15 +908,15 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   Widget build(BuildContext context) {
     final w = MediaQuery.of(context).size.width;
     final bool isSmartwatch = w < 250;
-    final bool isVerySmall  = w >= 250 && w < 350;
-    final bool isSmall      = w >= 350 && w < 600;
-    final bool isTablet     = w >= 600 && w < 900;
-    final bool isCardSmall  = isSmartwatch || isVerySmall;
-    final int  prodCols     = isSmartwatch || isVerySmall ? 1 : isSmall ? 2 : isTablet ? 3 : 5;
-    
-    // ✅ FIXED: LOWER aspect ratios = TALLER cards to show all buttons properly
-    final double prodAspect = isSmartwatch ? 0.40 : isVerySmall ? 0.42 : isSmall ? 0.46 : 0.50;
-    final double outerPad   = isSmartwatch ? 4 : isVerySmall ? 8 : 12;
+    final bool isVerySmall = w >= 250 && w < 350;
+    final bool isSmall = w >= 350 && w < 600;
+    final bool isTablet = w >= 600 && w < 900;
+    final bool isCardSmall = isSmartwatch || isVerySmall;
+    final int prodCols = isSmartwatch || isVerySmall ? 1 : isSmall ? 2 : isTablet ? 3 : 4;
+
+    // ✅ SQUARE CARDS - Aspect ratio close to 1.0 (square)
+    final double prodAspect = isSmartwatch ? 0.75 : isVerySmall ? 0.78 : isSmall ? 0.82 : 0.85;
+    final double outerPad = isSmartwatch ? 4 : isVerySmall ? 8 : 12;
 
     return Scaffold(
       key: _scaffoldKey,
@@ -783,32 +926,35 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
         elevation: 2,
         backgroundColor: primaryIndigo,
         automaticallyImplyLeading: false,
-        leading: w < 600
-            ? IconButton(icon: const Icon(Icons.menu, color: Colors.white), onPressed: () => _scaffoldKey.currentState?.openDrawer())
-            : null,
-        title: Row(mainAxisSize: MainAxisSize.min, children: [
-          Icon(Icons.admin_panel_settings, color: Colors.white, size: w < 350 ? 18 : 22),
-          SizedBox(width: w < 350 ? 4 : 8),
-          Flexible(child: Text(w < 350 ? "Admin" : "Admin Dashboard",
-              style: TextStyle(color: Colors.white, fontSize: w < 350 ? 14 : 18, fontWeight: FontWeight.bold),
-              overflow: TextOverflow.ellipsis)),
-        ]),
+        leading: w < 600 ? IconButton(icon: const Icon(Icons.menu, color: Colors.white), onPressed: () => _scaffoldKey.currentState?.openDrawer()) : null,
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.admin_panel_settings, color: Colors.white, size: w < 350 ? 18 : 22),
+            SizedBox(width: w < 350 ? 4 : 8),
+            Flexible(
+              child: Text(
+                w < 350 ? "Admin" : "Admin Dashboard",
+                style: TextStyle(color: Colors.white, fontSize: w < 350 ? 14 : 18, fontWeight: FontWeight.bold),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
         actions: [
           if (w >= 600) ...[
             navButton(Icons.notifications, "Alerts", () async {
               await Navigator.push(context, MaterialPageRoute(builder: (_) => NotificationsPage(token: widget.token, isAdmin: true)));
               _loadNotificationCount();
             }, badge: notificationCount),
-            navButton(Icons.people, "Users", () => Navigator.push(context,
-                MaterialPageRoute(builder: (_) => UsersPage(token: widget.token, currentUserId: widget.userId)))),
+            navButton(Icons.people, "Users", () => Navigator.push(context, MaterialPageRoute(builder: (_) => UsersPage(token: widget.token, currentUserId: widget.userId)))),
             navButton(Icons.shopping_cart, "Orders", () async {
               await Navigator.push(context, MaterialPageRoute(builder: (_) => AdminOrdersPage(token: widget.token)));
-              fetchNewOrdersCount(); fetchProducts();
+              fetchNewOrdersCount();
+              fetchProducts();
             }, badge: newOrdersCount),
-            navButton(Icons.local_offer, "Coupons", () => Navigator.push(context,
-                MaterialPageRoute(builder: (_) => AdminCouponsPage(token: widget.token)))),
-            navButton(Icons.rate_review, "Reviews", () => Navigator.push(context,
-                MaterialPageRoute(builder: (_) => AdminReviewsPage(token: widget.token)))),
+            navButton(Icons.local_offer, "Coupons", () => Navigator.push(context, MaterialPageRoute(builder: (_) => AdminCouponsPage(token: widget.token)))),
+            navButton(Icons.rate_review, "Reviews", () => Navigator.push(context, MaterialPageRoute(builder: (_) => AdminReviewsPage(token: widget.token)))),
           ],
           navButton(Icons.add, w < 350 ? "Add" : "Add Product", () => showProductModal(null)),
           if (kIsWeb) navButton(Icons.file_download, w < 350 ? "CSV" : "Export", exportCSV),
@@ -826,38 +972,25 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                   Padding(
                     padding: EdgeInsets.only(bottom: isSmartwatch ? 8 : 12),
                     child: Text(
-                      isSmartwatch ? "Hi, ${widget.username}!" : isVerySmall
-                          ? "Welcome, ${widget.username}!" : "Welcome, ${widget.username}! 👋",
-                      style: TextStyle(fontSize: isSmartwatch ? 14 : isVerySmall ? 16 : 20,
-                          fontWeight: FontWeight.bold, color: primaryIndigo),
+                      isSmartwatch ? "Hi, ${widget.username}!" : isVerySmall ? "Welcome, ${widget.username}!" : "Welcome, ${widget.username}! 👋",
+                      style: TextStyle(fontSize: isSmartwatch ? 14 : isVerySmall ? 16 : 20, fontWeight: FontWeight.bold, color: primaryIndigo),
                     ),
                   ),
-
                   LayoutBuilder(builder: (lbCtx, bc) {
-                    final isTiny   = isSmartwatch || isVerySmall;
-                    final spacing  = isTiny ? 4.0 : 8.0;
-                    final cols     = isTiny ? 2 : isSmall ? 3 : 5;
+                    final isTiny = isSmartwatch || isVerySmall;
+                    final spacing = isTiny ? 4.0 : 8.0;
+                    final cols = isTiny ? 2 : isSmall ? 3 : 5;
                     final cardW = (bc.maxWidth - spacing * (cols - 1)) / cols;
-                    final cardH = w >= 900
-                        ? cardW * 0.62
-                        : w >= 600
-                            ? cardW * 0.72
-                            : isSmall
-                                ? cardW * 0.90
-                                : isVerySmall
-                                    ? cardW * 1.05
-                                    : cardW * 1.10;
+                    final cardH = w >= 900 ? cardW * 0.62 : w >= 600 ? cardW * 0.72 : isSmall ? cardW * 0.90 : isVerySmall ? cardW * 1.05 : cardW * 1.10;
 
-                    final revenueStr = isTiny
-                        ? "Rs ${(_revenue / 1000).toStringAsFixed(1)}K"
-                        : "Rs ${_revenue.toStringAsFixed(0)}";
+                    final revenueStr = isTiny ? "Rs ${(_revenue / 1000).toStringAsFixed(1)}K" : "Rs ${_revenue.toStringAsFixed(0)}";
 
                     final cards = [
-                      analyticsCard("Total Products", "$_totalProducts", Icons.inventory_2,          accentGreen),
-                      analyticsCard("In Stock",       "$_inStock",       Icons.check_circle,          Colors.blue),
-                      analyticsCard("Low Stock",      "$_lowStock",      Icons.warning_amber_rounded,  Colors.orange),
-                      analyticsCard("Out of Stock",   "$_outOfStock",    Icons.remove_shopping_cart,   Colors.red.shade600),
-                      analyticsCard("Revenue",        revenueStr,        Icons.attach_money,           Colors.amber.shade700),
+                      analyticsCard("Total Products", "$_totalProducts", Icons.inventory_2, accentGreen),
+                      analyticsCard("In Stock", "$_inStock", Icons.check_circle, Colors.blue),
+                      analyticsCard("Low Stock", "$_lowStock", Icons.warning_amber_rounded, Colors.orange),
+                      analyticsCard("Out of Stock", "$_outOfStock", Icons.remove_shopping_cart, Colors.red.shade600),
+                      analyticsCard("Revenue", revenueStr, Icons.attach_money, Colors.amber.shade700),
                     ];
 
                     if (!isTiny && !isSmall) {
@@ -879,48 +1012,53 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                       children: cards.map((c) => SizedBox(width: cardW, height: cardH, child: c)).toList(),
                     );
                   }),
-
                   SizedBox(height: isSmartwatch ? 8 : 16),
-
-                  Row(children: [
-                    Expanded(
-                      child: TextField(
-                        style: TextStyle(color: darkGrey, fontSize: isSmartwatch ? 11 : 14),
-                        decoration: InputDecoration(
-                          prefixIcon: Icon(Icons.search, color: mediumGrey, size: isSmartwatch ? 16 : 20),
-                          hintText: isSmartwatch ? "Search" : "Search products",
-                          hintStyle: TextStyle(color: mediumGrey, fontSize: isSmartwatch ? 11 : 14),
-                          filled: true, fillColor: white,
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: borderGrey)),
-                          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: borderGrey)),
-                          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: primaryIndigo, width: 2)),
-                          contentPadding: EdgeInsets.symmetric(vertical: isSmartwatch ? 8 : 12, horizontal: isSmartwatch ? 8 : 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          style: TextStyle(color: darkGrey, fontSize: isSmartwatch ? 11 : 14),
+                          decoration: InputDecoration(
+                            prefixIcon: Icon(Icons.search, color: mediumGrey, size: isSmartwatch ? 16 : 20),
+                            hintText: isSmartwatch ? "Search" : "Search products",
+                            hintStyle: TextStyle(color: mediumGrey, fontSize: isSmartwatch ? 11 : 14),
+                            filled: true,
+                            fillColor: white,
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: borderGrey)),
+                            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: borderGrey)),
+                            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: primaryIndigo, width: 2)),
+                            contentPadding: EdgeInsets.symmetric(vertical: isSmartwatch ? 8 : 12, horizontal: isSmartwatch ? 8 : 12),
+                          ),
+                          onChanged: (v) {
+                            searchQuery = v;
+                            applyFilters();
+                          },
                         ),
-                        onChanged: (v) { searchQuery = v; applyFilters(); },
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: isSmartwatch ? 4 : 8),
-                      decoration: BoxDecoration(color: white, borderRadius: BorderRadius.circular(8), border: Border.all(color: borderGrey)),
-                      child: DropdownButton<String>(
-                        value: stockFilter,
-                        underline: const SizedBox(),
-                        dropdownColor: white,
-                        style: TextStyle(color: darkGrey, fontSize: isSmartwatch ? 10 : 13),
-                        items: const [
-                          DropdownMenuItem(value: 'all', child: Text("All")),
-                          DropdownMenuItem(value: 'in',  child: Text("In Stock")),
-                          DropdownMenuItem(value: 'low', child: Text("Low Stock")),
-                          DropdownMenuItem(value: 'out', child: Text("Out of Stock")),
-                        ],
-                        onChanged: (v) { stockFilter = v!; applyFilters(); },
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: isSmartwatch ? 4 : 8),
+                        decoration: BoxDecoration(color: white, borderRadius: BorderRadius.circular(8), border: Border.all(color: borderGrey)),
+                        child: DropdownButton<String>(
+                          value: stockFilter,
+                          underline: const SizedBox(),
+                          dropdownColor: white,
+                          style: TextStyle(color: darkGrey, fontSize: isSmartwatch ? 10 : 13),
+                          items: const [
+                            DropdownMenuItem(value: 'all', child: Text("All")),
+                            DropdownMenuItem(value: 'in', child: Text("In Stock")),
+                            DropdownMenuItem(value: 'low', child: Text("Low Stock")),
+                            DropdownMenuItem(value: 'out', child: Text("Out of Stock")),
+                          ],
+                          onChanged: (v) {
+                            stockFilter = v!;
+                            applyFilters();
+                          },
+                        ),
                       ),
-                    ),
-                  ]),
-
+                    ],
+                  ),
                   SizedBox(height: isSmartwatch ? 8 : 16),
-
                   GridView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
@@ -933,7 +1071,6 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                     ),
                     itemBuilder: (_, i) => buildProductCard(paginatedProducts[i], isCardSmall),
                   ),
-
                   const SizedBox(height: 20),
                   const FooterWidget(),
                 ],

@@ -1,4 +1,4 @@
-// lib/pages/admin_orders_page.dart - ENHANCED WITH BETTER READABILITY
+// lib/pages/admin_orders_page.dart - ENHANCED WITH BETTER READABILITY & FIXED APPBAR
 
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
@@ -629,42 +629,57 @@ class _AdminOrdersPageState extends State<AdminOrdersPage> {
         elevation: 2,
         backgroundColor: primaryIndigo,
         iconTheme: const IconThemeData(color: Colors.white),
+        // ✅ FIXED: Flexible title to prevent overflow
         title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.assignment, color: Colors.white, size: width < 350 ? 20 : 24),
-            SizedBox(width: width < 350 ? 6 : 8),
-            Text(
-              width < 350 ? "Orders" : "Manage Orders",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: width < 350 ? 16 : 20,
-                fontWeight: FontWeight.bold,
+            Icon(Icons.assignment, color: Colors.white, size: width < 350 ? 18 : 22),
+            SizedBox(width: width < 350 ? 4 : 6),
+            Flexible(
+              child: Text(
+                width < 350 ? "Orders" : "Manage Orders",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: width < 350 ? 15 : 18,
+                  fontWeight: FontWeight.bold,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
         ),
         actions: [
-          if (!isCardSmall && orders.isNotEmpty)
+          // ✅ FIXED: Compact order count badge (always show on all screens)
+          if (orders.isNotEmpty)
             Center(
               child: Container(
-                margin: const EdgeInsets.only(right: 8),
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                margin: EdgeInsets.only(right: width < 350 ? 4 : 8),
+                padding: EdgeInsets.symmetric(
+                  horizontal: width < 350 ? 8 : 12,
+                  vertical: width < 350 ? 4 : 6,
+                ),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: accentGreen,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.white, width: 1.5),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
                 child: Text(
-                  "${orders.length} ${orders.length == 1 ? 'Order' : 'Orders'}",
-                  style: const TextStyle(
+                  "${orders.length}",
+                  style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
-                    fontSize: 12,
+                    fontSize: width < 350 ? 11 : 12,
                   ),
                 ),
               ),
             ),
+          // ✅ FIXED: Proper refresh button padding
           IconButton(
             icon: Icon(
               Icons.refresh,
@@ -673,8 +688,8 @@ class _AdminOrdersPageState extends State<AdminOrdersPage> {
             ),
             onPressed: fetchOrders,
             tooltip: 'Refresh',
+            padding: EdgeInsets.all(width < 350 ? 8 : 12),
           ),
-          SizedBox(width: width < 350 ? 4 : 8),
         ],
       ),
       body: _isLoading

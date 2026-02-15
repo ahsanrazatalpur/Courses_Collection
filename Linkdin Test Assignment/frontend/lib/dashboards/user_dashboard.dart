@@ -1,4 +1,4 @@
-// lib/dashboards/user_dashboard.dart - FULLY RESPONSIVE WITH MOBILE DRAWER
+// lib/dashboards/user_dashboard.dart - FIXED: Taller cards, buttons always visible, persistent username
 
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -33,13 +33,15 @@ class UserDashboard extends StatefulWidget {
 }
 
 class _UserDashboardState extends State<UserDashboard> {
-  // ✅ ADD THIS: GlobalKey for Scaffold to control drawer
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   
   List<Product> products = [];
   List<CartItem> cartItems = [];
   List<Order> userOrders = [];
   bool _isLoading = true;
+  
+  // ✅ FIXED: Store login username permanently
+  late String _loginUsername;
   
   int _newOrderUpdates = 0;
   int _pendingReviewsCount = 0;
@@ -50,7 +52,6 @@ class _UserDashboardState extends State<UserDashboard> {
   int _sliderIndex = 0;
   Timer? _sliderTimer;
 
-  // Professional color palette
   static const Color primaryIndigo = Color(0xFF3F51B5);
   static const Color accentGreen = Color(0xFF4CAF50);
   static const Color white = Color(0xFFFFFFFF);
@@ -60,25 +61,20 @@ class _UserDashboardState extends State<UserDashboard> {
   static const Color darkGrey = Color(0xFF424242);
   static const Color borderGrey = Color(0xFFE0E0E0);
 
-final List<String> sliderImages = [
-  // Colorful shopping bags
-  "https://images.unsplash.com/photo-1607082350899-7e105aa886ae?q=80&w=1600&auto=format&fit=crop",
-  
-  // Fashion store interior
-  "https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1600&auto=format&fit=crop",
-  
-  // Online shopping with credit card
-  "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=1600&auto=format&fit=crop",
-  
-  // Shopping concept with bags
-  "https://images.unsplash.com/photo-1607083206325-caf1edba7a0f?q=80&w=1600&auto=format&fit=crop",
-];
+  final List<String> sliderImages = [
+    "https://images.unsplash.com/photo-1607082350899-7e105aa886ae?q=80&w=1600&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1600&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=1600&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1607083206325-caf1edba7a0f?q=80&w=1600&auto=format&fit=crop",
+  ];
 
   final PageController _pageController = PageController();
 
   @override
   void initState() {
     super.initState();
+    // ✅ FIXED: Save login username at init, never change it
+    _loginUsername = widget.username;
     fetchProducts();
     fetchCart();
     _initializeOrderTracking();
@@ -724,6 +720,7 @@ final List<String> sliderImages = [
     );
   }
 
+  // ✅ FIXED: Taller cards with proper button spacing
   Widget buildProductCard(Product product, bool isSmall) {
     final cartIndex = cartItems.indexWhere((i) => i.productId == product.id);
     final cartQty = cartIndex >= 0 ? cartItems[cartIndex].quantity : 0;
@@ -760,13 +757,14 @@ final List<String> sliderImages = [
                       ),
                     ),
                     child: Padding(
-                      padding: EdgeInsets.all(isSmall ? 6 : 8),
+                      padding: EdgeInsets.all(isSmall ? 8 : 10),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          // Image with stock badge
                           Stack(
                             children: [
-                              buildProductImage(product.image, height: isSmall ? 80 : 100, isSmall: isSmall),
+                              buildProductImage(product.image, height: isSmall ? 90 : 110, isSmall: isSmall),
                               Positioned(
                                 top: 6,
                                 right: 6,
@@ -774,37 +772,42 @@ final List<String> sliderImages = [
                               ),
                             ],
                           ),
-                          SizedBox(height: isSmall ? 4 : 6),
+                          SizedBox(height: isSmall ? 6 : 8),
                           
+                          // Product name
                           Text(
                             product.name,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: isSmall ? 12 : 14,
+                              fontSize: isSmall ? 13 : 14,
                               color: darkGrey,
                             ),
                           ),
+                          SizedBox(height: 2),
                           
+                          // Price
                           Text(
                             "Rs ${product.price}",
                             style: TextStyle(
                               color: primaryIndigo,
                               fontWeight: FontWeight.bold,
-                              fontSize: isSmall ? 12 : 14,
+                              fontSize: isSmall ? 13 : 14,
                             ),
                           ),
+                          SizedBox(height: 2),
                           
+                          // Reviews
                           if (reviewCount > 0)
                             Row(
                               children: [
-                                Icon(Icons.star, size: isSmall ? 10 : 12, color: Colors.amber),
+                                Icon(Icons.star, size: isSmall ? 11 : 12, color: Colors.amber),
                                 SizedBox(width: 2),
                                 Text(
                                   "$avgRating ($reviewCount)",
                                   style: TextStyle(
-                                    fontSize: isSmall ? 9 : 10,
+                                    fontSize: isSmall ? 10 : 11,
                                     fontWeight: FontWeight.w500,
                                     color: mediumGrey,
                                   ),
@@ -812,16 +815,20 @@ final List<String> sliderImages = [
                               ],
                             ),
                           
-                          if (cartQty > 0)
+                          // In cart indicator
+                          if (cartQty > 0) ...[
+                            SizedBox(height: 2),
                             Text(
                               "In Cart: $cartQty",
                               style: TextStyle(
                                 color: accentGreen,
-                                fontSize: isSmall ? 9 : 10,
+                                fontSize: isSmall ? 10 : 11,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
+                          ],
                           
+                          // Description
                           if (!isSmall) ...[
                             SizedBox(height: 4),
                             Text(
@@ -832,80 +839,98 @@ final List<String> sliderImages = [
                             ),
                           ],
                           
+                          // ✅ Spacer pushes buttons to bottom
                           Spacer(),
-                          SizedBox(height: 8),
                           
+                          // ✅ FIXED: Buttons with proper spacing
+                          SizedBox(height: isSmall ? 6 : 8),
                           Row(
                             children: [
                               Expanded(
-                                child: hoverButton(
-                                  onTap: isOutOfStock ? () {} : () => addToCart(product),
-                                  color: isOutOfStock ? mediumGrey : primaryIndigo,
-                                  padding: EdgeInsets.symmetric(vertical: isSmall ? 6 : 8),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(Icons.shopping_cart, size: isSmall ? 12 : 14, color: Colors.white),
-                                      SizedBox(width: 3),
-                                      Text(
-                                        isSmall ? "Cart" : "Add",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                          fontSize: isSmall ? 10 : 12,
+                                child: SizedBox(
+                                  height: isSmall ? 32 : 36,
+                                  child: ElevatedButton(
+                                    onPressed: isOutOfStock ? null : () => addToCart(product),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: isOutOfStock ? mediumGrey : primaryIndigo,
+                                      foregroundColor: Colors.white,
+                                      padding: EdgeInsets.symmetric(horizontal: 4, vertical: isSmall ? 6 : 8),
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                      elevation: 0,
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(Icons.shopping_cart, size: isSmall ? 12 : 14),
+                                        SizedBox(width: 3),
+                                        Text(
+                                          isSmall ? "Cart" : "Add",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: isSmall ? 10 : 12,
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
                               SizedBox(width: 6),
                               Expanded(
-                                child: hoverButton(
-                                  onTap: isOutOfStock
-                                      ? () {}
-                                      : () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (_) => CheckoutScreen(
-                                                cart: [
-                                                  CartItem(
-                                                    id: 0,
-                                                    productId: product.id!,
-                                                    productName: product.name,
-                                                    price: product.price,
-                                                    quantity: 1,
-                                                    image: product.image ?? '',
-                                                  )
-                                                ],
-                                                token: widget.token,
-                                                isBuyNow: true,
+                                child: SizedBox(
+                                  height: isSmall ? 32 : 36,
+                                  child: ElevatedButton(
+                                    onPressed: isOutOfStock
+                                        ? null
+                                        : () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (_) => CheckoutScreen(
+                                                  cart: [
+                                                    CartItem(
+                                                      id: 0,
+                                                      productId: product.id!,
+                                                      productName: product.name,
+                                                      price: product.price,
+                                                      quantity: 1,
+                                                      image: product.image ?? '',
+                                                    )
+                                                  ],
+                                                  token: widget.token,
+                                                  isBuyNow: true,
+                                                ),
                                               ),
-                                            ),
-                                          );
-                                        },
-                                  color: isOutOfStock ? mediumGrey : accentGreen,
-                                  padding: EdgeInsets.symmetric(vertical: isSmall ? 6 : 8),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(Icons.shopping_bag, size: isSmall ? 12 : 14, color: Colors.white),
-                                      SizedBox(width: 3),
-                                      Text(
-                                        isSmall ? "Buy" : "Buy",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                          fontSize: isSmall ? 10 : 12,
+                                            );
+                                          },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: isOutOfStock ? mediumGrey : accentGreen,
+                                      foregroundColor: Colors.white,
+                                      padding: EdgeInsets.symmetric(horizontal: 4, vertical: isSmall ? 6 : 8),
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                      elevation: 0,
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(Icons.shopping_bag, size: isSmall ? 12 : 14),
+                                        SizedBox(width: 3),
+                                        Text(
+                                          "Buy",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: isSmall ? 10 : 12,
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
                             ],
-                          )
+                          ),
                         ],
                       ),
                     ),
@@ -1022,7 +1047,7 @@ final List<String> sliderImages = [
     } else if (isTablet) {
       gridCount = 3;
     } else {
-      gridCount = 5;
+      gridCount = 4;
     }
     
     final bool isCardSmall = isSmartwatch || isVerySmall;
@@ -1031,13 +1056,11 @@ final List<String> sliderImages = [
     int cartCount = cartItems.fold(0, (sum, i) => sum + i.quantity);
 
     return Scaffold(
-      // ✅ ADD SCAFFOLD KEY
       key: _scaffoldKey,
       backgroundColor: lightGrey,
       appBar: AppBar(
         elevation: 2,
         backgroundColor: primaryIndigo,
-        // ✅ FIXED: Show menu icon on mobile
         leading: width < 600
             ? IconButton(
                 icon: Icon(Icons.menu, color: Colors.white),
@@ -1063,7 +1086,6 @@ final List<String> sliderImages = [
           ],
         ),
         actions: [
-          // ✅ Desktop navigation
           if (width >= 600) ...[
             navButton(
               Icons.shopping_cart,
@@ -1127,7 +1149,6 @@ final List<String> sliderImages = [
         ],
       ),
       
-      // ✅ MOBILE DRAWER
       drawer: width < 600
           ? Drawer(
               backgroundColor: white,
@@ -1165,8 +1186,9 @@ final List<String> sliderImages = [
                             ),
                           ),
                           SizedBox(height: 4),
+                          // ✅ FIXED: Use login username
                           Text(
-                            widget.username,
+                            _loginUsername,
                             style: TextStyle(color: Colors.white70, fontSize: 14),
                           ),
                         ],
@@ -1294,14 +1316,15 @@ final List<String> sliderImages = [
                   children: [
                     heroSlider(isCardSmall),
                     
+                    // ✅ FIXED: Use login username only
                     Padding(
                       padding: EdgeInsets.only(bottom: isSmartwatch ? 8 : 12),
                       child: Text(
                         isSmartwatch
-                            ? "Hi, ${widget.username}!"
+                            ? "Hi, $_loginUsername!"
                             : isVerySmall
-                                ? "Hello, ${widget.username}!"
-                                : "Hello, welcome back ${widget.username}! 👋",
+                                ? "Hello, $_loginUsername!"
+                                : "Hello, welcome back $_loginUsername! 👋",
                         style: TextStyle(
                           fontSize: isSmartwatch ? 14 : isVerySmall ? 16 : 18,
                           fontWeight: FontWeight.bold,
@@ -1417,6 +1440,7 @@ final List<String> sliderImages = [
                         ),
                       ),
                     
+                    // ✅ FIXED: Taller aspect ratio for better button visibility
                     GridView.builder(
                       physics: NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
@@ -1425,7 +1449,7 @@ final List<String> sliderImages = [
                         crossAxisCount: gridCount,
                         mainAxisSpacing: isSmartwatch ? 4 : 12,
                         crossAxisSpacing: isSmartwatch ? 4 : 12,
-                        childAspectRatio: isSmartwatch ? 0.55 : isVerySmall ? 0.6 : 0.65,
+                        childAspectRatio: isSmartwatch ? 0.52 : isVerySmall ? 0.56 : 0.60,  // ✅ Lower = Taller cards
                       ),
                       itemBuilder: (_, index) => buildProductCard(products[index], isCardSmall),
                     ),

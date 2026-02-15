@@ -120,20 +120,32 @@ class _ReviewSubmissionDialogState extends State<ReviewSubmissionDialog> {
     }
   }
 
+  // ✅ FIXED: Mobile-friendly star rating that doesn't overflow
   Widget _buildStarRating() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 600;
+    
+    // ✅ Responsive star size - smaller on mobile
+    final starSize = isMobile ? 32.0 : 40.0;
+    final starSpacing = isMobile ? 4.0 : 8.0;
+    
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
       children: List.generate(5, (index) {
         final starNumber = index + 1;
-        return IconButton(
-          icon: Icon(
-            starNumber <= _rating ? Icons.star : Icons.star_border,
-            color: starNumber <= _rating ? Colors.amber : Colors.grey,
-            size: 40,
+        return Padding(
+          padding: EdgeInsets.symmetric(horizontal: starSpacing / 2),
+          child: GestureDetector(
+            onTap: () {
+              setState(() => _rating = starNumber);
+            },
+            child: Icon(
+              starNumber <= _rating ? Icons.star : Icons.star_border,
+              color: starNumber <= _rating ? Colors.amber : Colors.grey,
+              size: starSize,
+            ),
           ),
-          onPressed: () {
-            setState(() => _rating = starNumber);
-          },
         );
       }),
     );
@@ -142,13 +154,21 @@ class _ReviewSubmissionDialogState extends State<ReviewSubmissionDialog> {
   @override
   Widget build(BuildContext context) {
     final isEditing = widget.existingReviewId != null;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 600;
     
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      insetPadding: EdgeInsets.symmetric(
+        horizontal: isMobile ? 16 : 40,
+        vertical: 24,
+      ),
       child: SingleChildScrollView(
         child: Container(
-          width: 400,
-          padding: const EdgeInsets.all(24),
+          constraints: BoxConstraints(
+            maxWidth: isMobile ? screenWidth - 32 : 400,
+          ),
+          padding: EdgeInsets.all(isMobile ? 20 : 24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -160,8 +180,8 @@ class _ReviewSubmissionDialogState extends State<ReviewSubmissionDialog> {
                   Expanded(
                     child: Text(
                       isEditing ? 'Edit Review' : 'Write a Review',
-                      style: const TextStyle(
-                        fontSize: 20,
+                      style: TextStyle(
+                        fontSize: isMobile ? 18 : 20,
                         fontWeight: FontWeight.bold,
                         color: Colors.indigo,
                       ),
@@ -170,76 +190,92 @@ class _ReviewSubmissionDialogState extends State<ReviewSubmissionDialog> {
                   IconButton(
                     icon: const Icon(Icons.close),
                     onPressed: () => Navigator.pop(context),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
                   ),
                 ],
               ),
               
-              const SizedBox(height: 8),
+              SizedBox(height: isMobile ? 6 : 8),
               
               // Product name
               Text(
                 widget.productName,
-                style: const TextStyle(
-                  fontSize: 14,
+                style: TextStyle(
+                  fontSize: isMobile ? 13 : 14,
                   color: Colors.grey,
                 ),
               ),
               
-              const SizedBox(height: 24),
+              SizedBox(height: isMobile ? 20 : 24),
               
               // Star rating
-              const Text(
+              Text(
                 'Your Rating',
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: isMobile ? 15 : 16,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: isMobile ? 10 : 12),
               _buildStarRating(),
               
-              const SizedBox(height: 24),
+              SizedBox(height: isMobile ? 20 : 24),
               
               // Title field (optional)
               TextField(
                 controller: _titleController,
+                style: TextStyle(fontSize: isMobile ? 14 : 16),
                 decoration: InputDecoration(
                   labelText: 'Review Title (Optional)',
+                  labelStyle: TextStyle(fontSize: isMobile ? 13 : 14),
                   hintText: 'Summarize your review',
+                  hintStyle: TextStyle(fontSize: isMobile ? 13 : 14),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                   filled: true,
                   fillColor: Colors.grey.shade100,
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: isMobile ? 12 : 16,
+                    vertical: isMobile ? 12 : 16,
+                  ),
                 ),
                 maxLength: 200,
               ),
               
-              const SizedBox(height: 16),
+              SizedBox(height: isMobile ? 12 : 16),
               
               // Comment field (required)
               TextField(
                 controller: _commentController,
+                style: TextStyle(fontSize: isMobile ? 14 : 16),
                 decoration: InputDecoration(
                   labelText: 'Your Review *',
+                  labelStyle: TextStyle(fontSize: isMobile ? 13 : 14),
                   hintText: 'Share your experience with this product',
+                  hintStyle: TextStyle(fontSize: isMobile ? 13 : 14),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                   filled: true,
                   fillColor: Colors.grey.shade100,
                   alignLabelWithHint: true,
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: isMobile ? 12 : 16,
+                    vertical: isMobile ? 12 : 16,
+                  ),
                 ),
-                maxLines: 5,
+                maxLines: isMobile ? 4 : 5,
                 maxLength: 1000,
               ),
               
-              const SizedBox(height: 24),
+              SizedBox(height: isMobile ? 20 : 24),
               
               // Submit button
               SizedBox(
                 width: double.infinity,
-                height: 48,
+                height: isMobile ? 44 : 48,
                 child: ElevatedButton(
                   onPressed: _isSubmitting ? null : _submitReview,
                   style: ElevatedButton.styleFrom(
@@ -250,18 +286,18 @@ class _ReviewSubmissionDialogState extends State<ReviewSubmissionDialog> {
                     ),
                   ),
                   child: _isSubmitting
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
+                      ? SizedBox(
+                          height: isMobile ? 18 : 20,
+                          width: isMobile ? 18 : 20,
+                          child: const CircularProgressIndicator(
                             color: Colors.white,
                             strokeWidth: 2,
                           ),
                         )
                       : Text(
                           isEditing ? 'Update Review' : 'Submit Review',
-                          style: const TextStyle(
-                            fontSize: 16,
+                          style: TextStyle(
+                            fontSize: isMobile ? 15 : 16,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
