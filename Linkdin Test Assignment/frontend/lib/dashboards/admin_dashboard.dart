@@ -1,10 +1,12 @@
-// lib/dashboards/admin_dashboard.dart (FIXED VERSION)
+// lib/dashboards/admin_dashboard.dart (FINAL VERSION)
 
 // ignore_for_file: use_build_context_synchronously
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../models/product.dart';
 import '../services/api_service.dart';
@@ -55,6 +57,10 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   int notificationCount = 0;
   Timer? _orderCountTimer;
   Timer? _notificationTimer;
+
+  // Image picker
+  final ImagePicker _imagePicker = ImagePicker();
+  XFile? _selectedImage;
 
   static const Color primaryIndigo = Color(0xFF3F51B5);
   static const Color accentGreen   = Color(0xFF4CAF50);
@@ -219,6 +225,89 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     });
   }
 
+  // Image picker method
+  Future<void> _pickImage(TextEditingController imageCtrl) async {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_library, color: primaryIndigo),
+              title: const Text('Choose from Gallery'),
+              onTap: () async {
+                Navigator.pop(context);
+                try {
+                  final XFile? image = await _imagePicker.pickImage(
+                    source: ImageSource.gallery,
+                    imageQuality: 70,
+                  );
+                  if (image != null) {
+                    setState(() {
+                      _selectedImage = image;
+                      // For demo, we'll set the path - in production you'd upload to server
+                      imageCtrl.text = image.path;
+                      TopPopup.show(
+                        context,
+                        "Image selected",
+                        accentGreen,
+                      );
+                    });
+                  }
+                } catch (e) {
+                  TopPopup.show(context, "Error picking image", Colors.red);
+                }
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_camera, color: primaryIndigo),
+              title: const Text('Take a Photo'),
+              onTap: () async {
+                Navigator.pop(context);
+                try {
+                  final XFile? image = await _imagePicker.pickImage(
+                    source: ImageSource.camera,
+                    imageQuality: 70,
+                  );
+                  if (image != null) {
+                    setState(() {
+                      _selectedImage = image;
+                      imageCtrl.text = image.path;
+                      TopPopup.show(
+                        context,
+                        "Photo captured",
+                        accentGreen,
+                      );
+                    });
+                  }
+                } catch (e) {
+                  TopPopup.show(context, "Error taking photo", Colors.red);
+                }
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.link, color: primaryIndigo),
+              title: const Text('Enter URL'),
+              onTap: () {
+                Navigator.pop(context);
+                // Keep existing URL input
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.cancel, color: Colors.red),
+              title: const Text('Cancel'),
+              onTap: () => Navigator.pop(context),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   void showProductModal(Product? product, {bool readOnly = false}) {
     final w       = MediaQuery.of(context).size.width;
     final isSmall = w < 600;
@@ -227,6 +316,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     final priceCtrl = TextEditingController(text: product?.price.toString() ?? '');
     final stockCtrl = TextEditingController(text: product?.stock.toString() ?? '');
     final imageCtrl = TextEditingController(text: product?.image ?? '');
+    
+    // Reset selected image
+    _selectedImage = null;
 
     showDialog(
       context: context,
@@ -234,87 +326,181 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
         backgroundColor: white,
         insetPadding: EdgeInsets.symmetric(horizontal: isSmall ? 12 : 16, vertical: 24),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: StatefulBuilder(builder: (ctx, setModal) => SingleChildScrollView(
-          child: Container(
-            constraints: const BoxConstraints(maxWidth: 400),
-            padding: EdgeInsets.all(isSmall ? 16 : 20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(child: Text(
-                      product == null ? "Add Product" : readOnly ? "View Product" : "Edit Product",
-                      style: TextStyle(fontSize: isSmall ? 18 : 20, fontWeight: FontWeight.bold, color: primaryIndigo),
-                    )),
-                    IconButton(onPressed: () => Navigator.pop(ctx), icon: const Icon(Icons.close, color: darkGrey),
-                        padding: EdgeInsets.zero, constraints: const BoxConstraints()),
-                  ],
-                ),
-                SizedBox(height: isSmall ? 12 : 16),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Container(
-                    height: isSmall ? 120 : 140, color: lightGrey,
-                    child: imageCtrl.text.isNotEmpty
-                        ? Image.network(imageCtrl.text, fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => const Icon(Icons.shopping_bag_outlined, size: 60, color: mediumGrey))
-                        : const Icon(Icons.shopping_bag_outlined, size: 80, color: mediumGrey),
-                  ),
-                ),
-                SizedBox(height: isSmall ? 16 : 20),
-                buildTextField(nameCtrl,  "Product Name",   readOnly, isSmall),
-                SizedBox(height: isSmall ? 10 : 12),
-                buildTextField(descCtrl,  "Description",    readOnly, isSmall, maxLines: 3),
-                SizedBox(height: isSmall ? 10 : 12),
-                buildTextField(priceCtrl, "Price (Rs)",     readOnly, isSmall, keyboard: TextInputType.number),
-                SizedBox(height: isSmall ? 10 : 12),
-                buildTextField(stockCtrl, "Stock Quantity", readOnly, isSmall, keyboard: TextInputType.number),
-                SizedBox(height: isSmall ? 10 : 12),
-                buildTextField(imageCtrl, "Image URL",      readOnly, isSmall),
-                SizedBox(height: isSmall ? 20 : 24),
-                if (!readOnly) Row(children: [
-                  Expanded(
-                    child: hoverButton(
-                      color: primaryIndigo,
-                      padding: EdgeInsets.symmetric(vertical: isSmall ? 12 : 14),
-                      onTap: () async {
-                        if (nameCtrl.text.isEmpty) { TopPopup.show(ctx, "Name is required", Colors.red); return; }
-                        final np = Product(
-                          id: product?.id, name: nameCtrl.text.trim(), description: descCtrl.text.trim(),
-                          price: double.tryParse(priceCtrl.text) ?? 0, stock: int.tryParse(stockCtrl.text) ?? 0,
-                          image: imageCtrl.text.trim().isEmpty ? null : imageCtrl.text.trim(),
-                        );
-                        final ok = product == null
-                            ? await ApiService.addProduct(np, token: widget.token)
-                            : await ApiService.updateProduct(np, token: widget.token);
-                        if (!mounted) return;
-                        if (ok) { Navigator.pop(ctx); fetchProducts(); TopPopup.show(context, product == null ? "Product added!" : "Product updated!", accentGreen); }
-                        else { TopPopup.show(ctx, "Operation failed", Colors.red); }
-                      },
-                      child: Text(product == null ? "Add Product" : "Update Product",
-                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: isSmall ? 14 : 16)),
-                    ),
-                  ),
-                  SizedBox(width: isSmall ? 10 : 12),
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () => Navigator.pop(ctx),
-                      style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: mediumGrey),
-                        padding: EdgeInsets.symmetric(vertical: isSmall ? 12 : 14),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        child: StatefulBuilder(
+          builder: (ctx, setModal) => SingleChildScrollView(
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 400),
+              padding: EdgeInsets.all(isSmall ? 16 : 20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(child: Text(
+                        product == null ? "Add Product" : readOnly ? "View Product" : "Edit Product",
+                        style: TextStyle(fontSize: isSmall ? 18 : 20, fontWeight: FontWeight.bold, color: primaryIndigo),
+                      )),
+                      IconButton(
+                        onPressed: () => Navigator.pop(ctx), 
+                        icon: const Icon(Icons.close, color: darkGrey),
+                        padding: EdgeInsets.zero, 
+                        constraints: const BoxConstraints()
                       ),
-                      child: Text("Cancel", style: TextStyle(color: darkGrey, fontSize: isSmall ? 14 : 16)),
+                    ],
+                  ),
+                  SizedBox(height: isSmall ? 12 : 16),
+                  
+                  // Image with picker option
+                  GestureDetector(
+                    onTap: readOnly ? null : () => _pickImage(imageCtrl),
+                    child: Stack(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Container(
+                            height: isSmall ? 120 : 140,
+                            width: double.infinity,
+                            color: lightGrey,
+                            child: _selectedImage != null
+                                ? (kIsWeb
+                                    ? Image.network(
+                                        _selectedImage!.path,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (_, __, ___) => const Icon(
+                                            Icons.shopping_bag_outlined,
+                                            size: 60,
+                                            color: mediumGrey),
+                                      )
+                                    : Image.file(
+                                        File(_selectedImage!.path),
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (_, __, ___) => const Icon(
+                                            Icons.shopping_bag_outlined,
+                                            size: 60,
+                                            color: mediumGrey),
+                                      ))
+                                : (imageCtrl.text.isNotEmpty
+                                    ? Image.network(
+                                        imageCtrl.text,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (_, __, ___) => const Icon(
+                                            Icons.shopping_bag_outlined,
+                                            size: 60,
+                                            color: mediumGrey),
+                                      )
+                                    : const Icon(Icons.shopping_bag_outlined,
+                                        size: 80, color: mediumGrey)),
+                          ),
+                        ),
+                        if (!readOnly)
+                          Positioned(
+                            bottom: 8,
+                            right: 8,
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: primaryIndigo.withOpacity(0.8),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.camera_alt,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                   ),
-                ]),
-              ],
+                  
+                  // Show selected image name if any
+                  if (_selectedImage != null) ...[
+                    SizedBox(height: isSmall ? 8 : 10),
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: lightGrey,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.check_circle,
+                              color: accentGreen, size: 16),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              _selectedImage!.name,
+                              style: const TextStyle(fontSize: 12),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                  
+                  SizedBox(height: isSmall ? 16 : 20),
+                  buildTextField(nameCtrl,  "Product Name",   readOnly, isSmall),
+                  SizedBox(height: isSmall ? 10 : 12),
+                  buildTextField(descCtrl,  "Description",    readOnly, isSmall, maxLines: 3),
+                  SizedBox(height: isSmall ? 10 : 12),
+                  buildTextField(priceCtrl, "Price (Rs)",     readOnly, isSmall, keyboard: TextInputType.number),
+                  SizedBox(height: isSmall ? 10 : 12),
+                  buildTextField(stockCtrl, "Stock Quantity", readOnly, isSmall, keyboard: TextInputType.number),
+                  SizedBox(height: isSmall ? 10 : 12),
+                  buildTextField(imageCtrl, "Image URL",      readOnly, isSmall),
+                  SizedBox(height: isSmall ? 20 : 24),
+                  
+                  if (!readOnly) Row(children: [
+                    Expanded(
+                      child: hoverButton(
+                        color: primaryIndigo,
+                        padding: EdgeInsets.symmetric(vertical: isSmall ? 12 : 14),
+                        onTap: () async {
+                          if (nameCtrl.text.isEmpty) { TopPopup.show(ctx, "Name is required", Colors.red); return; }
+                          final np = Product(
+                            id: product?.id, 
+                            name: nameCtrl.text.trim(), 
+                            description: descCtrl.text.trim(),
+                            price: double.tryParse(priceCtrl.text) ?? 0, 
+                            stock: int.tryParse(stockCtrl.text) ?? 0,
+                            image: _selectedImage?.path ?? (imageCtrl.text.trim().isEmpty ? null : imageCtrl.text.trim()),
+                          );
+                          final ok = product == null
+                              ? await ApiService.addProduct(np, token: widget.token)
+                              : await ApiService.updateProduct(np, token: widget.token);
+                          if (!mounted) return;
+                          if (ok) { 
+                            Navigator.pop(ctx); 
+                            fetchProducts(); 
+                            TopPopup.show(context, product == null ? "Product added!" : "Product updated!", accentGreen); 
+                          }
+                          else { TopPopup.show(ctx, "Operation failed", Colors.red); }
+                        },
+                        child: Text(product == null ? "Add Product" : "Update Product",
+                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: isSmall ? 14 : 16)),
+                      ),
+                    ),
+                    SizedBox(width: isSmall ? 10 : 12),
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.pop(ctx),
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(color: mediumGrey),
+                          padding: EdgeInsets.symmetric(vertical: isSmall ? 12 : 14),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        ),
+                        child: Text("Cancel", style: TextStyle(color: darkGrey, fontSize: isSmall ? 14 : 16)),
+                      ),
+                    ),
+                  ]),
+                ],
+              ),
             ),
           ),
-        )),
+        ),
       ),
     );
   }
@@ -357,7 +543,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     );
   }
 
-  // ✅ FIXED PRODUCT CARD - Larger, responsive, all buttons visible
+  // ✅ UPDATED PRODUCT CARD - Review button on top, Edit+Delete in one row below
   Widget buildProductCard(Product product, bool isSmall) {
     return StatefulBuilder(builder: (ctx, setCard) {
       bool hovered = false;
@@ -499,13 +685,13 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
 
                     const Spacer(),
 
-                    // Action Buttons
+                    // Action Buttons - REVIEWS ON TOP, EDIT+DELETE IN ROW BELOW
                     Padding(
                       padding: EdgeInsets.fromLTRB(pad, 4, pad, pad),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          // Reviews Button
+                          // 1. REVIEWS BUTTON (full width)
                           SizedBox(
                             width: double.infinity,
                             child: Material(
@@ -539,7 +725,6 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                                       const SizedBox(width: 4),
                                       Flexible(
                                         child: Text(
-                                          // ✅ FIXED: Changed reviewCount to product.reviewCount
                                           isUltraCompact ? "${product.reviewCount}" : "Reviews (${product.reviewCount})",
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
@@ -559,231 +744,118 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                           
                           const SizedBox(height: 6),
 
-                          // Edit + Delete buttons - stacked for ultra compact
-                          if (isUltraCompact) ...[
-                            SizedBox(
-                              width: double.infinity,
-                              child: Material(
-                                color: primaryIndigo,
-                                borderRadius: BorderRadius.circular(8),
-                                child: InkWell(
-                                  onTap: () => showProductModal(product),
+                          // 2. EDIT + DELETE BUTTONS IN ONE ROW (always)
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Material(
+                                  color: primaryIndigo,
                                   borderRadius: BorderRadius.circular(8),
-                                  child: Padding(
-                                    padding: EdgeInsets.symmetric(vertical: btnPad),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Icon(Icons.edit, color: Colors.white, size: iconSz),
-                                        const SizedBox(width: 3),
-                                        Text(
-                                          "Edit",
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: btnSz,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            SizedBox(
-                              width: double.infinity,
-                              child: Material(
-                                color: Colors.red,
-                                borderRadius: BorderRadius.circular(8),
-                                child: InkWell(
-                                  onTap: () async {
-                                    final confirm = await showDialog<bool>(
-                                      context: context,
-                                      builder: (_) => AlertDialog(
-                                        backgroundColor: white,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(16),
-                                        ),
-                                        title: const Text(
-                                          "Confirm Delete",
-                                          style: TextStyle(
-                                            color: primaryIndigo,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        content: Text(
-                                          'Delete "${product.name}"?',
-                                          style: const TextStyle(color: darkGrey),
-                                        ),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () => Navigator.pop(context, false),
-                                            child: const Text(
-                                              "Cancel",
-                                              style: TextStyle(color: mediumGrey),
+                                  child: InkWell(
+                                    onTap: () => showProductModal(product),
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Padding(
+                                      padding: EdgeInsets.symmetric(vertical: btnPad),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Icon(Icons.edit, color: Colors.white, size: iconSz),
+                                          const SizedBox(width: 3),
+                                          Text(
+                                            "Edit",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: btnSz,
                                             ),
-                                          ),
-                                          ElevatedButton(
-                                            onPressed: () => Navigator.pop(context, true),
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: Colors.red,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(8),
-                                              ),
-                                            ),
-                                            child: const Text("Delete"),
                                           ),
                                         ],
                                       ),
-                                    );
-                                    if (confirm != true) return;
-                                    final ok = await ApiService.deleteProduct(
-                                      product.id!,
-                                      token: widget.token,
-                                    );
-                                    if (!mounted) return;
-                                    if (ok) {
-                                      fetchProducts();
-                                      TopPopup.show(context, "Product deleted!", Colors.red);
-                                    }
-                                  },
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: Padding(
-                                    padding: EdgeInsets.symmetric(vertical: btnPad),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Icon(Icons.delete, color: Colors.white, size: iconSz),
-                                        const SizedBox(width: 3),
-                                        Text(
-                                          "Delete",
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: btnSz,
-                                          ),
-                                        ),
-                                      ],
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ] else ...[
-                            // Row layout for normal screens
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Material(
-                                    color: primaryIndigo,
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: InkWell(
-                                      onTap: () => showProductModal(product),
-                                      borderRadius: BorderRadius.circular(8),
-                                      child: Padding(
-                                        padding: EdgeInsets.symmetric(vertical: btnPad),
-                                        child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            Icon(Icons.edit, color: Colors.white, size: iconSz),
-                                            const SizedBox(width: 3),
-                                            Text(
-                                              "Edit",
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: btnSz,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 6),
-                                Expanded(
-                                  child: Material(
-                                    color: Colors.red,
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: InkWell(
-                                      onTap: () async {
-                                        final confirm = await showDialog<bool>(
-                                          context: context,
-                                          builder: (_) => AlertDialog(
-                                            backgroundColor: white,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(16),
-                                            ),
-                                            title: const Text(
-                                              "Confirm Delete",
-                                              style: TextStyle(
-                                                color: primaryIndigo,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            content: Text(
-                                              'Delete "${product.name}"?',
-                                              style: const TextStyle(color: darkGrey),
-                                            ),
-                                            actions: [
-                                              TextButton(
-                                                onPressed: () => Navigator.pop(context, false),
-                                                child: const Text(
-                                                  "Cancel",
-                                                  style: TextStyle(color: mediumGrey),
-                                                ),
-                                              ),
-                                              ElevatedButton(
-                                                onPressed: () => Navigator.pop(context, true),
-                                                style: ElevatedButton.styleFrom(
-                                                  backgroundColor: Colors.red,
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius: BorderRadius.circular(8),
-                                                  ),
-                                                ),
-                                                child: const Text("Delete"),
-                                              ),
-                                            ],
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: Material(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: InkWell(
+                                    onTap: () async {
+                                      final confirm = await showDialog<bool>(
+                                        context: context,
+                                        builder: (_) => AlertDialog(
+                                          backgroundColor: white,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(16),
                                           ),
-                                        );
-                                        if (confirm != true) return;
-                                        final ok = await ApiService.deleteProduct(
-                                          product.id!,
-                                          token: widget.token,
-                                        );
-                                        if (!mounted) return;
-                                        if (ok) {
-                                          fetchProducts();
-                                          TopPopup.show(context, "Product deleted!", Colors.red);
-                                        }
-                                      },
-                                      borderRadius: BorderRadius.circular(8),
-                                      child: Padding(
-                                        padding: EdgeInsets.symmetric(vertical: btnPad),
-                                        child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            Icon(Icons.delete, color: Colors.white, size: iconSz),
-                                            const SizedBox(width: 3),
-                                            Text(
-                                              "Delete",
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: btnSz,
+                                          title: const Text(
+                                            "Confirm Delete",
+                                            style: TextStyle(
+                                              color: primaryIndigo,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          content: Text(
+                                            'Delete "${product.name}"?',
+                                            style: const TextStyle(color: darkGrey),
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () => Navigator.pop(context, false),
+                                              child: const Text(
+                                                "Cancel",
+                                                style: TextStyle(color: mediumGrey),
                                               ),
+                                            ),
+                                            ElevatedButton(
+                                              onPressed: () => Navigator.pop(context, true),
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: Colors.red,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(8),
+                                                ),
+                                              ),
+                                              child: const Text("Delete"),
                                             ),
                                           ],
                                         ),
+                                      );
+                                      if (confirm != true) return;
+                                      final ok = await ApiService.deleteProduct(
+                                        product.id!,
+                                        token: widget.token,
+                                      );
+                                      if (!mounted) return;
+                                      if (ok) {
+                                        fetchProducts();
+                                        TopPopup.show(context, "Product deleted!", Colors.red);
+                                      }
+                                    },
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Padding(
+                                      padding: EdgeInsets.symmetric(vertical: btnPad),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Icon(Icons.delete, color: Colors.white, size: iconSz),
+                                          const SizedBox(width: 3),
+                                          Text(
+                                            "Delete",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: btnSz,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ),
                                 ),
-                              ],
-                            ),
-                          ],
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ),
@@ -1012,7 +1084,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     final bool isTablet     = w >= 600 && w < 900;
     final bool isCardSmall  = isSmartwatch || isVerySmall;
     
-    // ✅ IMPROVED: Better aspect ratios for larger cards
+    // Aspect ratios for responsive grid
     final int  prodCols     = isSmartwatch || isVerySmall ? 1 : isSmall ? 2 : isTablet ? 3 : 5;
     final double prodAspect = isSmartwatch ? 0.55 : isVerySmall ? 0.6 : isSmall ? 0.65 : 0.7;
     final double outerPad   = isSmartwatch ? 4 : isVerySmall ? 8 : 12;
