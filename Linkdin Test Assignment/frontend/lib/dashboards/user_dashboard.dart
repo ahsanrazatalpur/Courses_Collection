@@ -60,12 +60,19 @@ class _UserDashboardState extends State<UserDashboard> {
   static const Color darkGrey = Color(0xFF424242);
   static const Color borderGrey = Color(0xFFE0E0E0);
 
-  final List<String> sliderImages = [
-    "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?q=80&w=1600&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?q=80&w=1600&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1607083206968-13611e3d76db?q=80&w=1600&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1523381294911-8d3cead13475?q=80&w=1600&auto=format&fit=crop",
-  ];
+final List<String> sliderImages = [
+  // Colorful shopping bags
+  "https://images.unsplash.com/photo-1607082350899-7e105aa886ae?q=80&w=1600&auto=format&fit=crop",
+  
+  // Fashion store interior
+  "https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1600&auto=format&fit=crop",
+  
+  // Online shopping with credit card
+  "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=1600&auto=format&fit=crop",
+  
+  // Shopping concept with bags
+  "https://images.unsplash.com/photo-1607083206325-caf1edba7a0f?q=80&w=1600&auto=format&fit=crop",
+];
 
   final PageController _pageController = PageController();
 
