@@ -26,7 +26,7 @@ class _LoginPageState extends State<LoginPage> {
   bool _obscurePassword = true;
 
   String get baseUrl {
-    return "https://ahsanrazatalpur.pythonanywhere.com";
+    return "http://ahsanrazatalpur.pythonanywhere.com";
   }
 
   Future<void> login() async {

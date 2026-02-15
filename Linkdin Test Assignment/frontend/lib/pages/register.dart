@@ -28,7 +28,7 @@ class _RegisterPageState extends State<RegisterPage> {
   bool _obscurePassword = true;
 
   String get baseUrl {
-    return "https://ahsanrazatalpur.pythonanywhere.com";
+    return "http://ahsanrazatalpur.pythonanywhere.com";
   }
 
   Future<void> register() async {
