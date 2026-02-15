@@ -1,5 +1,5 @@
 // lib/dashboards/admin_dashboard.dart
-// ✅ FIXED: Correct card counts, no overflow/ribbon on any screen size
+// ✅ ENHANCED: Always show reviews, buttons never cut off
 
 // ignore_for_file: use_build_context_synchronously
 import 'dart:async';
@@ -21,12 +21,6 @@ import '../pages/product_reviews_page.dart';
 import '../widgets/footer_widget.dart';
 import 'package:csv/csv.dart';
 
-// ═══════════════════════════════════════════════════════════════════════════
-// STOCK THRESHOLD — single source of truth used by cards, badges, filters
-//   stock == 0              → Out of Stock  (red)
-//   0 < stock < threshold   → Low Stock     (orange)
-//   stock >= threshold      → In Stock      (green)
-// ═══════════════════════════════════════════════════════════════════════════
 const int kLowStockThreshold = 10;
 
 class AdminDashboardPage extends StatefulWidget {
@@ -63,7 +57,6 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   Timer? _orderCountTimer;
   Timer? _notificationTimer;
 
-  // ─── Color Palette ────────────────────────────────────────────────────────
   static const Color primaryIndigo = Color(0xFF3F51B5);
   static const Color accentGreen   = Color(0xFF4CAF50);
   static const Color white         = Color(0xFFFFFFFF);
@@ -90,26 +83,6 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     super.dispose();
   }
 
-  // ═══════════════════════════════════════════════════════════════════════════
-  // ✅ FIXED ANALYTICS GETTERS
-  //
-  // WHY ALL CARDS SHOWED "9":
-  //   Old code: _inStock = products.where((p) => p.stock > 0).length
-  //   With 9 products all having stock > 0 → inStock = 9
-  //   _totalProducts also = 9, _outOfStock = 0, _lowStock = 0
-  //   Revenue was the only different value but still appeared wrong.
-  //
-  // WHY LOW STOCK WAS WRONG:
-  //   Dashboard used stock < 10 threshold but stock badge used stock <= 5.
-  //   These were inconsistent — the card count never matched badge display.
-  //
-  // FIX: kLowStockThreshold = 10 used EVERYWHERE (cards, badges, filter).
-  //   _totalProducts = products.length                      (all products)
-  //   _inStock       = stock >= 10                          (healthy stock)
-  //   _lowStock      = 0 < stock < 10                       (warning zone)
-  //   _outOfStock    = stock == 0                           (none left)
-  //   _revenue       = sum of price * stock (inventory value)
-  // ═══════════════════════════════════════════════════════════════════════════
   int    get _totalProducts => products.length;
   int    get _inStock       => products.where((p) => p.stock >= kLowStockThreshold).length;
   int    get _lowStock      => products.where((p) => p.stock > 0 && p.stock < kLowStockThreshold).length;
@@ -145,7 +118,6 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     }
   }
 
-  // ✅ Filter logic also uses kLowStockThreshold
   void applyFilters() {
     filteredProducts = products.where((p) {
       final matchSearch = p.name.toLowerCase().contains(searchQuery.toLowerCase());
@@ -365,7 +337,6 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     );
   }
 
-  // ✅ Stock badge now uses kLowStockThreshold — matches card counts exactly
   Widget _buildStockBadge(Product product) {
     final Color color;
     final IconData icon;
@@ -387,10 +358,11 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     );
   }
 
+  // ✅ ENHANCED: Always show reviews, better button layout
   Widget buildProductCard(Product product, bool isSmall) {
     final imgH   = isSmall ? 90.0  : 120.0;
     final pad    = isSmall ? 6.0   : 10.0;
-    final btnPad = isSmall ? 4.0   : 6.0;
+    final btnPad = isSmall ? 6.0   : 8.0;
     final nameSz = isSmall ? 11.0  : 13.0;
     final prSz   = isSmall ? 11.0  : 13.0;
     final ratSz  = isSmall ? 9.0   : 10.0;
@@ -418,6 +390,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisSize: MainAxisSize.min,
               children: [
+                // Image with stock badge
                 Stack(children: [
                   SizedBox(
                     height: imgH, width: double.infinity,
@@ -430,6 +403,8 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                   ),
                   Positioned(top: 6, right: 6, child: _buildStockBadge(product)),
                 ]),
+                
+                // Product info
                 Padding(
                   padding: EdgeInsets.fromLTRB(pad, pad * 0.6, pad, 0),
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
@@ -438,16 +413,30 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                     const SizedBox(height: 2),
                     Text("Rs ${product.price}", maxLines: 1, overflow: TextOverflow.ellipsis,
                         style: TextStyle(color: primaryIndigo, fontWeight: FontWeight.bold, fontSize: prSz)),
-                    if (product.reviewCount > 0) ...[
-                      const SizedBox(height: 2),
-                      Row(mainAxisSize: MainAxisSize.min, children: [
-                        Icon(Icons.star, size: ratSz + 1, color: Colors.amber),
-                        const SizedBox(width: 2),
-                        Flexible(child: Text("${product.averageRating} (${product.reviewCount})",
-                            maxLines: 1, overflow: TextOverflow.ellipsis,
-                            style: TextStyle(fontSize: ratSz, color: mediumGrey))),
-                      ]),
-                    ],
+                    
+                    // ✅ ALWAYS show review count
+                    const SizedBox(height: 2),
+                    Row(mainAxisSize: MainAxisSize.min, children: [
+                      Icon(
+                        product.reviewCount > 0 ? Icons.star : Icons.star_outline,
+                        size: ratSz + 1,
+                        color: product.reviewCount > 0 ? Colors.amber : mediumGrey,
+                      ),
+                      const SizedBox(width: 2),
+                      Flexible(child: Text(
+                        product.reviewCount > 0
+                            ? "${product.averageRating} (${product.reviewCount})"
+                            : "No reviews yet",
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: ratSz,
+                          color: product.reviewCount > 0 ? darkGrey : mediumGrey,
+                          fontStyle: product.reviewCount == 0 ? FontStyle.italic : FontStyle.normal,
+                        ),
+                      )),
+                    ]),
+                    
                     if (!isSmall && product.description.isNotEmpty) ...[
                       const SizedBox(height: 2),
                       Text(product.description, maxLines: 2, overflow: TextOverflow.ellipsis,
@@ -455,27 +444,45 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                     ],
                   ]),
                 ),
+                
+                // Action buttons
                 Padding(
                   padding: EdgeInsets.all(pad),
                   child: Column(mainAxisSize: MainAxisSize.min, children: [
-                    if (product.reviewCount > 0) ...[
-                      SizedBox(
-                        width: double.infinity,
-                        child: hoverButton(
-                          color: Colors.purple,
-                          padding: EdgeInsets.symmetric(vertical: btnPad),
-                          onTap: () => Navigator.push(context, MaterialPageRoute(
-                              builder: (_) => ProductReviewsPage(productId: product.id!, productName: product.name, token: widget.token, isAdmin: true))),
-                          child: Row(mainAxisAlignment: MainAxisAlignment.center, mainAxisSize: MainAxisSize.min, children: [
-                            Icon(Icons.rate_review, color: Colors.white, size: iconSz),
-                            const SizedBox(width: 3),
-                            Flexible(child: Text("Reviews (${product.reviewCount})", maxLines: 1, overflow: TextOverflow.ellipsis,
-                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: btnSz))),
-                          ]),
-                        ),
+                    // ✅ ALWAYS show review button
+                    SizedBox(
+                      width: double.infinity,
+                      child: hoverButton(
+                        color: product.reviewCount > 0 ? Colors.purple : Colors.grey.shade600,
+                        padding: EdgeInsets.symmetric(vertical: btnPad),
+                        onTap: () => Navigator.push(context, MaterialPageRoute(
+                            builder: (_) => ProductReviewsPage(
+                              productId: product.id!,
+                              productName: product.name,
+                              token: widget.token,
+                              isAdmin: true,
+                            ))),
+                        child: Row(mainAxisAlignment: MainAxisAlignment.center, mainAxisSize: MainAxisSize.min, children: [
+                          Icon(
+                            product.reviewCount > 0 ? Icons.rate_review : Icons.rate_review_outlined,
+                            color: Colors.white,
+                            size: iconSz,
+                          ),
+                          const SizedBox(width: 3),
+                          Flexible(child: Text(
+                            product.reviewCount > 0
+                                ? "Reviews (${product.reviewCount})"
+                                : "Reviews (0)",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: btnSz),
+                          )),
+                        ]),
                       ),
-                      const SizedBox(height: 4),
-                    ],
+                    ),
+                    const SizedBox(height: 6),
+                    
+                    // Edit and Delete buttons
                     Row(children: [
                       Expanded(
                         child: hoverButton(
@@ -519,7 +526,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                           child: Row(mainAxisAlignment: MainAxisAlignment.center, mainAxisSize: MainAxisSize.min, children: [
                             Icon(Icons.delete, color: Colors.white, size: iconSz),
                             const SizedBox(width: 3),
-                            Text("Del", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: btnSz)),
+                            Text("Delete", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: btnSz)),
                           ]),
                         ),
                       ),
@@ -534,20 +541,6 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     });
   }
 
-  // ═══════════════════════════════════════════════════════════════════════════
-  // ✅ FIXED analyticsCard — RIBBON ELIMINATED
-  //
-  // ROOT CAUSE of "bottom overflow by 5.8px" on PC:
-  //   Old: cardH = cardW * 0.50  (too short — content didn't fit)
-  //   Old: cardW was computed WITHOUT subtracting gap widths, so it was
-  //        slightly too wide → text/icon pushed beyond allocated height.
-  //
-  // FIX 1: Caller now subtracts ALL spacing before computing cardW.
-  // FIX 2: Raised PC ratio to 0.62 (content fits with room to spare).
-  // FIX 3: Card uses Clip.hardEdge + inner ClipRect — sub-pixel leaks
-  //        are hard-clipped rather than painted as overflow ribbons.
-  // FIX 4: All Text widgets have maxLines + overflow ellipsis guards.
-  // ═══════════════════════════════════════════════════════════════════════════
   Widget analyticsCard(String title, String value, IconData icon, Color color) {
     return StatefulBuilder(builder: (ctx, setCard) {
       bool hovered = false;
@@ -569,7 +562,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
             return Card(
               elevation: hovered ? 10 : 3,
               color: hovered ? color : color.withOpacity(0.95),
-              clipBehavior: Clip.hardEdge,     // ✅ hard-clips ribbon pixels
+              clipBehavior: Clip.hardEdge,
               margin: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -581,7 +574,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
               child: SizedBox.expand(
                 child: Padding(
                   padding: EdgeInsets.all(innerPad),
-                  child: ClipRect(          // ✅ second safety net — no ribbon escapes
+                  child: ClipRect(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       mainAxisSize: MainAxisSize.max,
@@ -757,7 +750,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     final bool isTablet     = w >= 600 && w < 900;
     final bool isCardSmall  = isSmartwatch || isVerySmall;
     final int  prodCols     = isSmartwatch || isVerySmall ? 1 : isSmall ? 2 : isTablet ? 3 : 5;
-    final double prodAspect = isSmartwatch ? 0.62 : isVerySmall ? 0.65 : isSmall ? 0.68 : 0.70;
+    
+    // ✅ FIXED: Increased aspect ratios to prevent button cutoff
+    final double prodAspect = isSmartwatch ? 0.58 : isVerySmall ? 0.60 : isSmall ? 0.62 : 0.65;
     final double outerPad   = isSmartwatch ? 4 : isVerySmall ? 8 : 12;
 
     return Scaffold(
@@ -808,7 +803,6 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Welcome
                   Padding(
                     padding: EdgeInsets.only(bottom: isSmartwatch ? 8 : 12),
                     child: Text(
@@ -819,30 +813,13 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                     ),
                   ),
 
-                  // ═══════════════════════════════════════════════════════
-                  // ✅ ANALYTICS CARDS — 5 cards, zero ribbon, correct counts
-                  //
-                  // CRITICAL FIX in LayoutBuilder:
-                  //   We compute cardW by SUBTRACTING all gap pixels first:
-                  //     totalGap = spacing × (cols - 1)
-                  //     cardW    = (availableWidth - totalGap) / cols
-                  //   This gives the exact pixel width each GridView cell
-                  //   gets, so childAspectRatio is perfectly accurate.
-                  //
-                  //   cardH ratios are bumped up on every breakpoint so
-                  //   content never tries to overflow its cell.
-                  // ═══════════════════════════════════════════════════════
                   LayoutBuilder(builder: (lbCtx, bc) {
                     final isTiny   = isSmartwatch || isVerySmall;
                     final spacing  = isTiny ? 4.0 : 8.0;
                     final cols     = isTiny ? 2 : isSmall ? 3 : 5;
-
-                    // ✅ FIXED: subtract all gaps before dividing
                     final cardW = (bc.maxWidth - spacing * (cols - 1)) / cols;
-
-                    // ✅ FIXED: generous height ratios — no more overflow
                     final cardH = w >= 900
-                        ? cardW * 0.62    // PC:     was 0.50, now 0.62 → ~12px breathing room
+                        ? cardW * 0.62
                         : w >= 600
                             ? cardW * 0.72
                             : isSmall
@@ -863,7 +840,6 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                       analyticsCard("Revenue",        revenueStr,        Icons.attach_money,           Colors.amber.shade700),
                     ];
 
-                    // Tablet/Desktop → GridView (exact aspect ratio)
                     if (!isTiny && !isSmall) {
                       return GridView.count(
                         shrinkWrap: true,
@@ -876,7 +852,6 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                       );
                     }
 
-                    // Phone/Tiny → Wrap (5th card auto-centres, no ribbon)
                     return Wrap(
                       spacing: spacing,
                       runSpacing: spacing,
@@ -887,7 +862,6 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
 
                   SizedBox(height: isSmartwatch ? 8 : 16),
 
-                  // Search + Filter
                   Row(children: [
                     Expanded(
                       child: TextField(
@@ -927,7 +901,6 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
 
                   SizedBox(height: isSmartwatch ? 8 : 16),
 
-                  // Product Grid
                   GridView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),

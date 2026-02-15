@@ -17,9 +17,16 @@ class User(AbstractUser):
 
     def save(self, *args, **kwargs):
         """
-        Automatically set is_staff based on role.
+        Automatically set role and is_staff.
+        If user is superuser, ensure they're admin.
         """
+        # ✅ FIX: Auto-set role to 'admin' for superusers
+        if self.is_superuser or self.is_staff:
+            self.role = 'admin'
+        
+        # Set is_staff based on role
         self.is_staff = True if self.role == 'admin' else False
+        
         super().save(*args, **kwargs)
 
     def toggle_role(self):

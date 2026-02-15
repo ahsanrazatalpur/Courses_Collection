@@ -49,6 +49,13 @@ class _LoginPageState extends State<LoginPage> {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
 
+        // ✅ DEBUG: Print what backend returns
+        debugPrint("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        debugPrint("🔍 FULL LOGIN RESPONSE: $data");
+        debugPrint("🔍 ROLE: ${data['role']}");
+        debugPrint("🔍 IS_ADMIN: ${data['is_admin']}");
+        debugPrint("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+
         // ---------------- RELIABLE DATA EXTRACTION ----------------
         final token = data['access']?.toString() ?? '';
         final username = data['username']?.toString() ?? '';
@@ -59,6 +66,12 @@ class _LoginPageState extends State<LoginPage> {
         final roleFromBackend = data['role']?.toString().toLowerCase() ?? 'user';
         final isAdmin = roleFromBackend == 'admin';
         final role = isAdmin ? 'admin' : 'user';
+
+        // ✅ DEBUG: Print computed values
+        debugPrint("🔍 roleFromBackend: $roleFromBackend");
+        debugPrint("🔍 isAdmin: $isAdmin");
+        debugPrint("🔍 role: $role");
+        debugPrint("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
         // ----------------------------------------------------------
 
         if (token.isEmpty) {
@@ -82,6 +95,8 @@ class _LoginPageState extends State<LoginPage> {
         passwordController.clear();
 
         // ---------------- NAVIGATE TO DASHBOARD ----------------
+        debugPrint("🚀 Navigating to: ${isAdmin ? 'ADMIN' : 'USER'} Dashboard");
+        
         if (!mounted) return;
         Navigator.pushReplacement(
           context,
