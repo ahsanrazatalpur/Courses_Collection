@@ -539,7 +539,8 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                                       const SizedBox(width: 4),
                                       Flexible(
                                         child: Text(
-                                          isUltraCompact ? "$reviewCount" : "Reviews (${product.reviewCount})",
+                                          // ✅ FIXED: Changed reviewCount to product.reviewCount
+                                          isUltraCompact ? "${product.reviewCount}" : "Reviews (${product.reviewCount})",
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
