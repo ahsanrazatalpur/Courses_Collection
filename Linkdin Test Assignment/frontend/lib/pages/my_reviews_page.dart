@@ -129,7 +129,7 @@ class _MyReviewsPageState extends State<MyReviewsPage> with SingleTickerProvider
     }
   }
 
-  Widget _buildStars(int rating, {double size = 18}) {
+  Widget _buildStars(int rating, {double size = 16}) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: List.generate(5, (index) {
@@ -207,10 +207,10 @@ class _MyReviewsPageState extends State<MyReviewsPage> with SingleTickerProvider
             
             SizedBox(height: isMobile ? 6 : 8),
             
-            // Rating and date
+            // Rating and date - FIXED FOR MOBILE
             Row(
               children: [
-                _buildStars(review.rating, size: isMobile ? 16 : 18),
+                _buildStars(review.rating, size: isMobile ? 14 : 16),
                 SizedBox(width: isMobile ? 6 : 8),
                 Expanded(
                   child: Text(
@@ -219,6 +219,7 @@ class _MyReviewsPageState extends State<MyReviewsPage> with SingleTickerProvider
                       fontSize: isMobile ? 11 : 12,
                       color: Colors.grey,
                     ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 if (review.isEdited)

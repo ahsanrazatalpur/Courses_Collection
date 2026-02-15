@@ -229,7 +229,7 @@ class _ProductReviewsPageState extends State<ProductReviewsPage> {
                         ],
                       ),
                       const SizedBox(height: 20),
-                      // Rating distribution
+                      // Rating distribution - FIXED FOR MOBILE
                       Column(
                         children: List.generate(5, (index) {
                           final star = 5 - index;
@@ -239,27 +239,34 @@ class _ProductReviewsPageState extends State<ProductReviewsPage> {
                               : 0;
 
                           return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 2),
+                            padding: const EdgeInsets.symmetric(vertical: 3),
                             child: Row(
                               children: [
-                                Text('$star'),
-                                const SizedBox(width: 4),
-                                const Icon(Icons.star, size: 16, color: Colors.amber),
-                                const SizedBox(width: 8),
+                                SizedBox(
+                                  width: 12,
+                                  child: Text(
+                                    '$star',
+                                    style: const TextStyle(fontSize: 12),
+                                  ),
+                                ),
+                                const SizedBox(width: 2),
+                                const Icon(Icons.star, size: 14, color: Colors.amber),
+                                const SizedBox(width: 6),
                                 Expanded(
                                   child: LinearProgressIndicator(
                                     value: percentage / 100,
                                     backgroundColor: Colors.grey.shade300,
                                     color: Colors.amber,
+                                    minHeight: 6,
                                   ),
                                 ),
-                                const SizedBox(width: 8),
+                                const SizedBox(width: 6),
                                 SizedBox(
-                                  width: 40,
+                                  width: 32,
                                   child: Text(
                                     '$percentage%',
                                     textAlign: TextAlign.right,
-                                    style: const TextStyle(fontSize: 12),
+                                    style: const TextStyle(fontSize: 11),
                                   ),
                                 ),
                               ],
