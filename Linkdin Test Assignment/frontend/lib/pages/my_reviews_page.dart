@@ -210,9 +210,9 @@ class _MyReviewsPageState extends State<MyReviewsPage> with SingleTickerProvider
             // Rating and date - FIXED FOR MOBILE
             Row(
               children: [
-                _buildStars(review.rating, size: isMobile ? 14 : 16),
-                SizedBox(width: isMobile ? 6 : 8),
-                Expanded(
+                _buildStars(review.rating, size: isMobile ? 12 : 16),
+                SizedBox(width: isMobile ? 4 : 8),
+                Flexible(
                   child: Text(
                     review.timeAgo,
                     style: TextStyle(
@@ -222,7 +222,8 @@ class _MyReviewsPageState extends State<MyReviewsPage> with SingleTickerProvider
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                if (review.isEdited)
+                if (review.isEdited) ...[
+                  SizedBox(width: isMobile ? 3 : 4),
                   Text(
                     "(edited)",
                     style: TextStyle(
@@ -231,6 +232,7 @@ class _MyReviewsPageState extends State<MyReviewsPage> with SingleTickerProvider
                       fontStyle: FontStyle.italic,
                     ),
                   ),
+                ],
               ],
             ),
             

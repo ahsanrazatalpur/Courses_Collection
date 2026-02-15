@@ -1,5 +1,5 @@
 // lib/dashboards/admin_dashboard.dart
-// ✅ ENHANCED: Always show reviews, buttons never cut off
+// ✅ ENHANCED: Always show reviews, buttons never cut off, ANDROID FRIENDLY
 
 // ignore_for_file: use_build_context_synchronously
 import 'dart:async';
@@ -358,16 +358,16 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     );
   }
 
-  // ✅ ENHANCED: Always show reviews, better button layout
+  // ✅ FIXED: Proper aspect ratios and spacing to show all buttons
   Widget buildProductCard(Product product, bool isSmall) {
-    final imgH   = isSmall ? 90.0  : 120.0;
-    final pad    = isSmall ? 6.0   : 10.0;
-    final btnPad = isSmall ? 6.0   : 8.0;
-    final nameSz = isSmall ? 11.0  : 13.0;
-    final prSz   = isSmall ? 11.0  : 13.0;
-    final ratSz  = isSmall ? 9.0   : 10.0;
-    final iconSz = isSmall ? 11.0  : 13.0;
-    final btnSz  = isSmall ? 9.0   : 11.0;
+    final imgH   = isSmall ? 85.0  : 110.0;
+    final pad    = isSmall ? 8.0   : 10.0;
+    final btnPad = isSmall ? 7.0   : 9.0;
+    final nameSz = isSmall ? 12.0  : 13.0;
+    final prSz   = isSmall ? 12.0  : 13.0;
+    final ratSz  = isSmall ? 9.5   : 10.0;
+    final iconSz = isSmall ? 12.0  : 13.0;
+    final btnSz  = isSmall ? 10.0  : 11.0;
 
     return StatefulBuilder(builder: (ctx, setCard) {
       bool hovered = false;
@@ -397,25 +397,25 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                     child: product.image != null && product.image!.isNotEmpty
                         ? Image.network(product.image!, fit: BoxFit.cover,
                             errorBuilder: (_, __, ___) => Container(color: lightGrey,
-                                child: Icon(Icons.shopping_bag_outlined, size: isSmall ? 36 : 52, color: mediumGrey)))
+                                child: Icon(Icons.shopping_bag_outlined, size: isSmall ? 36 : 48, color: mediumGrey)))
                         : Container(color: lightGrey,
-                            child: Icon(Icons.shopping_bag_outlined, size: isSmall ? 36 : 52, color: mediumGrey)),
+                            child: Icon(Icons.shopping_bag_outlined, size: isSmall ? 36 : 48, color: mediumGrey)),
                   ),
                   Positioned(top: 6, right: 6, child: _buildStockBadge(product)),
                 ]),
                 
                 // Product info
                 Padding(
-                  padding: EdgeInsets.fromLTRB(pad, pad * 0.6, pad, 0),
+                  padding: EdgeInsets.fromLTRB(pad, pad * 0.7, pad, 0),
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
                     Text(product.name, maxLines: 1, overflow: TextOverflow.ellipsis,
                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: nameSz, color: darkGrey)),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: 3),
                     Text("Rs ${product.price}", maxLines: 1, overflow: TextOverflow.ellipsis,
                         style: TextStyle(color: primaryIndigo, fontWeight: FontWeight.bold, fontSize: prSz)),
                     
                     // ✅ ALWAYS show review count
-                    const SizedBox(height: 2),
+                    const SizedBox(height: 3),
                     Row(mainAxisSize: MainAxisSize.min, children: [
                       Icon(
                         product.reviewCount > 0 ? Icons.star : Icons.star_outline,
@@ -438,46 +438,54 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                     ]),
                     
                     if (!isSmall && product.description.isNotEmpty) ...[
-                      const SizedBox(height: 2),
-                      Text(product.description, maxLines: 2, overflow: TextOverflow.ellipsis,
+                      const SizedBox(height: 3),
+                      Text(product.description, maxLines: 1, overflow: TextOverflow.ellipsis,
                           style: TextStyle(fontSize: 10, color: mediumGrey)),
                     ],
                   ]),
                 ),
                 
-                // Action buttons
+                const SizedBox(height: 4),
+                
+                // Action buttons - ✅ FIXED: Proper spacing and sizing
                 Padding(
-                  padding: EdgeInsets.all(pad),
+                  padding: EdgeInsets.fromLTRB(pad, 0, pad, pad),
                   child: Column(mainAxisSize: MainAxisSize.min, children: [
-                    // ✅ ALWAYS show review button
+                    // Reviews button
                     SizedBox(
                       width: double.infinity,
-                      child: hoverButton(
+                      child: Material(
                         color: product.reviewCount > 0 ? Colors.purple : Colors.grey.shade600,
-                        padding: EdgeInsets.symmetric(vertical: btnPad),
-                        onTap: () => Navigator.push(context, MaterialPageRoute(
-                            builder: (_) => ProductReviewsPage(
-                              productId: product.id!,
-                              productName: product.name,
-                              token: widget.token,
-                              isAdmin: true,
-                            ))),
-                        child: Row(mainAxisAlignment: MainAxisAlignment.center, mainAxisSize: MainAxisSize.min, children: [
-                          Icon(
-                            product.reviewCount > 0 ? Icons.rate_review : Icons.rate_review_outlined,
-                            color: Colors.white,
-                            size: iconSz,
+                        borderRadius: BorderRadius.circular(8),
+                        child: InkWell(
+                          onTap: () => Navigator.push(context, MaterialPageRoute(
+                              builder: (_) => ProductReviewsPage(
+                                productId: product.id!,
+                                productName: product.name,
+                                token: widget.token,
+                                isAdmin: true,
+                              ))),
+                          borderRadius: BorderRadius.circular(8),
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: btnPad),
+                            child: Row(mainAxisAlignment: MainAxisAlignment.center, mainAxisSize: MainAxisSize.min, children: [
+                              Icon(
+                                product.reviewCount > 0 ? Icons.rate_review : Icons.rate_review_outlined,
+                                color: Colors.white,
+                                size: iconSz,
+                              ),
+                              const SizedBox(width: 4),
+                              Flexible(child: Text(
+                                product.reviewCount > 0
+                                    ? "Reviews (${product.reviewCount})"
+                                    : "Reviews (0)",
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: btnSz),
+                              )),
+                            ]),
                           ),
-                          const SizedBox(width: 3),
-                          Flexible(child: Text(
-                            product.reviewCount > 0
-                                ? "Reviews (${product.reviewCount})"
-                                : "Reviews (0)",
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: btnSz),
-                          )),
-                        ]),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 6),
@@ -485,49 +493,61 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                     // Edit and Delete buttons
                     Row(children: [
                       Expanded(
-                        child: hoverButton(
+                        child: Material(
                           color: primaryIndigo,
-                          padding: EdgeInsets.symmetric(vertical: btnPad),
-                          onTap: () => showProductModal(product),
-                          child: Row(mainAxisAlignment: MainAxisAlignment.center, mainAxisSize: MainAxisSize.min, children: [
-                            Icon(Icons.edit, color: Colors.white, size: iconSz),
-                            const SizedBox(width: 3),
-                            Text("Edit", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: btnSz)),
-                          ]),
+                          borderRadius: BorderRadius.circular(8),
+                          child: InkWell(
+                            onTap: () => showProductModal(product),
+                            borderRadius: BorderRadius.circular(8),
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: btnPad),
+                              child: Row(mainAxisAlignment: MainAxisAlignment.center, mainAxisSize: MainAxisSize.min, children: [
+                                Icon(Icons.edit, color: Colors.white, size: iconSz),
+                                const SizedBox(width: 3),
+                                Text("Edit", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: btnSz)),
+                              ]),
+                            ),
+                          ),
                         ),
                       ),
                       const SizedBox(width: 6),
                       Expanded(
-                        child: hoverButton(
+                        child: Material(
                           color: Colors.red,
-                          padding: EdgeInsets.symmetric(vertical: btnPad),
-                          onTap: () async {
-                            final confirm = await showDialog<bool>(context: context, builder: (_) => AlertDialog(
-                              backgroundColor: white,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                              title: Text("Confirm Delete", style: TextStyle(color: primaryIndigo, fontWeight: FontWeight.bold)),
-                              content: Text("Delete \"${product.name}\"?", style: TextStyle(color: darkGrey)),
-                              actions: [
-                                TextButton(onPressed: () => Navigator.pop(context, false),
-                                    child: Text("Cancel", style: TextStyle(color: mediumGrey))),
-                                ElevatedButton(
-                                  onPressed: () => Navigator.pop(context, true),
-                                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red,
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
-                                  child: const Text("Delete"),
-                                ),
-                              ],
-                            ));
-                            if (confirm != true) return;
-                            final ok = await ApiService.deleteProduct(product.id!, token: widget.token);
-                            if (!mounted) return;
-                            if (ok) fetchProducts();
-                          },
-                          child: Row(mainAxisAlignment: MainAxisAlignment.center, mainAxisSize: MainAxisSize.min, children: [
-                            Icon(Icons.delete, color: Colors.white, size: iconSz),
-                            const SizedBox(width: 3),
-                            Text("Delete", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: btnSz)),
-                          ]),
+                          borderRadius: BorderRadius.circular(8),
+                          child: InkWell(
+                            onTap: () async {
+                              final confirm = await showDialog<bool>(context: context, builder: (_) => AlertDialog(
+                                backgroundColor: white,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                title: Text("Confirm Delete", style: TextStyle(color: primaryIndigo, fontWeight: FontWeight.bold)),
+                                content: Text("Delete \"${product.name}\"?", style: TextStyle(color: darkGrey)),
+                                actions: [
+                                  TextButton(onPressed: () => Navigator.pop(context, false),
+                                      child: Text("Cancel", style: TextStyle(color: mediumGrey))),
+                                  ElevatedButton(
+                                    onPressed: () => Navigator.pop(context, true),
+                                    style: ElevatedButton.styleFrom(backgroundColor: Colors.red,
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
+                                    child: const Text("Delete"),
+                                  ),
+                                ],
+                              ));
+                              if (confirm != true) return;
+                              final ok = await ApiService.deleteProduct(product.id!, token: widget.token);
+                              if (!mounted) return;
+                              if (ok) fetchProducts();
+                            },
+                            borderRadius: BorderRadius.circular(8),
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: btnPad),
+                              child: Row(mainAxisAlignment: MainAxisAlignment.center, mainAxisSize: MainAxisSize.min, children: [
+                                Icon(Icons.delete, color: Colors.white, size: iconSz),
+                                const SizedBox(width: 3),
+                                Text("Delete", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: btnSz)),
+                              ]),
+                            ),
+                          ),
                         ),
                       ),
                     ]),
@@ -751,8 +771,8 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     final bool isCardSmall  = isSmartwatch || isVerySmall;
     final int  prodCols     = isSmartwatch || isVerySmall ? 1 : isSmall ? 2 : isTablet ? 3 : 5;
     
-    // ✅ FIXED: Increased aspect ratios to prevent button cutoff
-    final double prodAspect = isSmartwatch ? 0.58 : isVerySmall ? 0.60 : isSmall ? 0.62 : 0.65;
+    // ✅ FIXED: LOWER aspect ratios = TALLER cards to show all buttons properly
+    final double prodAspect = isSmartwatch ? 0.40 : isVerySmall ? 0.42 : isSmall ? 0.46 : 0.50;
     final double outerPad   = isSmartwatch ? 4 : isVerySmall ? 8 : 12;
 
     return Scaffold(
