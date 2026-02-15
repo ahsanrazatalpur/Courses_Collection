@@ -17,8 +17,8 @@ import '../models/review.dart';
 class ApiService {
   // ==================== BASE URL ====================
   static String get baseUrl {
-    if (kIsWeb) return "https://ahsanrazatalpur.pythonanywhere.com/api"; // Flutter Web
-    return "https://ahsanrazatalpur.pythonanywhere.com/api"; // Mobile/Desktop
+    if (kIsWeb) return "http://ahsanrazatalpur.pythonanywhere.com/api"; // Flutter Web
+    return "http://ahsanrazatalpur.pythonanywhere.com/api"; // Mobile/Desktop
   }
 
   static const int _timeout = 15;
