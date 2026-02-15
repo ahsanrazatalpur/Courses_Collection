@@ -1,4 +1,4 @@
-// lib/services/notification_service.dart - COMPLETE FIXED VERSION
+// lib/services/notification_service.dart - COMPLETE WITH saveNotification
 
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -53,6 +53,50 @@ class NotificationService {
     }
   }
 
+  // ==================== ✅ NEW: SAVE NOTIFICATION (Instant Alerts) ====================
+  /// Save a notification immediately when editing products
+  /// This is called from admin_dashboard.dart when stock changes manually
+  static Future<void> saveNotification(String message, String type) async {
+    try {
+      // Determine notification details based on type
+      String title;
+      String notificationType;
+      
+      if (type == 'urgent' || message.contains('OUT OF STOCK')) {
+        title = '🚨 Critical Stock Alert';
+        notificationType = 'out_of_stock';
+      } else if (type == 'warning' || message.contains('LOW')) {
+        title = '⚠️ Low Stock Warning';
+        notificationType = 'low_stock';
+      } else if (type == 'info' || message.contains('back in stock') || message.contains('replenished')) {
+        title = '✅ Stock Update';
+        notificationType = 'order_update';
+      } else {
+        title = '📢 Notification';
+        notificationType = 'order_update';
+      }
+      
+      // Create notification
+      final notification = AppNotification(
+        id: 'manual_${DateTime.now().millisecondsSinceEpoch}',
+        type: notificationType,
+        title: title,
+        message: message,
+        createdAt: DateTime.now(),
+        isRead: false,
+      );
+      
+      // Add notification (will check for duplicates automatically)
+      final notifications = await loadNotifications();
+      notifications.insert(0, notification); // Force add to beginning
+      await saveNotifications(notifications);
+      
+      print('✅ Notification saved: $message');
+    } catch (e) {
+      print('❌ Error saving notification: $e');
+    }
+  }
+
   // ==================== MARK AS READ ====================
   static Future<void> markAsRead(String notificationId) async {
     final notifications = await loadNotifications();
@@ -90,7 +134,7 @@ class NotificationService {
     return notifications.where((n) => !n.isRead).length;
   }
 
-  // ==================== CHECK STOCK ALERTS (ADMIN) ====================
+  // ==================== CHECK STOCK ALERTS (ADMIN - Batch Check) ====================
   static Future<void> checkStockAlerts(List<Product> products) async {
     final notifications = await loadNotifications();
     
