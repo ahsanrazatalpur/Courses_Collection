@@ -1,5 +1,5 @@
 // lib/dashboards/admin_dashboard.dart
-// ✅ COMPLETE FIX: Square cards, image picker, stock notifications, Android-perfect
+// ✅ COMPLETE: Notifications + Edit/Delete buttons + Larger cards for visibility
 
 // ignore_for_file: use_build_context_synchronously
 import 'dart:async';
@@ -200,8 +200,6 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
         imageQuality: 85,
       );
       if (image != null) {
-        // TODO: Upload image to your server and return URL
-        // For now, return local path (you need to implement upload to Firebase/S3/your backend)
         TopPopup.show(context, "Image selected! Upload to server needed.", Colors.orange);
         return image.path;
       }
@@ -375,9 +373,8 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                         if (ok) {
                           Navigator.pop(ctx);
                           
-                          // ✅ FIX: Create notification for stock changes
+                          // ✅ Create notification for stock changes
                           if (product != null) {
-                            // Check for low stock or out of stock after update
                             if (newStock == 0 && originalStock > 0) {
                               await NotificationService.saveNotification(
                                 'Stock Alert: ${np.name} is now OUT OF STOCK',
@@ -385,7 +382,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                               );
                             } else if (newStock < kLowStockThreshold && newStock > 0 && originalStock >= kLowStockThreshold) {
                               await NotificationService.saveNotification(
-                                'Stock Alert: ${np.name} is running LOW (${newStock} left)',
+                                'Stock Alert: ${np.name} is running LOW ($newStock left)',
                                 'warning',
                               );
                             }
@@ -452,26 +449,26 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
       color = accentGreen; icon = Icons.check_circle;
     }
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(12)),
       child: Row(mainAxisSize: MainAxisSize.min, children: [
-        Icon(icon, color: Colors.white, size: 11),
-        const SizedBox(width: 2),
-        Text("${product.stock}", style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+        Icon(icon, color: Colors.white, size: 13),
+        const SizedBox(width: 3),
+        Text("${product.stock}", style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
       ]),
     );
   }
 
-  // ✅ PERFECT SQUARE CARD - Like user dashboard
+  // ✅ LARGER CARDS with ALL buttons visible
   Widget buildProductCard(Product product, bool isSmall) {
-    final imgH   = isSmall ? 100.0 : 130.0;
-    final pad    = isSmall ? 10.0  : 12.0;
-    final btnPad = isSmall ? 8.0   : 10.0;
-    final nameSz = isSmall ? 13.0  : 14.0;
-    final prSz   = isSmall ? 13.0  : 14.0;
-    final ratSz  = isSmall ? 10.0  : 11.0;
-    final iconSz = isSmall ? 13.0  : 14.0;
-    final btnSz  = isSmall ? 11.0  : 12.0;
+    final imgH   = isSmall ? 120.0 : 150.0;  // ✅ LARGER images
+    final pad    = isSmall ? 12.0  : 14.0;   // ✅ MORE padding
+    final btnPad = isSmall ? 9.0   : 11.0;
+    final nameSz = isSmall ? 14.0  : 15.0;   // ✅ BIGGER text
+    final prSz   = isSmall ? 14.0  : 15.0;
+    final ratSz  = isSmall ? 11.0  : 12.0;
+    final iconSz = isSmall ? 14.0  : 15.0;
+    final btnSz  = isSmall ? 11.5  : 12.5;
 
     return Card(
       elevation: 2,
@@ -496,7 +493,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                       fit: BoxFit.cover,
                       errorBuilder: (_, __, ___) => Container(
                         color: lightGrey,
-                        child: Icon(Icons.shopping_bag_outlined, size: isSmall ? 40 : 50, color: mediumGrey),
+                        child: Icon(Icons.shopping_bag_outlined, size: isSmall ? 50 : 60, color: mediumGrey),
                       ),
                       loadingBuilder: (_, child, loadingProgress) {
                         if (loadingProgress == null) return child;
@@ -515,13 +512,13 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                     )
                   : Container(
                       color: lightGrey,
-                      child: Icon(Icons.shopping_bag_outlined, size: isSmall ? 40 : 50, color: mediumGrey),
+                      child: Icon(Icons.shopping_bag_outlined, size: isSmall ? 50 : 60, color: mediumGrey),
                     ),
             ),
-            Positioned(top: 6, right: 6, child: _buildStockBadge(product)),
+            Positioned(top: 8, right: 8, child: _buildStockBadge(product)),
           ]),
           
-          // Product info - Compact
+          // Product info - More spacious
           Expanded(
             child: Padding(
               padding: EdgeInsets.all(pad),
@@ -535,14 +532,14 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: nameSz, color: darkGrey),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 5),
                   Text(
                     "Rs ${product.price}",
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(color: primaryIndigo, fontWeight: FontWeight.bold, fontSize: prSz),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 5),
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -551,7 +548,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                         size: ratSz + 1,
                         color: product.reviewCount > 0 ? Colors.amber : mediumGrey,
                       ),
-                      const SizedBox(width: 2),
+                      const SizedBox(width: 3),
                       Flexible(
                         child: Text(
                           product.reviewCount > 0
@@ -569,14 +566,14 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                   ),
                   const Spacer(),
                   
-                  // Action buttons - Compact
+                  // ✅ ALL ACTION BUTTONS - More visible
                   Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       // Reviews button
                       SizedBox(
                         width: double.infinity,
-                        height: isSmall ? 32 : 36,
+                        height: isSmall ? 36 : 40,
                         child: ElevatedButton(
                           onPressed: () => Navigator.push(
                             context,
@@ -592,7 +589,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: product.reviewCount > 0 ? Colors.purple : Colors.grey.shade600,
                             foregroundColor: Colors.white,
-                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: btnPad),
+                            padding: EdgeInsets.symmetric(horizontal: 10, vertical: btnPad),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                             elevation: 0,
                           ),
@@ -604,7 +601,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                                 product.reviewCount > 0 ? Icons.rate_review : Icons.rate_review_outlined,
                                 size: iconSz,
                               ),
-                              const SizedBox(width: 4),
+                              const SizedBox(width: 5),
                               Flexible(
                                 child: Text(
                                   "Reviews (${product.reviewCount})",
@@ -617,20 +614,20 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 8),
                       
-                      // Edit and Delete - Side by side
+                      // ✅ Edit and Delete - Side by side
                       Row(
                         children: [
                           Expanded(
                             child: SizedBox(
-                              height: isSmall ? 32 : 36,
+                              height: isSmall ? 36 : 40,
                               child: ElevatedButton(
                                 onPressed: () => showProductModal(product),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: primaryIndigo,
                                   foregroundColor: Colors.white,
-                                  padding: EdgeInsets.symmetric(horizontal: 4, vertical: btnPad),
+                                  padding: EdgeInsets.symmetric(horizontal: 6, vertical: btnPad),
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                                   elevation: 0,
                                 ),
@@ -639,17 +636,17 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Icon(Icons.edit, size: iconSz),
-                                    const SizedBox(width: 3),
+                                    const SizedBox(width: 4),
                                     Text("Edit", style: TextStyle(fontWeight: FontWeight.w600, fontSize: btnSz)),
                                   ],
                                 ),
                               ),
                             ),
                           ),
-                          const SizedBox(width: 6),
+                          const SizedBox(width: 8),
                           Expanded(
                             child: SizedBox(
-                              height: isSmall ? 32 : 36,
+                              height: isSmall ? 36 : 40,
                               child: ElevatedButton(
                                 onPressed: () async {
                                   final confirm = await showDialog<bool>(
@@ -683,7 +680,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.red,
                                   foregroundColor: Colors.white,
-                                  padding: EdgeInsets.symmetric(horizontal: 4, vertical: btnPad),
+                                  padding: EdgeInsets.symmetric(horizontal: 6, vertical: btnPad),
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                                   elevation: 0,
                                 ),
@@ -692,7 +689,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Icon(Icons.delete, size: iconSz),
-                                    const SizedBox(width: 3),
+                                    const SizedBox(width: 4),
                                     Text("Delete", style: TextStyle(fontWeight: FontWeight.w600, fontSize: btnSz)),
                                   ],
                                 ),
@@ -914,8 +911,8 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     final bool isCardSmall = isSmartwatch || isVerySmall;
     final int prodCols = isSmartwatch || isVerySmall ? 1 : isSmall ? 2 : isTablet ? 3 : 4;
 
-    // ✅ SQUARE CARDS - Aspect ratio close to 1.0 (square)
-    final double prodAspect = isSmartwatch ? 0.75 : isVerySmall ? 0.78 : isSmall ? 0.82 : 0.85;
+    // ✅ LARGER cards - Lower aspect ratio = Taller cards
+    final double prodAspect = isSmartwatch ? 0.65 : isVerySmall ? 0.68 : isSmall ? 0.72 : 0.75;
     final double outerPad = isSmartwatch ? 4 : isVerySmall ? 8 : 12;
 
     return Scaffold(

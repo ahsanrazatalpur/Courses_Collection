@@ -1,4 +1,5 @@
-// lib/dashboards/user_dashboard.dart - FIXED: Taller cards, buttons always visible, persistent username
+// lib/dashboards/user_dashboard.dart
+// ✅ FIXED: Larger cards + Professional cart indicator + Buttons always visible
 
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -40,7 +41,6 @@ class _UserDashboardState extends State<UserDashboard> {
   List<Order> userOrders = [];
   bool _isLoading = true;
   
-  // ✅ FIXED: Store login username permanently
   late String _loginUsername;
   
   int _newOrderUpdates = 0;
@@ -73,7 +73,6 @@ class _UserDashboardState extends State<UserDashboard> {
   @override
   void initState() {
     super.initState();
-    // ✅ FIXED: Save login username at init, never change it
     _loginUsername = widget.username;
     fetchProducts();
     fetchCart();
@@ -392,14 +391,14 @@ class _UserDashboardState extends State<UserDashboard> {
         color: lightGrey,
         child: url == null || url.isEmpty
             ? Icon(Icons.shopping_bag_outlined, 
-                size: isSmall ? 40 : 60, 
+                size: isSmall ? 50 : 70, 
                 color: mediumGrey)
             : Image.network(
                 url,
                 fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) => Icon(
                     Icons.shopping_bag_outlined,
-                    size: isSmall ? 40 : 60,
+                    size: isSmall ? 50 : 70,
                     color: mediumGrey),
               ),
       ),
@@ -467,46 +466,76 @@ class _UserDashboardState extends State<UserDashboard> {
     );
   }
 
-  Widget _buildStockBadge(int stock, bool isSmall) {
+  // ✅ PROFESSIONAL: Stock + Cart badge combined
+  Widget _buildStockAndCartBadge(int stock, int cartQty, bool isSmall) {
     Color badgeColor;
     IconData icon;
-    String text;
     
     if (stock == 0) {
       badgeColor = Colors.red;
       icon = Icons.remove_shopping_cart;
-      text = isSmall ? "Out" : "Out of Stock";
     } else if (stock <= 5) {
       badgeColor = Colors.orange;
       icon = Icons.warning;
-      text = isSmall ? "Low" : "Low Stock";
     } else {
       badgeColor = accentGreen;
       icon = Icons.check_circle;
-      text = isSmall ? "In" : "In Stock";
     }
 
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: isSmall ? 4 : 6, vertical: isSmall ? 2 : 3),
-      decoration: BoxDecoration(
-        color: badgeColor,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, color: Colors.white, size: isSmall ? 10 : 12),
-          SizedBox(width: isSmall ? 2 : 3),
-          Text(
-            text,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: isSmall ? 8 : 10,
-              fontWeight: FontWeight.bold,
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Stock badge
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: isSmall ? 5 : 6, vertical: isSmall ? 2 : 3),
+          decoration: BoxDecoration(
+            color: badgeColor,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, color: Colors.white, size: isSmall ? 10 : 11),
+              SizedBox(width: 2),
+              Text(
+                "$stock",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: isSmall ? 9 : 10,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ),
+        
+        // Cart badge (if in cart)
+        if (cartQty > 0) ...[
+          SizedBox(width: 4),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: isSmall ? 5 : 6, vertical: isSmall ? 2 : 3),
+            decoration: BoxDecoration(
+              color: primaryIndigo,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.shopping_cart, color: Colors.white, size: isSmall ? 10 : 11),
+                SizedBox(width: 2),
+                Text(
+                  "$cartQty",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: isSmall ? 9 : 10,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
-      ),
+      ],
     );
   }
 
@@ -561,11 +590,11 @@ class _UserDashboardState extends State<UserDashboard> {
                 
                 Stack(
                   children: [
-                    buildProductImage(product.image, height: isSmall ? 120 : 160, isSmall: isSmall),
+                    buildProductImage(product.image, height: isSmall ? 140 : 180, isSmall: isSmall),
                     Positioned(
                       top: 8,
                       right: 8,
-                      child: _buildStockBadge(stock, isSmall),
+                      child: _buildStockAndCartBadge(stock, cartQty, isSmall),
                     ),
                   ],
                 ),
@@ -595,14 +624,6 @@ class _UserDashboardState extends State<UserDashboard> {
                         ),
                       ),
                     ],
-                  ),
-                ],
-                
-                if (cartQty > 0) ...[
-                  SizedBox(height: 4),
-                  Text(
-                    "In Cart: $cartQty",
-                    style: TextStyle(color: accentGreen, fontWeight: FontWeight.w600),
                   ),
                 ],
                 
@@ -720,7 +741,7 @@ class _UserDashboardState extends State<UserDashboard> {
     );
   }
 
-  // ✅ FIXED: Taller cards with proper button spacing
+  // ✅ LARGER CARDS with PROFESSIONAL layout - Buttons ALWAYS visible
   Widget buildProductCard(Product product, bool isSmall) {
     final cartIndex = cartItems.indexWhere((i) => i.productId == product.id);
     final cartQty = cartIndex >= 0 ? cartItems[cartIndex].quantity : 0;
@@ -729,6 +750,16 @@ class _UserDashboardState extends State<UserDashboard> {
     final isOutOfStock = stock == 0;
     final reviewCount = product.reviewCount;
     final avgRating = product.averageRating;
+
+    // ✅ LARGER sizes matching admin dashboard
+    final imgH   = isSmall ? 120.0 : 150.0;  // Same as admin
+    final pad    = isSmall ? 12.0  : 14.0;
+    final btnPad = isSmall ? 9.0   : 11.0;
+    final nameSz = isSmall ? 14.0  : 15.0;
+    final prSz   = isSmall ? 14.0  : 15.0;
+    final ratSz  = isSmall ? 11.0  : 12.0;
+    final iconSz = isSmall ? 14.0  : 15.0;
+    final btnSz  = isSmall ? 11.5  : 12.5;
 
     return MouseRegion(
       cursor: SystemMouseCursors.click,
@@ -744,7 +775,7 @@ class _UserDashboardState extends State<UserDashboard> {
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
                 child: Opacity(
-                  opacity: isOutOfStock ? 0.5 : 1.0,
+                  opacity: isOutOfStock ? 0.6 : 1.0,
                   child: Card(
                     elevation: isHovered ? 8 : 2,
                     shadowColor: primaryIndigo.withOpacity(isHovered ? 0.3 : 0.1),
@@ -756,183 +787,202 @@ class _UserDashboardState extends State<UserDashboard> {
                         width: isHovered ? 2 : 1,
                       ),
                     ),
-                    child: Padding(
-                      padding: EdgeInsets.all(isSmall ? 8 : 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Image with stock badge
-                          Stack(
-                            children: [
-                              buildProductImage(product.image, height: isSmall ? 90 : 110, isSmall: isSmall),
-                              Positioned(
-                                top: 6,
-                                right: 6,
-                                child: _buildStockBadge(stock, isSmall),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        // ✅ Image with combined badge
+                        Stack(
+                          children: [
+                            SizedBox(
+                              height: imgH,
+                              width: double.infinity,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+                                child: product.image != null && product.image!.isNotEmpty
+                                    ? Image.network(
+                                        product.image!,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (_, __, ___) => Container(
+                                          color: lightGrey,
+                                          child: Icon(Icons.shopping_bag_outlined, size: isSmall ? 50 : 60, color: mediumGrey),
+                                        ),
+                                      )
+                                    : Container(
+                                        color: lightGrey,
+                                        child: Icon(Icons.shopping_bag_outlined, size: isSmall ? 50 : 60, color: mediumGrey),
+                                      ),
                               ),
-                            ],
-                          ),
-                          SizedBox(height: isSmall ? 6 : 8),
-                          
-                          // Product name
-                          Text(
-                            product.name,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: isSmall ? 13 : 14,
-                              color: darkGrey,
                             ),
-                          ),
-                          SizedBox(height: 2),
-                          
-                          // Price
-                          Text(
-                            "Rs ${product.price}",
-                            style: TextStyle(
-                              color: primaryIndigo,
-                              fontWeight: FontWeight.bold,
-                              fontSize: isSmall ? 13 : 14,
+                            Positioned(
+                              top: 8,
+                              right: 8,
+                              child: _buildStockAndCartBadge(stock, cartQty, isSmall),
                             ),
-                          ),
-                          SizedBox(height: 2),
-                          
-                          // Reviews
-                          if (reviewCount > 0)
-                            Row(
+                          ],
+                        ),
+                        
+                        // ✅ Product info - Fixed height content
+                        Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.all(pad),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(Icons.star, size: isSmall ? 11 : 12, color: Colors.amber),
-                                SizedBox(width: 2),
+                                // Name
                                 Text(
-                                  "$avgRating ($reviewCount)",
+                                  product.name,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
-                                    fontSize: isSmall ? 10 : 11,
-                                    fontWeight: FontWeight.w500,
-                                    color: mediumGrey,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: nameSz,
+                                    color: darkGrey,
                                   ),
+                                ),
+                                SizedBox(height: 5),
+                                
+                                // Price
+                                Text(
+                                  "Rs ${product.price}",
+                                  style: TextStyle(
+                                    color: primaryIndigo,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: prSz,
+                                  ),
+                                ),
+                                SizedBox(height: 5),
+                                
+                                // Reviews (fixed height)
+                                SizedBox(
+                                  height: ratSz + 4,
+                                  child: reviewCount > 0
+                                      ? Row(
+                                          children: [
+                                            Icon(Icons.star, size: ratSz + 1, color: Colors.amber),
+                                            SizedBox(width: 3),
+                                            Flexible(
+                                              child: Text(
+                                                "$avgRating ($reviewCount)",
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(
+                                                  fontSize: ratSz,
+                                                  color: darkGrey,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      : Row(
+                                          children: [
+                                            Icon(Icons.star_outline, size: ratSz + 1, color: mediumGrey),
+                                            SizedBox(width: 3),
+                                            Text(
+                                              "No reviews",
+                                              style: TextStyle(fontSize: ratSz, color: mediumGrey),
+                                            ),
+                                          ],
+                                        ),
+                                ),
+                                
+                                // ✅ Spacer pushes buttons to bottom
+                                Spacer(),
+                                
+                                // ✅ Buttons - ALWAYS visible at bottom
+                                SizedBox(height: 8),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: SizedBox(
+                                        height: isSmall ? 36 : 40,
+                                        child: ElevatedButton(
+                                          onPressed: isOutOfStock ? null : () => addToCart(product),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: isOutOfStock ? mediumGrey : primaryIndigo,
+                                            foregroundColor: Colors.white,
+                                            padding: EdgeInsets.symmetric(horizontal: 6, vertical: btnPad),
+                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                            elevation: 0,
+                                          ),
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(Icons.shopping_cart, size: iconSz),
+                                              SizedBox(width: 4),
+                                              Text(
+                                                isSmall ? "Cart" : "Add",
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: btnSz,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(width: 8),
+                                    Expanded(
+                                      child: SizedBox(
+                                        height: isSmall ? 36 : 40,
+                                        child: ElevatedButton(
+                                          onPressed: isOutOfStock
+                                              ? null
+                                              : () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (_) => CheckoutScreen(
+                                                        cart: [
+                                                          CartItem(
+                                                            id: 0,
+                                                            productId: product.id!,
+                                                            productName: product.name,
+                                                            price: product.price,
+                                                            quantity: 1,
+                                                            image: product.image ?? '',
+                                                          )
+                                                        ],
+                                                        token: widget.token,
+                                                        isBuyNow: true,
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: isOutOfStock ? mediumGrey : accentGreen,
+                                            foregroundColor: Colors.white,
+                                            padding: EdgeInsets.symmetric(horizontal: 6, vertical: btnPad),
+                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                            elevation: 0,
+                                          ),
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(Icons.shopping_bag, size: iconSz),
+                                              SizedBox(width: 4),
+                                              Text(
+                                                "Buy",
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: btnSz,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
-                          
-                          // In cart indicator
-                          if (cartQty > 0) ...[
-                            SizedBox(height: 2),
-                            Text(
-                              "In Cart: $cartQty",
-                              style: TextStyle(
-                                color: accentGreen,
-                                fontSize: isSmall ? 10 : 11,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                          
-                          // Description
-                          if (!isSmall) ...[
-                            SizedBox(height: 4),
-                            Text(
-                              product.description,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(fontSize: 11, color: mediumGrey),
-                            ),
-                          ],
-                          
-                          // ✅ Spacer pushes buttons to bottom
-                          Spacer(),
-                          
-                          // ✅ FIXED: Buttons with proper spacing
-                          SizedBox(height: isSmall ? 6 : 8),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: SizedBox(
-                                  height: isSmall ? 32 : 36,
-                                  child: ElevatedButton(
-                                    onPressed: isOutOfStock ? null : () => addToCart(product),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: isOutOfStock ? mediumGrey : primaryIndigo,
-                                      foregroundColor: Colors.white,
-                                      padding: EdgeInsets.symmetric(horizontal: 4, vertical: isSmall ? 6 : 8),
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                                      elevation: 0,
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(Icons.shopping_cart, size: isSmall ? 12 : 14),
-                                        SizedBox(width: 3),
-                                        Text(
-                                          isSmall ? "Cart" : "Add",
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: isSmall ? 10 : 12,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 6),
-                              Expanded(
-                                child: SizedBox(
-                                  height: isSmall ? 32 : 36,
-                                  child: ElevatedButton(
-                                    onPressed: isOutOfStock
-                                        ? null
-                                        : () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (_) => CheckoutScreen(
-                                                  cart: [
-                                                    CartItem(
-                                                      id: 0,
-                                                      productId: product.id!,
-                                                      productName: product.name,
-                                                      price: product.price,
-                                                      quantity: 1,
-                                                      image: product.image ?? '',
-                                                    )
-                                                  ],
-                                                  token: widget.token,
-                                                  isBuyNow: true,
-                                                ),
-                                              ),
-                                            );
-                                          },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: isOutOfStock ? mediumGrey : accentGreen,
-                                      foregroundColor: Colors.white,
-                                      padding: EdgeInsets.symmetric(horizontal: 4, vertical: isSmall ? 6 : 8),
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                                      elevation: 0,
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(Icons.shopping_bag, size: isSmall ? 12 : 14),
-                                        SizedBox(width: 3),
-                                        Text(
-                                          "Buy",
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: isSmall ? 10 : 12,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -1038,9 +1088,7 @@ class _UserDashboardState extends State<UserDashboard> {
     final bool isTablet = width >= 600 && width < 900;
     
     int gridCount;
-    if (isSmartwatch) {
-      gridCount = 1;
-    } else if (isVerySmall) {
+    if (isSmartwatch || isVerySmall) {
       gridCount = 1;
     } else if (isSmall) {
       gridCount = 2;
@@ -1186,7 +1234,6 @@ class _UserDashboardState extends State<UserDashboard> {
                             ),
                           ),
                           SizedBox(height: 4),
-                          // ✅ FIXED: Use login username
                           Text(
                             _loginUsername,
                             style: TextStyle(color: Colors.white70, fontSize: 14),
@@ -1316,7 +1363,6 @@ class _UserDashboardState extends State<UserDashboard> {
                   children: [
                     heroSlider(isCardSmall),
                     
-                    // ✅ FIXED: Use login username only
                     Padding(
                       padding: EdgeInsets.only(bottom: isSmartwatch ? 8 : 12),
                       child: Text(
@@ -1440,7 +1486,7 @@ class _UserDashboardState extends State<UserDashboard> {
                         ),
                       ),
                     
-                    // ✅ FIXED: Taller aspect ratio for better button visibility
+                    // ✅ LARGER cards with LOWER aspect ratio (0.65/0.68/0.72/0.75)
                     GridView.builder(
                       physics: NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
@@ -1449,7 +1495,7 @@ class _UserDashboardState extends State<UserDashboard> {
                         crossAxisCount: gridCount,
                         mainAxisSpacing: isSmartwatch ? 4 : 12,
                         crossAxisSpacing: isSmartwatch ? 4 : 12,
-                        childAspectRatio: isSmartwatch ? 0.52 : isVerySmall ? 0.56 : 0.60,  // ✅ Lower = Taller cards
+                        childAspectRatio: isSmartwatch ? 0.65 : isVerySmall ? 0.68 : isSmall ? 0.72 : 0.75,  // ✅ Same as admin
                       ),
                       itemBuilder: (_, index) => buildProductCard(products[index], isCardSmall),
                     ),
