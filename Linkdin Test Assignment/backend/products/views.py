@@ -1,4 +1,4 @@
-# products/views.py - UPDATED WITH MULTIPART SUPPORT
+# products/views.py - COMPLETE FIXED VERSION WITH PROPER ERROR HANDLING
 
 from rest_framework import generics, status
 from rest_framework.response import Response
@@ -17,24 +17,51 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
     parser_classes = (MultiPartParser, FormParser, JSONParser)
 
     def create(self, request, *args, **kwargs):
-        print("📥 Received data:", request.data)
-        print("📎 Files:", request.FILES)
+        print("=" * 80)
+        print("📥 CREATE REQUEST RECEIVED")
+        print("=" * 80)
+        print(f"📎 Content-Type: {request.content_type}")
+        print(f"📎 Files: {list(request.FILES.keys())}")
+        print(f"📎 Data keys: {list(request.data.keys())}")
         
-        # Handle file upload
         data = request.data.copy()
         
-        # If image file is uploaded, clear image_url
+        # ✅ FIX: Handle different upload scenarios
         if 'image' in request.FILES:
-            data['image_url'] = None
-        # If image_url is provided as string, clear image file
-        elif 'image' in data and isinstance(data['image'], str):
-            data['image_url'] = data.pop('image')
+            # File upload detected - clear image_url
+            print("✅ File upload detected")
+            data['image_url'] = ''
+        elif 'image' in data:
+            image_value = data['image']
+            if isinstance(image_value, str):
+                if image_value.startswith('http://') or image_value.startswith('https://'):
+                    # URL provided as string
+                    print("✅ URL detected in 'image' field")
+                    data['image_url'] = data.pop('image')
+                elif image_value == '':
+                    # Empty string
+                    print("⚠️ Empty image field")
+                    data.pop('image', None)
         
         serializer = self.get_serializer(data=data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
         
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        try:
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            print("✅ Product created successfully")
+            print("=" * 80)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            print(f"❌ CREATE FAILED: {str(e)}")
+            print(f"❌ Validation errors: {serializer.errors if hasattr(serializer, 'errors') else 'N/A'}")
+            print("=" * 80)
+            return Response(
+                {
+                    'error': str(e),
+                    'details': serializer.errors if hasattr(serializer, 'errors') else {}
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
     def get_serializer_context(self):
         return {'request': self.request}
@@ -51,26 +78,58 @@ class ProductRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView)
     parser_classes = (MultiPartParser, FormParser, JSONParser)
 
     def update(self, request, *args, **kwargs):
-        print("📝 Update data:", request.data)
-        print("📎 Update files:", request.FILES)
+        print("=" * 80)
+        print("📝 UPDATE REQUEST RECEIVED")
+        print("=" * 80)
+        print(f"📎 Content-Type: {request.content_type}")
+        print(f"📎 Files: {list(request.FILES.keys())}")
+        print(f"📎 Data keys: {list(request.data.keys())}")
         
-        partial = kwargs.pop('partial', False)
+        partial = kwargs.pop('partial', True)  # ✅ Default to partial update
         instance = self.get_object()
+        
+        print(f"📦 Current product: {instance.name} (ID: {instance.id})")
+        print(f"📦 Current image: {instance.image.name if instance.image else 'None'}")
+        print(f"📦 Current image_url: {instance.image_url or 'None'}")
         
         data = request.data.copy()
         
-        # Handle file upload
+        # ✅ FIX: Handle different update scenarios
         if 'image' in request.FILES:
-            data['image_url'] = None  # Clear URL when file is uploaded
-        elif 'image' in data and isinstance(data['image'], str):
-            # URL provided
-            data['image_url'] = data.pop('image')
+            # File upload - clear URL
+            print("✅ File upload detected - will clear image_url")
+            data['image_url'] = ''
+        elif 'image' in data:
+            image_value = data['image']
+            if isinstance(image_value, str):
+                if image_value.startswith('http://') or image_value.startswith('https://'):
+                    # URL provided
+                    print("✅ URL detected - will clear image file")
+                    data['image_url'] = data.pop('image')
+                elif image_value == '':
+                    # Empty string - keep existing
+                    print("✅ Empty image field - keeping existing")
+                    data.pop('image', None)
         
         serializer = self.get_serializer(instance, data=data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
         
-        return Response(serializer.data)
+        try:
+            serializer.is_valid(raise_exception=True)
+            self.perform_update(serializer)
+            print("✅ Product updated successfully")
+            print("=" * 80)
+            return Response(serializer.data)
+        except Exception as e:
+            print(f"❌ UPDATE FAILED: {str(e)}")
+            print(f"❌ Validation errors: {serializer.errors if hasattr(serializer, 'errors') else 'N/A'}")
+            print("=" * 80)
+            return Response(
+                {
+                    'error': str(e),
+                    'details': serializer.errors if hasattr(serializer, 'errors') else {}
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
     def get_serializer_context(self):
         return {'request': self.request}

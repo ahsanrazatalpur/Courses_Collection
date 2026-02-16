@@ -1,4 +1,4 @@
-// lib/services/api_service.dart - COMPLETE UPDATED VERSION WITH FIXED IMAGE UPLOAD
+// lib/services/api_service.dart - COMPLETE FIXED VERSION WITH PROPER ERROR HANDLING
 
 import 'dart:async';
 import 'dart:convert';
@@ -22,7 +22,7 @@ class ApiService {
     return "http://ahsanrazatalpur.pythonanywhere.com/api";
   }
 
-  static const int _timeout = 15;
+  static const int _timeout = 20; // ✅ Increased timeout for image uploads
 
   // ==================== HEADERS ====================
   static Map<String, String> _headers({String? token}) {
@@ -51,7 +51,7 @@ class ApiService {
     return [];
   }
 
-  // ✅ FIXED: ADD PRODUCT WITH PROPER MULTIPART
+  // ✅ COMPLETE FIXED: ADD PRODUCT
   static Future<bool> addProduct(
     Product product, {
     String? token,
@@ -60,21 +60,32 @@ class ApiService {
   }) async {
     try {
       final url = Uri.parse("$baseUrl/products/");
+      
+      debugPrint("=" * 80);
+      debugPrint("📤 ADD PRODUCT REQUEST");
+      debugPrint("=" * 80);
+      debugPrint("Product: ${product.name}");
+      debugPrint("Has image bytes: ${imageBytes != null}");
+      debugPrint("Image filename: ${imageFileName ?? 'N/A'}");
+      debugPrint("Image URL: ${product.image ?? 'N/A'}");
 
       if (imageBytes != null && imageFileName != null) {
-        // ✅ Multipart upload with proper content type
+        // ✅ Multipart upload with file
+        debugPrint("🔄 Using MULTIPART upload");
+        
         final request = http.MultipartRequest('POST', url);
         
         if (token != null && token.isNotEmpty) {
           request.headers['Authorization'] = 'Bearer $token';
         }
         
+        // Add text fields
         request.fields['name'] = product.name;
         request.fields['description'] = product.description;
         request.fields['price'] = product.price.toString();
         request.fields['stock'] = product.stock.toString();
         
-        // ✅ Detect proper content type
+        // Detect content type
         String contentType = 'image/jpeg';
         final lowerFileName = imageFileName.toLowerCase();
         if (lowerFileName.endsWith('.png')) {
@@ -87,6 +98,11 @@ class ApiService {
           contentType = 'image/jpeg';
         }
         
+        debugPrint("📎 Uploading file: $imageFileName");
+        debugPrint("📎 Content-Type: $contentType");
+        debugPrint("📎 File size: ${imageBytes.length} bytes");
+        
+        // Add image file
         request.files.add(
           http.MultipartFile.fromBytes(
             'image',  // Must match Django field name
@@ -96,71 +112,103 @@ class ApiService {
           ),
         );
         
-        debugPrint("📤 Sending multipart POST with file: $imageFileName");
-        debugPrint("📤 Content-Type: $contentType");
-        
-        final streamedResponse = await request.send();
+        final streamedResponse = await request.send().timeout(
+          const Duration(seconds: _timeout),
+        );
         final res = await http.Response.fromStream(streamedResponse);
         
-        debugPrint("📥 addProduct response: ${res.statusCode}");
+        debugPrint("📥 Response status: ${res.statusCode}");
         debugPrint("📄 Response body: ${res.body}");
+        debugPrint("=" * 80);
         
-        return res.statusCode == 201 || res.statusCode == 200;
+        if (res.statusCode == 201 || res.statusCode == 200) {
+          return true;
+        } else {
+          debugPrint("❌ Server returned error: ${res.body}");
+          return false;
+        }
       } else {
-        // ✅ JSON upload for URL-only products
-        final body = product.toJson();
+        // ✅ JSON upload with URL
+        debugPrint("🔄 Using JSON upload with URL");
         
-        // If product.image is a URL, send it as image_url
+        final body = <String, dynamic>{
+          'name': product.name,
+          'description': product.description,
+          'price': product.price,
+          'stock': product.stock,
+        };
+        
+        // Add image_url if provided
         if (product.image != null && product.image!.isNotEmpty) {
           body['image_url'] = product.image;
-          body.remove('image');
+          debugPrint("📎 Image URL: ${product.image}");
         }
-        
-        debugPrint("📤 Sending JSON POST with URL");
         
         final res = await http.post(
           url,
           headers: _headers(token: token),
           body: jsonEncode(body),
-        );
+        ).timeout(const Duration(seconds: _timeout));
         
-        debugPrint("📥 addProduct JSON response: ${res.statusCode}");
+        debugPrint("📥 Response status: ${res.statusCode}");
         debugPrint("📄 Response body: ${res.body}");
+        debugPrint("=" * 80);
         
-        return res.statusCode == 201 || res.statusCode == 200;
+        if (res.statusCode == 201 || res.statusCode == 200) {
+          return true;
+        } else {
+          debugPrint("❌ Server returned error: ${res.body}");
+          return false;
+        }
       }
     } catch (e) {
       debugPrint("❌ addProduct error: $e");
+      debugPrint("=" * 80);
       return false;
     }
   }
 
-  // ✅ FIXED: UPDATE PRODUCT WITH PROPER MULTIPART
+  // ✅ COMPLETE FIXED: UPDATE PRODUCT
   static Future<bool> updateProduct(
     Product product, {
     String? token,
     Uint8List? imageBytes,
     String? imageFileName,
   }) async {
-    if (product.id == null) return false;
+    if (product.id == null) {
+      debugPrint("❌ Cannot update product: ID is null");
+      return false;
+    }
     
     try {
       final url = Uri.parse("$baseUrl/products/${product.id}/");
+      
+      debugPrint("=" * 80);
+      debugPrint("📝 UPDATE PRODUCT REQUEST");
+      debugPrint("=" * 80);
+      debugPrint("Product ID: ${product.id}");
+      debugPrint("Product: ${product.name}");
+      debugPrint("Has image bytes: ${imageBytes != null}");
+      debugPrint("Image filename: ${imageFileName ?? 'N/A'}");
+      debugPrint("Image URL: ${product.image ?? 'N/A'}");
 
       if (imageBytes != null && imageFileName != null) {
-        // ✅ Multipart upload
+        // ✅ Multipart update with new file
+        debugPrint("🔄 Using MULTIPART update with new file");
+        
         final request = http.MultipartRequest('PATCH', url);
         
         if (token != null && token.isNotEmpty) {
           request.headers['Authorization'] = 'Bearer $token';
         }
         
+        // Add text fields
         request.fields['name'] = product.name;
         request.fields['description'] = product.description;
         request.fields['price'] = product.price.toString();
         request.fields['stock'] = product.stock.toString();
         
-        // ✅ Detect proper content type
+        // Detect content type
         String contentType = 'image/jpeg';
         final lowerFileName = imageFileName.toLowerCase();
         if (lowerFileName.endsWith('.png')) {
@@ -173,6 +221,11 @@ class ApiService {
           contentType = 'image/jpeg';
         }
         
+        debugPrint("📎 Uploading file: $imageFileName");
+        debugPrint("📎 Content-Type: $contentType");
+        debugPrint("📎 File size: ${imageBytes.length} bytes");
+        
+        // Add image file
         request.files.add(
           http.MultipartFile.fromBytes(
             'image',
@@ -182,40 +235,60 @@ class ApiService {
           ),
         );
         
-        debugPrint("📤 Sending multipart PATCH with file: $imageFileName");
-        debugPrint("📤 Content-Type: $contentType");
-        
-        final streamedResponse = await request.send();
+        final streamedResponse = await request.send().timeout(
+          const Duration(seconds: _timeout),
+        );
         final res = await http.Response.fromStream(streamedResponse);
         
-        debugPrint("📥 updateProduct response: ${res.statusCode}");
+        debugPrint("📥 Response status: ${res.statusCode}");
         debugPrint("📄 Response body: ${res.body}");
+        debugPrint("=" * 80);
         
-        return res.statusCode == 200;
+        if (res.statusCode == 200) {
+          return true;
+        } else {
+          debugPrint("❌ Server returned error: ${res.body}");
+          return false;
+        }
       } else {
-        // ✅ JSON update
-        final body = product.toJson();
+        // ✅ JSON update (with or without URL)
+        debugPrint("🔄 Using JSON update");
         
+        final body = <String, dynamic>{
+          'name': product.name,
+          'description': product.description,
+          'price': product.price,
+          'stock': product.stock,
+        };
+        
+        // Only include image_url if explicitly set
         if (product.image != null && product.image!.isNotEmpty) {
           body['image_url'] = product.image;
-          body.remove('image');
+          debugPrint("📎 Image URL: ${product.image}");
+        } else {
+          debugPrint("📎 No image change (keeping existing)");
         }
-        
-        debugPrint("📤 Sending JSON PATCH with URL");
         
         final res = await http.patch(
           url,
           headers: _headers(token: token),
           body: jsonEncode(body),
-        );
+        ).timeout(const Duration(seconds: _timeout));
         
-        debugPrint("📥 updateProduct JSON response: ${res.statusCode}");
+        debugPrint("📥 Response status: ${res.statusCode}");
         debugPrint("📄 Response body: ${res.body}");
+        debugPrint("=" * 80);
         
-        return res.statusCode == 200;
+        if (res.statusCode == 200) {
+          return true;
+        } else {
+          debugPrint("❌ Server returned error: ${res.body}");
+          return false;
+        }
       }
     } catch (e) {
       debugPrint("❌ updateProduct error: $e");
+      debugPrint("=" * 80);
       return false;
     }
   }

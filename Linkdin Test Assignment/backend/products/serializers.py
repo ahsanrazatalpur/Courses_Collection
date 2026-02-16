@@ -1,4 +1,4 @@
-# products/serializers.py - FIXED WITH DUAL IMAGE SUPPORT
+# products/serializers.py - COMPLETE FIXED VERSION
 
 from rest_framework import serializers
 from .models import Product
@@ -72,14 +72,54 @@ class ProductSerializer(serializers.ModelSerializer):
         return obj.is_out_of_stock()
 
     def validate(self, data):
-        """Ensure either image file or image_url is provided"""
+        """
+        ✅ FIXED: Only validate image requirement for NEW products
+        For updates, image is optional - existing image will be preserved
+        """
         image = data.get('image')
         image_url = data.get('image_url')
         
-        # At least one must be provided for new products
-        if not self.instance and not image and not image_url:
-            raise serializers.ValidationError(
-                "Either 'image' file or 'image_url' must be provided."
-            )
+        # Only require image for NEW products (when self.instance is None)
+        if not self.instance:
+            # Creating new product - need at least one image source
+            if not image and not image_url:
+                raise serializers.ValidationError(
+                    "Either 'image' file or 'image_url' must be provided for new products."
+                )
         
+        # For updates (self.instance exists), validation passes
+        # Existing image will be preserved if none provided
         return data
+
+    def update(self, instance, validated_data):
+        """
+        ✅ FIXED: Handle image updates properly
+        - If new image file uploaded: use it and clear image_url
+        - If new URL provided: use it and clear image file
+        - If neither provided: keep existing image
+        """
+        # Handle image field updates
+        if 'image' in validated_data:
+            image = validated_data.get('image')
+            if image:
+                # New file uploaded
+                instance.image = image
+                instance.image_url = None
+            # If image is None/empty, we'll keep existing
+        
+        if 'image_url' in validated_data:
+            image_url = validated_data.get('image_url')
+            if image_url:
+                # New URL provided
+                instance.image_url = image_url
+                instance.image = None
+            # If image_url is None/empty, we'll keep existing
+        
+        # Update other fields
+        instance.name = validated_data.get('name', instance.name)
+        instance.description = validated_data.get('description', instance.description)
+        instance.price = validated_data.get('price', instance.price)
+        instance.stock = validated_data.get('stock', instance.stock)
+        
+        instance.save()
+        return instance
