@@ -1,4 +1,4 @@
-# backend/settings.py - UPDATED WITH REVIEWS
+# backend/settings.py - UPDATED WITH MEDIA FILE SUPPORT
 
 from pathlib import Path
 import os
@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'coupons',
     'dashboard',
     'users',
-    'reviews',  # ✅ ADDED
+    'reviews',
 ]
 
 # =============================
@@ -121,6 +121,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+# ✅ CRITICAL: Media files configuration
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
@@ -166,8 +167,13 @@ CORS_ALLOW_HEADERS = [
     'user-agent',
     'x-csrftoken',
     'x-requested-with',
+    'content-disposition',  # ✅ ADDED for file uploads
 ]
 CORS_ALLOW_METHODS = ['DELETE', 'GET', 'OPTIONS', 'PATCH', 'POST', 'PUT']
+
+# ✅ ADDED: File upload settings
+FILE_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
 
 # =============================
 # Custom User Model

@@ -1,4 +1,4 @@
-// lib/models/product.dart - WITH STOCK STATUS AND REVIEW FIELDS
+// lib/models/product.dart - WITH REVIEW FIELDS AND IMAGE_DISPLAY SUPPORT
 
 import 'dart:io';
 
@@ -12,12 +12,12 @@ class Product {
   final File? imageFile;
   
   // Stock status fields
-  final String stockStatus; // 'in_stock', 'low_stock', 'out_of_stock'
+  final String stockStatus;
   final bool isInStock;
   final bool isLowStock;
   final bool isOutOfStock;
   
-  // ✅ NEW: Review fields
+  // Review fields
   final double averageRating;
   final int reviewCount;
 
@@ -33,8 +33,8 @@ class Product {
     this.isInStock = true,
     this.isLowStock = false,
     this.isOutOfStock = false,
-    this.averageRating = 0.0,  // ✅ ADDED
-    this.reviewCount = 0,      // ✅ ADDED
+    this.averageRating = 0.0,
+    this.reviewCount = 0,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
@@ -47,14 +47,22 @@ class Product {
       }
     }
 
+    // ✅ FIXED: Use image_display from backend (priority over image and image_url)
+    String? imageUrl;
+    if (json['image_display'] != null && (json['image_display'] as String).isNotEmpty) {
+      imageUrl = json['image_display'];
+    } else if (json['image_url'] != null && (json['image_url'] as String).isNotEmpty) {
+      imageUrl = json['image_url'];
+    } else if (json['image'] != null && (json['image'] as String).isNotEmpty) {
+      imageUrl = json['image'];
+    }
+
     return Product(
       id: json['id'] != null ? int.tryParse(json['id'].toString()) : null,
       name: json['name'] ?? '',
       description: json['description'] ?? '',
       price: parsedPrice,
-      image: (json['image'] != null && (json['image'] as String).isNotEmpty)
-          ? json['image']
-          : null,
+      image: imageUrl,
       stock: json['stock'] != null
           ? int.tryParse(json['stock'].toString()) ?? 0
           : 0,
@@ -63,7 +71,6 @@ class Product {
       isInStock: json['is_in_stock'] ?? true,
       isLowStock: json['is_low_stock'] ?? false,
       isOutOfStock: json['is_out_of_stock'] ?? false,
-      // ✅ ADDED: Parse review fields
       averageRating: json['average_rating'] != null
           ? double.tryParse(json['average_rating'].toString()) ?? 0.0
           : 0.0,
@@ -79,8 +86,8 @@ class Product {
       'description': description,
       'price': price,
       'stock': stock,
-      'average_rating': averageRating,  // ✅ ADDED
-      'review_count': reviewCount,      // ✅ ADDED
+      'average_rating': averageRating,
+      'review_count': reviewCount,
     };
     if (image != null) map['image'] = image;
     if (id != null) map['id'] = id;
@@ -99,8 +106,8 @@ class Product {
     bool? isInStock,
     bool? isLowStock,
     bool? isOutOfStock,
-    double? averageRating,  // ✅ ADDED
-    int? reviewCount,       // ✅ ADDED
+    double? averageRating,
+    int? reviewCount,
   }) {
     return Product(
       id: id ?? this.id,
@@ -114,8 +121,8 @@ class Product {
       isInStock: isInStock ?? this.isInStock,
       isLowStock: isLowStock ?? this.isLowStock,
       isOutOfStock: isOutOfStock ?? this.isOutOfStock,
-      averageRating: averageRating ?? this.averageRating,  // ✅ ADDED
-      reviewCount: reviewCount ?? this.reviewCount,        // ✅ ADDED
+      averageRating: averageRating ?? this.averageRating,
+      reviewCount: reviewCount ?? this.reviewCount,
     );
   }
 }

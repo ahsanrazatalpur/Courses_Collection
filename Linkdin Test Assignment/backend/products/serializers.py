@@ -1,11 +1,15 @@
-# products/serializers.py - FIXED WITH REVIEW FIELDS
+# products/serializers.py - FIXED WITH DUAL IMAGE SUPPORT
 
 from rest_framework import serializers
 from .models import Product
 
 class ProductSerializer(serializers.ModelSerializer):
-    # Derived field to always return a usable image URL
-    image_url = serializers.SerializerMethodField()
+    # ✅ Make image field optional and handle both file & URL
+    image = serializers.ImageField(required=False, allow_null=True)
+    image_url = serializers.URLField(required=False, allow_blank=True, allow_null=True)
+    
+    # Computed field for frontend - THIS IS WHAT FLUTTER WILL USE
+    image_display = serializers.SerializerMethodField()
     
     # Stock status fields
     stock_status = serializers.SerializerMethodField()
@@ -13,7 +17,7 @@ class ProductSerializer(serializers.ModelSerializer):
     is_low_stock = serializers.SerializerMethodField()
     is_out_of_stock = serializers.SerializerMethodField()
     
-    # ✅ CRITICAL: Include review fields from model
+    # Review fields
     average_rating = serializers.DecimalField(
         max_digits=3, 
         decimal_places=1, 
@@ -29,26 +33,30 @@ class ProductSerializer(serializers.ModelSerializer):
             'description', 
             'price', 
             'stock', 
-            'image', 
-            'image_url', 
+            'image',           # File upload field
+            'image_url',       # URL string field
+            'image_display',   # ✅ Computed field for frontend
             'created_at', 
             'stock_status', 
             'is_in_stock', 
             'is_low_stock', 
             'is_out_of_stock',
-            'average_rating',  # ✅ ADDED
-            'review_count',    # ✅ ADDED
+            'average_rating',
+            'review_count',
         ]
-        read_only_fields = ['id', 'created_at', 'average_rating', 'review_count']
+        read_only_fields = ['id', 'created_at', 'average_rating', 'review_count', 'image_display']
 
-    def get_image_url(self, obj):
-        """Returns a usable URL for the image"""
+    def get_image_display(self, obj):
+        """Returns the actual image URL to display"""
+        request = self.context.get('request')
+        
+        # Priority: uploaded file > URL string
         if obj.image:
-            if obj.image.startswith("http://") or obj.image.startswith("https://"):
-                return obj.image
-            request = self.context.get('request')
             if request:
-                return request.build_absolute_uri(obj.image)
+                return request.build_absolute_uri(obj.image.url)
+            return obj.image.url
+        elif obj.image_url:
+            return obj.image_url
         return ""
     
     def get_stock_status(self, obj):
@@ -63,9 +71,15 @@ class ProductSerializer(serializers.ModelSerializer):
     def get_is_out_of_stock(self, obj):
         return obj.is_out_of_stock()
 
-    def validate_image(self, value):
-        if value and len(value) > 2000:
+    def validate(self, data):
+        """Ensure either image file or image_url is provided"""
+        image = data.get('image')
+        image_url = data.get('image_url')
+        
+        # At least one must be provided for new products
+        if not self.instance and not image and not image_url:
             raise serializers.ValidationError(
-                "Image URL cannot exceed 2000 characters."
+                "Either 'image' file or 'image_url' must be provided."
             )
-        return value
+        
+        return data

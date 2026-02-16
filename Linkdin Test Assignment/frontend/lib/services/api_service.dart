@@ -1,11 +1,12 @@
-// lib/services/api_service.dart - COMPLETE UPDATED VERSION
+// lib/services/api_service.dart - COMPLETE UPDATED VERSION WITH FIXED IMAGE UPLOAD
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data'; // ← ADDED: needed for Uint8List (imageBytes)
+import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart' as http_parser;
 
 import '../models/product.dart';
 import '../models/order.dart';
@@ -17,8 +18,8 @@ import '../models/review.dart';
 class ApiService {
   // ==================== BASE URL ====================
   static String get baseUrl {
-    if (kIsWeb) return "http://ahsanrazatalpur.pythonanywhere.com/api"; // Flutter Web
-    return "http://ahsanrazatalpur.pythonanywhere.com/api"; // Mobile/Desktop
+    if (kIsWeb) return "http://ahsanrazatalpur.pythonanywhere.com/api";
+    return "http://ahsanrazatalpur.pythonanywhere.com/api";
   }
 
   static const int _timeout = 15;
@@ -50,103 +51,174 @@ class ApiService {
     return [];
   }
 
-  // ── CHANGED: added imageBytes + imageFileName params ──────────────────────
-  // Old code used product.imageFile (dart:io File) which crashes on web.
-  // New code receives raw bytes from the dashboard (works on web + mobile).
+  // ✅ FIXED: ADD PRODUCT WITH PROPER MULTIPART
   static Future<bool> addProduct(
     Product product, {
     String? token,
-    Uint8List? imageBytes,   // ← bytes from XFile.readAsBytes()
-    String? imageFileName,   // ← original filename e.g. "shoe.jpg"
+    Uint8List? imageBytes,
+    String? imageFileName,
   }) async {
     try {
       final url = Uri.parse("$baseUrl/products/");
 
       if (imageBytes != null && imageFileName != null) {
-        // Multipart upload — file was picked from gallery/camera
+        // ✅ Multipart upload with proper content type
         final request = http.MultipartRequest('POST', url);
+        
         if (token != null && token.isNotEmpty) {
           request.headers['Authorization'] = 'Bearer $token';
         }
-        request.fields['name']        = product.name;
+        
+        request.fields['name'] = product.name;
         request.fields['description'] = product.description;
-        request.fields['price']       = product.price.toString();
-        request.fields['stock']       = product.stock.toString();
+        request.fields['price'] = product.price.toString();
+        request.fields['stock'] = product.stock.toString();
+        
+        // ✅ Detect proper content type
+        String contentType = 'image/jpeg';
+        final lowerFileName = imageFileName.toLowerCase();
+        if (lowerFileName.endsWith('.png')) {
+          contentType = 'image/png';
+        } else if (lowerFileName.endsWith('.webp')) {
+          contentType = 'image/webp';
+        } else if (lowerFileName.endsWith('.gif')) {
+          contentType = 'image/gif';
+        } else if (lowerFileName.endsWith('.jpg') || lowerFileName.endsWith('.jpeg')) {
+          contentType = 'image/jpeg';
+        }
+        
         request.files.add(
-          http.MultipartFile.fromBytes(   // ← fromBytes not fromPath (web safe)
-            'image',
+          http.MultipartFile.fromBytes(
+            'image',  // Must match Django field name
             imageBytes,
             filename: imageFileName,
+            contentType: http_parser.MediaType.parse(contentType),
           ),
         );
+        
+        debugPrint("📤 Sending multipart POST with file: $imageFileName");
+        debugPrint("📤 Content-Type: $contentType");
+        
         final streamedResponse = await request.send();
         final res = await http.Response.fromStream(streamedResponse);
-        debugPrint("addProduct multipart response: ${res.statusCode} | ${res.body}");
+        
+        debugPrint("📥 addProduct response: ${res.statusCode}");
+        debugPrint("📄 Response body: ${res.body}");
+        
         return res.statusCode == 201 || res.statusCode == 200;
       } else {
-        // JSON upload — URL string or no image
+        // ✅ JSON upload for URL-only products
+        final body = product.toJson();
+        
+        // If product.image is a URL, send it as image_url
+        if (product.image != null && product.image!.isNotEmpty) {
+          body['image_url'] = product.image;
+          body.remove('image');
+        }
+        
+        debugPrint("📤 Sending JSON POST with URL");
+        
         final res = await http.post(
           url,
           headers: _headers(token: token),
-          body: jsonEncode(product.toJson()),
+          body: jsonEncode(body),
         );
-        debugPrint("addProduct JSON response: ${res.statusCode} | ${res.body}");
+        
+        debugPrint("📥 addProduct JSON response: ${res.statusCode}");
+        debugPrint("📄 Response body: ${res.body}");
+        
         return res.statusCode == 201 || res.statusCode == 200;
       }
     } catch (e) {
-      debugPrint("addProduct error: $e");
+      debugPrint("❌ addProduct error: $e");
       return false;
     }
   }
 
-  // ── CHANGED: added imageBytes + imageFileName params ──────────────────────
+  // ✅ FIXED: UPDATE PRODUCT WITH PROPER MULTIPART
   static Future<bool> updateProduct(
     Product product, {
     String? token,
-    Uint8List? imageBytes,   // ← bytes from XFile.readAsBytes()
-    String? imageFileName,   // ← original filename e.g. "shoe.jpg"
+    Uint8List? imageBytes,
+    String? imageFileName,
   }) async {
     if (product.id == null) return false;
+    
     try {
       final url = Uri.parse("$baseUrl/products/${product.id}/");
 
       if (imageBytes != null && imageFileName != null) {
-        // Multipart upload — file was picked from gallery/camera
+        // ✅ Multipart upload
         final request = http.MultipartRequest('PATCH', url);
+        
         if (token != null && token.isNotEmpty) {
           request.headers['Authorization'] = 'Bearer $token';
         }
-        request.fields['name']        = product.name;
+        
+        request.fields['name'] = product.name;
         request.fields['description'] = product.description;
-        request.fields['price']       = product.price.toString();
-        request.fields['stock']       = product.stock.toString();
+        request.fields['price'] = product.price.toString();
+        request.fields['stock'] = product.stock.toString();
+        
+        // ✅ Detect proper content type
+        String contentType = 'image/jpeg';
+        final lowerFileName = imageFileName.toLowerCase();
+        if (lowerFileName.endsWith('.png')) {
+          contentType = 'image/png';
+        } else if (lowerFileName.endsWith('.webp')) {
+          contentType = 'image/webp';
+        } else if (lowerFileName.endsWith('.gif')) {
+          contentType = 'image/gif';
+        } else if (lowerFileName.endsWith('.jpg') || lowerFileName.endsWith('.jpeg')) {
+          contentType = 'image/jpeg';
+        }
+        
         request.files.add(
-          http.MultipartFile.fromBytes(   // ← fromBytes not fromPath (web safe)
+          http.MultipartFile.fromBytes(
             'image',
             imageBytes,
             filename: imageFileName,
+            contentType: http_parser.MediaType.parse(contentType),
           ),
         );
+        
+        debugPrint("📤 Sending multipart PATCH with file: $imageFileName");
+        debugPrint("📤 Content-Type: $contentType");
+        
         final streamedResponse = await request.send();
         final res = await http.Response.fromStream(streamedResponse);
-        debugPrint("updateProduct multipart response: ${res.statusCode} | ${res.body}");
+        
+        debugPrint("📥 updateProduct response: ${res.statusCode}");
+        debugPrint("📄 Response body: ${res.body}");
+        
         return res.statusCode == 200;
       } else {
-        // JSON upload — URL string or no image
+        // ✅ JSON update
+        final body = product.toJson();
+        
+        if (product.image != null && product.image!.isNotEmpty) {
+          body['image_url'] = product.image;
+          body.remove('image');
+        }
+        
+        debugPrint("📤 Sending JSON PATCH with URL");
+        
         final res = await http.patch(
           url,
           headers: _headers(token: token),
-          body: jsonEncode(product.toJson()),
+          body: jsonEncode(body),
         );
-        debugPrint("updateProduct JSON response: ${res.statusCode} | ${res.body}");
+        
+        debugPrint("📥 updateProduct JSON response: ${res.statusCode}");
+        debugPrint("📄 Response body: ${res.body}");
+        
         return res.statusCode == 200;
       }
     } catch (e) {
-      debugPrint("updateProduct error: $e");
+      debugPrint("❌ updateProduct error: $e");
       return false;
     }
   }
-  // ── END OF CHANGES ────────────────────────────────────────────────────────
 
   static Future<bool> deleteProduct(int id, {String? token}) async {
     try {
@@ -550,7 +622,6 @@ class ApiService {
 
   // ==================== REVIEWS ====================
   
-  /// Fetch reviews for a specific product
   static Future<Map<String, dynamic>?> fetchProductReviews({
     required int productId,
     int page = 1,
@@ -574,7 +645,6 @@ class ApiService {
     return null;
   }
 
-  /// Fetch user's own reviews
   static Future<List<Review>> fetchMyReviews({required String token}) async {
     try {
       final res = await http.get(
@@ -592,7 +662,6 @@ class ApiService {
     return [];
   }
 
-  /// Fetch products pending review
   static Future<List<PendingReviewProduct>> fetchPendingReviews({required String token}) async {
     try {
       final res = await http.get(
@@ -611,7 +680,6 @@ class ApiService {
     return [];
   }
 
-  /// Submit a new review
   static Future<bool> submitReview({
     required int productId,
     required int rating,
@@ -638,7 +706,6 @@ class ApiService {
     }
   }
 
-  /// Update an existing review
   static Future<bool> updateReview({
     required int reviewId,
     required int rating,
@@ -664,7 +731,6 @@ class ApiService {
     }
   }
 
-  /// Delete a review
   static Future<bool> deleteReview({
     required int reviewId,
     required String token,
@@ -682,7 +748,6 @@ class ApiService {
     }
   }
 
-  /// Like/unlike a review
   static Future<Map<String, dynamic>?> toggleReviewLike({
     required int reviewId,
     required String token,
@@ -702,7 +767,6 @@ class ApiService {
     return null;
   }
 
-  /// Get users who liked a review
   static Future<Map<String, dynamic>?> getReviewLikes({
     required int reviewId,
     String? token,
@@ -722,7 +786,6 @@ class ApiService {
     return null;
   }
 
-  /// Check if user can review a product
   static Future<ReviewEligibility?> checkReviewEligibility({
     required int productId,
     required String token,
@@ -745,7 +808,6 @@ class ApiService {
 
   // ==================== ADMIN: REVIEWS ====================
   
-  /// Admin: Fetch all reviews
   static Future<List<Review>> fetchAllReviews({
     required String token,
     int? minRating,
@@ -762,7 +824,6 @@ class ApiService {
       
       if (params.isNotEmpty) queryParams = '?${params.join('&')}';
       
-      // ✅ FIXED: Using new endpoint
       final res = await http.get(
         Uri.parse("$baseUrl/reviews/admin/all/$queryParams"),
         headers: _headers(token: token),
@@ -778,13 +839,11 @@ class ApiService {
     return [];
   }
 
-  /// Admin: Delete any review
   static Future<bool> adminDeleteReview({
     required int reviewId,
     required String token,
   }) async {
     try {
-      // ✅ FIXED: Using new endpoint
       final res = await http.delete(
         Uri.parse("$baseUrl/reviews/admin/$reviewId/"),
         headers: _headers(token: token),
@@ -797,10 +856,8 @@ class ApiService {
     }
   }
 
-  /// Admin: Get flagged reviews
   static Future<List<Review>> fetchFlaggedReviews({required String token}) async {
     try {
-      // ✅ FIXED: Using new endpoint
       final res = await http.get(
         Uri.parse("$baseUrl/reviews/admin/flagged/"),
         headers: _headers(token: token),
