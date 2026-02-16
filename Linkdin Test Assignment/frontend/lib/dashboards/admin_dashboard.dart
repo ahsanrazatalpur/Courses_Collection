@@ -225,41 +225,53 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     });
   }
 
-  // Image picker method
-  Future<void> _pickImage(TextEditingController imageCtrl) async {
+  // ✅ FIXED: Image picker with working URL dialog
+  Future<void> _pickImage(TextEditingController imageCtrl, StateSetter setModal) async {
     showModalBottomSheet(
       context: context,
       backgroundColor: white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
-      builder: (context) => SafeArea(
+      builder: (sheetCtx) => SafeArea(
         child: Wrap(
           children: [
+            // Header
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+              decoration: BoxDecoration(
+                color: primaryIndigo.withOpacity(0.08),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+              ),
+              child: const Text(
+                "Select Image Source",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                  color: primaryIndigo,
+                ),
+              ),
+            ),
             ListTile(
               leading: const Icon(Icons.photo_library, color: primaryIndigo),
               title: const Text('Choose from Gallery'),
               onTap: () async {
-                Navigator.pop(context);
+                Navigator.pop(sheetCtx);
                 try {
                   final XFile? image = await _imagePicker.pickImage(
                     source: ImageSource.gallery,
                     imageQuality: 70,
                   );
                   if (image != null) {
-                    setState(() {
+                    setModal(() {
                       _selectedImage = image;
-                      // For demo, we'll set the path - in production you'd upload to server
                       imageCtrl.text = image.path;
-                      TopPopup.show(
-                        context,
-                        "Image selected",
-                        accentGreen,
-                      );
                     });
+                    TopPopup.show(context, "Image selected!", accentGreen);
                   }
                 } catch (e) {
-                  TopPopup.show(context, "Error picking image", Colors.red);
+                  TopPopup.show(context, "Could not access gallery: $e", Colors.red);
                 }
               },
             ),
@@ -267,43 +279,137 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
               leading: const Icon(Icons.photo_camera, color: primaryIndigo),
               title: const Text('Take a Photo'),
               onTap: () async {
-                Navigator.pop(context);
+                Navigator.pop(sheetCtx);
                 try {
                   final XFile? image = await _imagePicker.pickImage(
                     source: ImageSource.camera,
                     imageQuality: 70,
                   );
                   if (image != null) {
-                    setState(() {
+                    setModal(() {
                       _selectedImage = image;
                       imageCtrl.text = image.path;
-                      TopPopup.show(
-                        context,
-                        "Photo captured",
-                        accentGreen,
-                      );
                     });
+                    TopPopup.show(context, "Photo captured!", accentGreen);
                   }
                 } catch (e) {
-                  TopPopup.show(context, "Error taking photo", Colors.red);
+                  TopPopup.show(context, "Could not access camera: $e", Colors.red);
                 }
               },
             ),
+            // ✅ FIXED: Enter URL now shows a proper input dialog
             ListTile(
               leading: const Icon(Icons.link, color: primaryIndigo),
-              title: const Text('Enter URL'),
+              title: const Text('Enter Image URL'),
               onTap: () {
-                Navigator.pop(context);
-                // Keep existing URL input
+                Navigator.pop(sheetCtx);
+                _showUrlInputDialog(imageCtrl, setModal);
               },
             ),
             ListTile(
               leading: const Icon(Icons.cancel, color: Colors.red),
-              title: const Text('Cancel'),
-              onTap: () => Navigator.pop(context),
+              title: const Text('Cancel', style: TextStyle(color: Colors.red)),
+              onTap: () => Navigator.pop(sheetCtx),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  // ✅ NEW: Dedicated URL input dialog
+  void _showUrlInputDialog(TextEditingController imageCtrl, StateSetter setModal) {
+    final urlCtrl = TextEditingController(text: imageCtrl.text);
+
+    showDialog(
+      context: context,
+      builder: (dialogCtx) => AlertDialog(
+        backgroundColor: white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Row(
+          children: [
+            Icon(Icons.link, color: primaryIndigo, size: 20),
+            SizedBox(width: 8),
+            Text(
+              "Enter Image URL",
+              style: TextStyle(
+                color: primaryIndigo,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextField(
+              controller: urlCtrl,
+              autofocus: true,
+              keyboardType: TextInputType.url,
+              style: const TextStyle(color: darkGrey, fontSize: 14),
+              decoration: InputDecoration(
+                hintText: "https://example.com/image.jpg",
+                hintStyle: const TextStyle(color: mediumGrey, fontSize: 13),
+                filled: true,
+                fillColor: lightGrey,
+                prefixIcon: const Icon(Icons.image_outlined, color: mediumGrey),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: const BorderSide(color: borderGrey),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: const BorderSide(color: borderGrey),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: const BorderSide(color: primaryIndigo, width: 2),
+                ),
+                contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              "Paste a direct link to an image (jpg, png, webp)",
+              style: TextStyle(color: mediumGrey, fontSize: 11),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogCtx),
+            child: const Text("Cancel", style: TextStyle(color: mediumGrey)),
+          ),
+          ElevatedButton.icon(
+            onPressed: () {
+              final url = urlCtrl.text.trim();
+              if (url.isEmpty) {
+                TopPopup.show(context, "Please enter a URL", Colors.orange);
+                return;
+              }
+              // Basic URL validation
+              if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                TopPopup.show(context, "URL must start with http:// or https://", Colors.orange);
+                return;
+              }
+              setModal(() {
+                _selectedImage = null; // clear any picked file
+                imageCtrl.text = url;
+              });
+              Navigator.pop(dialogCtx);
+              TopPopup.show(context, "Image URL set!", accentGreen);
+            },
+            icon: const Icon(Icons.check, size: 16),
+            label: const Text("Apply"),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: primaryIndigo,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -316,7 +422,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     final priceCtrl = TextEditingController(text: product?.price.toString() ?? '');
     final stockCtrl = TextEditingController(text: product?.stock.toString() ?? '');
     final imageCtrl = TextEditingController(text: product?.image ?? '');
-    
+
     // Reset selected image
     _selectedImage = null;
 
@@ -326,6 +432,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
         backgroundColor: white,
         insetPadding: EdgeInsets.symmetric(horizontal: isSmall ? 12 : 16, vertical: 24),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        // ✅ Pass StatefulBuilder's setModal to _pickImage so image updates reflect live
         child: StatefulBuilder(
           builder: (ctx, setModal) => SingleChildScrollView(
             child: Container(
@@ -343,18 +450,18 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                         style: TextStyle(fontSize: isSmall ? 18 : 20, fontWeight: FontWeight.bold, color: primaryIndigo),
                       )),
                       IconButton(
-                        onPressed: () => Navigator.pop(ctx), 
+                        onPressed: () => Navigator.pop(ctx),
                         icon: const Icon(Icons.close, color: darkGrey),
-                        padding: EdgeInsets.zero, 
-                        constraints: const BoxConstraints()
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
                       ),
                     ],
                   ),
                   SizedBox(height: isSmall ? 12 : 16),
-                  
+
                   // Image with picker option
                   GestureDetector(
-                    onTap: readOnly ? null : () => _pickImage(imageCtrl),
+                    onTap: readOnly ? null : () => _pickImage(imageCtrl, setModal),
                     child: Stack(
                       children: [
                         ClipRRect(
@@ -369,29 +476,22 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                                         _selectedImage!.path,
                                         fit: BoxFit.cover,
                                         errorBuilder: (_, __, ___) => const Icon(
-                                            Icons.shopping_bag_outlined,
-                                            size: 60,
-                                            color: mediumGrey),
+                                            Icons.shopping_bag_outlined, size: 60, color: mediumGrey),
                                       )
                                     : Image.file(
                                         File(_selectedImage!.path),
                                         fit: BoxFit.cover,
                                         errorBuilder: (_, __, ___) => const Icon(
-                                            Icons.shopping_bag_outlined,
-                                            size: 60,
-                                            color: mediumGrey),
+                                            Icons.shopping_bag_outlined, size: 60, color: mediumGrey),
                                       ))
                                 : (imageCtrl.text.isNotEmpty
                                     ? Image.network(
                                         imageCtrl.text,
                                         fit: BoxFit.cover,
                                         errorBuilder: (_, __, ___) => const Icon(
-                                            Icons.shopping_bag_outlined,
-                                            size: 60,
-                                            color: mediumGrey),
+                                            Icons.shopping_bag_outlined, size: 60, color: mediumGrey),
                                       )
-                                    : const Icon(Icons.shopping_bag_outlined,
-                                        size: 80, color: mediumGrey)),
+                                    : const Icon(Icons.shopping_bag_outlined, size: 80, color: mediumGrey)),
                           ),
                         ),
                         if (!readOnly)
@@ -401,20 +501,16 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                             child: Container(
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                color: primaryIndigo.withOpacity(0.8),
+                                color: primaryIndigo.withOpacity(0.85),
                                 shape: BoxShape.circle,
                               ),
-                              child: const Icon(
-                                Icons.camera_alt,
-                                color: Colors.white,
-                                size: 20,
-                              ),
+                              child: const Icon(Icons.camera_alt, color: Colors.white, size: 20),
                             ),
                           ),
                       ],
                     ),
                   ),
-                  
+
                   // Show selected image name if any
                   if (_selectedImage != null) ...[
                     SizedBox(height: isSmall ? 8 : 10),
@@ -426,8 +522,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.check_circle,
-                              color: accentGreen, size: 16),
+                          const Icon(Icons.check_circle, color: accentGreen, size: 16),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
@@ -440,7 +535,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                       ),
                     ),
                   ],
-                  
+
                   SizedBox(height: isSmall ? 16 : 20),
                   buildTextField(nameCtrl,  "Product Name",   readOnly, isSmall),
                   SizedBox(height: isSmall ? 10 : 12),
@@ -452,7 +547,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                   SizedBox(height: isSmall ? 10 : 12),
                   buildTextField(imageCtrl, "Image URL",      readOnly, isSmall),
                   SizedBox(height: isSmall ? 20 : 24),
-                  
+
                   if (!readOnly) Row(children: [
                     Expanded(
                       child: hoverButton(
@@ -461,10 +556,10 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                         onTap: () async {
                           if (nameCtrl.text.isEmpty) { TopPopup.show(ctx, "Name is required", Colors.red); return; }
                           final np = Product(
-                            id: product?.id, 
-                            name: nameCtrl.text.trim(), 
+                            id: product?.id,
+                            name: nameCtrl.text.trim(),
                             description: descCtrl.text.trim(),
-                            price: double.tryParse(priceCtrl.text) ?? 0, 
+                            price: double.tryParse(priceCtrl.text) ?? 0,
                             stock: int.tryParse(stockCtrl.text) ?? 0,
                             image: _selectedImage?.path ?? (imageCtrl.text.trim().isEmpty ? null : imageCtrl.text.trim()),
                           );
@@ -472,12 +567,13 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                               ? await ApiService.addProduct(np, token: widget.token)
                               : await ApiService.updateProduct(np, token: widget.token);
                           if (!mounted) return;
-                          if (ok) { 
-                            Navigator.pop(ctx); 
-                            fetchProducts(); 
-                            TopPopup.show(context, product == null ? "Product added!" : "Product updated!", accentGreen); 
+                          if (ok) {
+                            Navigator.pop(ctx);
+                            fetchProducts();
+                            TopPopup.show(context, product == null ? "Product added!" : "Product updated!", accentGreen);
+                          } else {
+                            TopPopup.show(ctx, "Operation failed", Colors.red);
                           }
-                          else { TopPopup.show(ctx, "Operation failed", Colors.red); }
                         },
                         child: Text(product == null ? "Add Product" : "Update Product",
                             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: isSmall ? 14 : 16)),
@@ -543,7 +639,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     );
   }
 
-  // ✅ UPDATED PRODUCT CARD - Review button on top, Edit+Delete in one row below
+  // ✅ UPDATED: Larger Edit/Delete buttons, reviews btn slightly smaller
   Widget buildProductCard(Product product, bool isSmall) {
     return StatefulBuilder(builder: (ctx, setCard) {
       bool hovered = false;
@@ -566,16 +662,22 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
               builder: (context, constraints) {
                 final cardWidth = constraints.maxWidth;
                 final bool isUltraCompact = cardWidth < 160;
-                
-                // Adjust sizes based on available width
-                final double imgH = isUltraCompact ? 80 : (isSmall ? 100 : 120);
-                final double pad = isUltraCompact ? 6 : (isSmall ? 8 : 10);
-                final double btnPad = isUltraCompact ? 5 : (isSmall ? 7 : 9);
-                final double nameSz = isUltraCompact ? 11 : (isSmall ? 12 : 14);
-                final double prSz = isUltraCompact ? 11 : (isSmall ? 12 : 14);
-                final double ratSz = isUltraCompact ? 9 : (isSmall ? 10 : 11);
-                final double iconSz = isUltraCompact ? 11 : (isSmall ? 12 : 14);
-                final double btnSz = isUltraCompact ? 9 : (isSmall ? 10 : 12);
+
+                final double imgH    = isUltraCompact ? 80 : (isSmall ? 100 : 120);
+                final double pad     = isUltraCompact ? 6 : (isSmall ? 8 : 10);
+                final double nameSz  = isUltraCompact ? 11 : (isSmall ? 12 : 14);
+                final double prSz    = isUltraCompact ? 11 : (isSmall ? 12 : 14);
+                final double ratSz   = isUltraCompact ? 9 : (isSmall ? 10 : 11);
+
+                // ✅ Larger edit/delete button padding & icon sizes
+                final double actionBtnPad  = isUltraCompact ? 8 : (isSmall ? 10 : 12);
+                final double actionIconSz  = isUltraCompact ? 13 : (isSmall ? 15 : 16);
+                final double actionBtnSz   = isUltraCompact ? 10 : (isSmall ? 12 : 13);
+
+                // Reviews btn slightly smaller than edit/delete
+                final double reviewBtnPad  = isUltraCompact ? 6 : (isSmall ? 7 : 8);
+                final double reviewIconSz  = isUltraCompact ? 11 : (isSmall ? 12 : 13);
+                final double reviewBtnSz   = isUltraCompact ? 9 : (isSmall ? 10 : 11);
 
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -642,8 +744,8 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                             ),
                           ),
                           const SizedBox(height: 2),
-                          
-                          // Reviews row - always visible
+
+                          // Reviews row
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -668,7 +770,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                               ),
                             ],
                           ),
-                          
+
                           // Description on larger screens only
                           if (!isUltraCompact && !isSmall && product.description.isNotEmpty) ...[
                             const SizedBox(height: 3),
@@ -685,13 +787,13 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
 
                     const Spacer(),
 
-                    // Action Buttons - REVIEWS ON TOP, EDIT+DELETE IN ROW BELOW
+                    // Action Buttons
                     Padding(
                       padding: EdgeInsets.fromLTRB(pad, 4, pad, pad),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          // 1. REVIEWS BUTTON (full width)
+                          // 1. REVIEWS BUTTON (full width, slightly compact)
                           SizedBox(
                             width: double.infinity,
                             child: Material(
@@ -711,7 +813,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                                 ),
                                 borderRadius: BorderRadius.circular(8),
                                 child: Padding(
-                                  padding: EdgeInsets.symmetric(vertical: btnPad),
+                                  padding: EdgeInsets.symmetric(vertical: reviewBtnPad),
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
@@ -720,18 +822,20 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                                             ? Icons.rate_review
                                             : Icons.rate_review_outlined,
                                         color: Colors.white,
-                                        size: iconSz,
+                                        size: reviewIconSz,
                                       ),
                                       const SizedBox(width: 4),
                                       Flexible(
                                         child: Text(
-                                          isUltraCompact ? "${product.reviewCount}" : "Reviews (${product.reviewCount})",
+                                          isUltraCompact
+                                              ? "${product.reviewCount}"
+                                              : "Reviews (${product.reviewCount})",
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
                                             color: Colors.white,
                                             fontWeight: FontWeight.w600,
-                                            fontSize: btnSz,
+                                            fontSize: reviewBtnSz,
                                           ),
                                         ),
                                       ),
@@ -741,10 +845,10 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                               ),
                             ),
                           ),
-                          
+
                           const SizedBox(height: 6),
 
-                          // 2. EDIT + DELETE BUTTONS IN ONE ROW (always)
+                          // 2. ✅ EDIT + DELETE BUTTONS - larger, more tappable
                           Row(
                             children: [
                               Expanded(
@@ -755,18 +859,18 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                                     onTap: () => showProductModal(product),
                                     borderRadius: BorderRadius.circular(8),
                                     child: Padding(
-                                      padding: EdgeInsets.symmetric(vertical: btnPad),
+                                      padding: EdgeInsets.symmetric(vertical: actionBtnPad),
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
-                                          Icon(Icons.edit, color: Colors.white, size: iconSz),
-                                          const SizedBox(width: 3),
+                                          Icon(Icons.edit, color: Colors.white, size: actionIconSz),
+                                          const SizedBox(width: 4),
                                           Text(
                                             "Edit",
                                             style: TextStyle(
                                               color: Colors.white,
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: btnSz,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: actionBtnSz,
                                             ),
                                           ),
                                         ],
@@ -803,10 +907,8 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                                           actions: [
                                             TextButton(
                                               onPressed: () => Navigator.pop(context, false),
-                                              child: const Text(
-                                                "Cancel",
-                                                style: TextStyle(color: mediumGrey),
-                                              ),
+                                              child: const Text("Cancel",
+                                                  style: TextStyle(color: mediumGrey)),
                                             ),
                                             ElevatedButton(
                                               onPressed: () => Navigator.pop(context, true),
@@ -834,18 +936,18 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                                     },
                                     borderRadius: BorderRadius.circular(8),
                                     child: Padding(
-                                      padding: EdgeInsets.symmetric(vertical: btnPad),
+                                      padding: EdgeInsets.symmetric(vertical: actionBtnPad),
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
-                                          Icon(Icons.delete, color: Colors.white, size: iconSz),
-                                          const SizedBox(width: 3),
+                                          Icon(Icons.delete, color: Colors.white, size: actionIconSz),
+                                          const SizedBox(width: 4),
                                           Text(
                                             "Delete",
                                             style: TextStyle(
                                               color: Colors.white,
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: btnSz,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: actionBtnSz,
                                             ),
                                           ),
                                         ],
@@ -872,7 +974,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   // Ultra compact stock badge
   Widget _buildStockBadgeCompact(Product product, bool isUltraCompact) {
     if (!isUltraCompact) return _buildStockBadge(product);
-    
+
     Color badgeColor;
     String text;
     if (product.stock == 0) {
@@ -885,7 +987,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
       badgeColor = accentGreen;
       text = "${product.stock}";
     }
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
       decoration: BoxDecoration(
@@ -1083,10 +1185,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     final bool isSmall      = w >= 350 && w < 600;
     final bool isTablet     = w >= 600 && w < 900;
     final bool isCardSmall  = isSmartwatch || isVerySmall;
-    
-    // Aspect ratios for responsive grid
+
     final int  prodCols     = isSmartwatch || isVerySmall ? 1 : isSmall ? 2 : isTablet ? 3 : 5;
-    final double prodAspect = isSmartwatch ? 0.55 : isVerySmall ? 0.6 : isSmall ? 0.65 : 0.7;
+    final double prodAspect = isSmartwatch ? 0.52 : isVerySmall ? 0.55 : isSmall ? 0.60 : 0.65;
     final double outerPad   = isSmartwatch ? 4 : isVerySmall ? 8 : 12;
 
     return Scaffold(
@@ -1144,7 +1245,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                         fontWeight: FontWeight.bold, color: primaryIndigo),
                   ),
                 ),
-                
+
                 // Analytics Cards
                 LayoutBuilder(builder: (lbCtx, bc) {
                   final isTiny  = isSmartwatch || isVerySmall;
@@ -1170,9 +1271,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                   return Wrap(spacing: spacing, runSpacing: spacing, alignment: WrapAlignment.center,
                       children: cards.map((c) => SizedBox(width: cardW, height: cardH, child: c)).toList());
                 }),
-                
+
                 SizedBox(height: isSmartwatch ? 8 : 16),
-                
+
                 // Search and Filter
                 Row(
                   children: [
@@ -1229,9 +1330,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                     ),
                   ],
                 ),
-                
+
                 SizedBox(height: isSmartwatch ? 8 : 16),
-                
+
                 // Product Grid
                 LayoutBuilder(
                   builder: (context, constraints) {
@@ -1249,7 +1350,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                     );
                   },
                 ),
-                
+
                 const SizedBox(height: 20),
                 const FooterWidget(),
               ]),

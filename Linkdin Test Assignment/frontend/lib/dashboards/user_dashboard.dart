@@ -642,7 +642,7 @@ class _UserDashboardState extends State<UserDashboard> {
     );
   }
 
-  // ✅ UPDATED PRODUCT CARD - Review button on top, Cart+Buy in one row below
+  // ✅ UPDATED PRODUCT CARD - Compact Reviews btn, simple Cart/Buy text labels
   Widget buildProductCard(Product product, bool isSmall) {
     final cartIndex = cartItems.indexWhere((i) => i.productId == product.id);
     final cartQty = cartIndex >= 0 ? cartItems[cartIndex].quantity : 0;
@@ -679,21 +679,14 @@ class _UserDashboardState extends State<UserDashboard> {
                     padding: EdgeInsets.all(isSmall ? 8 : 10),
                     child: LayoutBuilder(
                       builder: (context, constraints) {
-                        // Calculate available width
                         final cardWidth = constraints.maxWidth;
-                        
-                        // Determine if we need ultra compact layout
                         final bool isUltraCompact = cardWidth < 140;
-                        
-                        // Adjust sizes based on available width
+
                         final double imgH = isUltraCompact ? 80 : (isSmall ? 100 : 120);
                         final double pad = isUltraCompact ? 6 : (isSmall ? 8 : 10);
-                        final double btnPad = isUltraCompact ? 5 : (isSmall ? 7 : 9);
                         final double nameSz = isUltraCompact ? 12 : (isSmall ? 13 : 15);
                         final double prSz = isUltraCompact ? 12 : (isSmall ? 13 : 15);
                         final double ratSz = isUltraCompact ? 10 : (isSmall ? 11 : 12);
-                        final double iconSz = isUltraCompact ? 12 : (isSmall ? 14 : 16);
-                        final double btnSz = isUltraCompact ? 10 : (isSmall ? 11 : 12);
 
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -781,11 +774,11 @@ class _UserDashboardState extends State<UserDashboard> {
                             ),
 
                             const Spacer(),
-                            
-                            // 1. REVIEWS BUTTON (full width)
+
+                            // ✅ FIX 1: REVIEWS BUTTON - smaller height & compact text
                             SizedBox(
                               width: double.infinity,
-                              height: 38,
+                              height: 30, // reduced from 38 → 30
                               child: ElevatedButton.icon(
                                 onPressed: () => Navigator.push(
                                     context,
@@ -800,49 +793,53 @@ class _UserDashboardState extends State<UserDashboard> {
                                   reviewCount > 0
                                       ? Icons.rate_review
                                       : Icons.rate_review_outlined,
-                                  size: 16,
+                                  size: 13, // reduced from 16 → 13
                                 ),
                                 label: Text(
-                                  isUltraCompact ? "$reviewCount" : "Reviews ($reviewCount)",
+                                  isUltraCompact
+                                      ? "★ $reviewCount"
+                                      : "Reviews ($reviewCount)",
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 12,
+                                    fontSize: 11, // reduced from 12 → 11
                                   ),
                                 ),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor:
                                       reviewCount > 0 ? Colors.purple : Colors.grey,
                                   foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(horizontal: 6),
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
+                                    borderRadius: BorderRadius.circular(7),
                                   ),
-                                  elevation: 2,
+                                  elevation: 1,
                                 ),
                               ),
                             ),
 
-                            const SizedBox(height: 6),
+                            const SizedBox(height: 5),
 
-                            // 2. CART + BUY BUTTONS IN ONE ROW (always)
+                            // ✅ FIX 2: CART + BUY BUTTONS - simple "Cart" and "Buy" labels
                             Row(
                               children: [
                                 Expanded(
                                   child: SizedBox(
-                                    height: 38,
+                                    height: 36,
                                     child: ElevatedButton.icon(
                                       onPressed: isOutOfStock ? null : () => addToCart(product),
                                       icon: const Icon(Icons.shopping_cart, size: 14),
-                                      label: Text(
-                                        cartQty > 0 ? "Cart ($cartQty)" : "Cart",
-                                        style: const TextStyle(
+                                      label: const Text(
+                                        "Cart", // ✅ Fixed: always "Cart", no dynamic long text
+                                        style: TextStyle(
                                           fontWeight: FontWeight.bold,
-                                          fontSize: 11,
+                                          fontSize: 12,
                                         ),
                                       ),
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor:
                                             isOutOfStock ? mediumGrey : primaryIndigo,
                                         foregroundColor: Colors.white,
+                                        padding: const EdgeInsets.symmetric(horizontal: 4),
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(8),
                                         ),
@@ -854,7 +851,7 @@ class _UserDashboardState extends State<UserDashboard> {
                                 const SizedBox(width: 6),
                                 Expanded(
                                   child: SizedBox(
-                                    height: 38,
+                                    height: 36,
                                     child: ElevatedButton.icon(
                                       onPressed: isOutOfStock ? null : () {
                                         Navigator.push(
@@ -876,16 +873,17 @@ class _UserDashboardState extends State<UserDashboard> {
                                       },
                                       icon: const Icon(Icons.shopping_bag, size: 14),
                                       label: const Text(
-                                        "Buy",
+                                        "Buy", // ✅ Fixed: always "Buy", clean and short
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
-                                          fontSize: 11,
+                                          fontSize: 12,
                                         ),
                                       ),
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor:
                                             isOutOfStock ? mediumGrey : accentGreen,
                                         foregroundColor: Colors.white,
+                                        padding: const EdgeInsets.symmetric(horizontal: 4),
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(8),
                                         ),
@@ -913,7 +911,7 @@ class _UserDashboardState extends State<UserDashboard> {
   // Ultra compact stock badge for very small screens
   Widget _buildStockBadgeCompact(int stock, bool isUltraCompact) {
     if (!isUltraCompact) return _buildStockBadge(stock, true);
-    
+
     Color badgeColor;
     String text;
     if (stock == 0) {
@@ -926,7 +924,7 @@ class _UserDashboardState extends State<UserDashboard> {
       badgeColor = accentGreen;
       text = "In";
     }
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
       decoration: BoxDecoration(
@@ -1034,9 +1032,11 @@ class _UserDashboardState extends State<UserDashboard> {
     final bool isCardSmall = isSmartwatch || isVerySmall;
     final bool isNavSmall = width < 350;
 
-    // ✅ Responsive aspect ratios
-    final double aspectRatio = isSmartwatch ? 0.55 : (isVerySmall ? 0.6 : (isSmall ? 0.65 : 0.7));
-    
+    // ✅ Slightly increased aspect ratios for more professional card height
+    final double aspectRatio = isSmartwatch
+        ? 0.52
+        : (isVerySmall ? 0.55 : (isSmall ? 0.60 : 0.65));
+
     final int gridCount = isSmartwatch || isVerySmall ? 1 : isSmall ? 2 : isTablet ? 3 : 5;
     final int cartCount = cartItems.fold(0, (sum, i) => sum + i.quantity);
 
