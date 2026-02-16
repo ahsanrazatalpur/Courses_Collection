@@ -2,7 +2,7 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
+import 'dart:typed_data'; // ← ADDED: needed for Uint8List (imageBytes)
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -50,28 +50,41 @@ class ApiService {
     return [];
   }
 
-  static Future<bool> addProduct(Product product, {String? token}) async {
+  // ── CHANGED: added imageBytes + imageFileName params ──────────────────────
+  // Old code used product.imageFile (dart:io File) which crashes on web.
+  // New code receives raw bytes from the dashboard (works on web + mobile).
+  static Future<bool> addProduct(
+    Product product, {
+    String? token,
+    Uint8List? imageBytes,   // ← bytes from XFile.readAsBytes()
+    String? imageFileName,   // ← original filename e.g. "shoe.jpg"
+  }) async {
     try {
       final url = Uri.parse("$baseUrl/products/");
 
-      if (product.imageFile != null && product.imageFile is File) {
-        var request = http.MultipartRequest('POST', url);
+      if (imageBytes != null && imageFileName != null) {
+        // Multipart upload — file was picked from gallery/camera
+        final request = http.MultipartRequest('POST', url);
         if (token != null && token.isNotEmpty) {
           request.headers['Authorization'] = 'Bearer $token';
         }
-        request.fields['name'] = product.name;
+        request.fields['name']        = product.name;
         request.fields['description'] = product.description;
-        request.fields['price'] = product.price.toString();
-        request.fields['stock'] = product.stock.toString();
-        request.files.add(await http.MultipartFile.fromPath(
-          'image',
-          (product.imageFile as File).path,
-        ));
+        request.fields['price']       = product.price.toString();
+        request.fields['stock']       = product.stock.toString();
+        request.files.add(
+          http.MultipartFile.fromBytes(   // ← fromBytes not fromPath (web safe)
+            'image',
+            imageBytes,
+            filename: imageFileName,
+          ),
+        );
         final streamedResponse = await request.send();
         final res = await http.Response.fromStream(streamedResponse);
         debugPrint("addProduct multipart response: ${res.statusCode} | ${res.body}");
         return res.statusCode == 201 || res.statusCode == 200;
       } else {
+        // JSON upload — URL string or no image
         final res = await http.post(
           url,
           headers: _headers(token: token),
@@ -86,29 +99,40 @@ class ApiService {
     }
   }
 
-  static Future<bool> updateProduct(Product product, {String? token}) async {
+  // ── CHANGED: added imageBytes + imageFileName params ──────────────────────
+  static Future<bool> updateProduct(
+    Product product, {
+    String? token,
+    Uint8List? imageBytes,   // ← bytes from XFile.readAsBytes()
+    String? imageFileName,   // ← original filename e.g. "shoe.jpg"
+  }) async {
     if (product.id == null) return false;
     try {
       final url = Uri.parse("$baseUrl/products/${product.id}/");
 
-      if (product.imageFile != null && product.imageFile is File) {
-        var request = http.MultipartRequest('PATCH', url);
+      if (imageBytes != null && imageFileName != null) {
+        // Multipart upload — file was picked from gallery/camera
+        final request = http.MultipartRequest('PATCH', url);
         if (token != null && token.isNotEmpty) {
           request.headers['Authorization'] = 'Bearer $token';
         }
-        request.fields['name'] = product.name;
+        request.fields['name']        = product.name;
         request.fields['description'] = product.description;
-        request.fields['price'] = product.price.toString();
-        request.fields['stock'] = product.stock.toString();
-        request.files.add(await http.MultipartFile.fromPath(
-          'image',
-          (product.imageFile as File).path,
-        ));
+        request.fields['price']       = product.price.toString();
+        request.fields['stock']       = product.stock.toString();
+        request.files.add(
+          http.MultipartFile.fromBytes(   // ← fromBytes not fromPath (web safe)
+            'image',
+            imageBytes,
+            filename: imageFileName,
+          ),
+        );
         final streamedResponse = await request.send();
         final res = await http.Response.fromStream(streamedResponse);
         debugPrint("updateProduct multipart response: ${res.statusCode} | ${res.body}");
         return res.statusCode == 200;
       } else {
+        // JSON upload — URL string or no image
         final res = await http.patch(
           url,
           headers: _headers(token: token),
@@ -122,6 +146,7 @@ class ApiService {
       return false;
     }
   }
+  // ── END OF CHANGES ────────────────────────────────────────────────────────
 
   static Future<bool> deleteProduct(int id, {String? token}) async {
     try {
