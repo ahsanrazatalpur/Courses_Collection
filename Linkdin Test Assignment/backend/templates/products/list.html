@@ -1,0 +1,87 @@
+<!-- templates/dashboard/products/list.html -->
+{% extends 'dashboard/base.html' %}
+{% block title %}Products{% endblock %}
+{% block appbar_title %}Products{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <h3>📦 Products ({{ products|length }})</h3>
+    <a href="{% url 'product_add' %}" class="btn btn-green">➕ Add Product</a>
+</div>
+
+<!-- Search + Filter bar (matches Flutter search + dropdown) -->
+<div class="filter-bar">
+    <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" class="search-input"
+               placeholder="Search products..." oninput="filterProducts()">
+    </div>
+    <select id="stockFilter" class="filter-select" onchange="filterProducts()">
+        <option value="all">All Stock</option>
+        <option value="in">In Stock</option>
+        <option value="low">Low Stock</option>
+        <option value="out">Out of Stock</option>
+    </select>
+</div>
+
+<!-- Product Grid (matches Flutter GridView with buildProductCard) -->
+<div class="product-grid" id="productGrid">
+    {% for product in products %}
+    <div class="product-card"
+         data-name="{{ product.name|lower }}"
+         data-stock="{{ product.stock }}">
+
+        <!-- Image + stock badge -->
+        <div class="product-img-wrap">
+            {% if product.image %}
+            <img src="{{ product.image.url }}" class="product-img" alt="{{ product.name }}"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="product-img-placeholder" style="display:none;">🛍️</div>
+            {% else %}
+            <div class="product-img-placeholder">🛍️</div>
+            {% endif %}
+
+            <!-- Stock badge (matches Flutter _buildStockBadge) -->
+            {% if product.stock == 0 %}
+            <span class="stock-badge stock-out">🚫 {{ product.stock }}</span>
+            {% elif product.stock < 10 %}
+            <span class="stock-badge stock-low">⚠️ {{ product.stock }}</span>
+            {% else %}
+            <span class="stock-badge stock-in">✅ {{ product.stock }}</span>
+            {% endif %}
+        </div>
+
+        <!-- Product info -->
+        <div class="product-info">
+            <div class="product-name">{{ product.name }}</div>
+            <div class="product-price">Rs {{ product.price }}</div>
+            <div class="product-rating">
+                {% if product.review_count > 0 %}
+                ⭐ {{ product.average_rating }} ({{ product.review_count }})
+                {% else %}
+                ☆ No reviews
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Action buttons (matches Flutter btn-reviews + Edit + Delete) -->
+        <div class="product-actions">
+            <div class="btn-row">
+                <a href="{% url 'product_edit' product.id %}" class="btn-edit">✏️ Edit</a>
+                <button class="btn-delete"
+                    onclick="confirmDelete('{% url 'product_delete' product.id %}', '{{ product.name }}')">
+                    🗑️ Delete
+                </button>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div style="grid-column:1/-1;text-align:center;padding:60px;color:#9E9E9E;">
+        <div style="font-size:48px;margin-bottom:12px;">📦</div>
+        No products found. <a href="{% url 'product_add' %}" style="color:#3F51B5;">Add one!</a>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

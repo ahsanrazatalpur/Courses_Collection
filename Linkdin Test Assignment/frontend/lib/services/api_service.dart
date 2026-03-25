@@ -18,11 +18,10 @@ import '../models/review.dart';
 class ApiService {
   // ==================== BASE URL ====================
   static String get baseUrl {
-    if (kIsWeb) return "http://ahsanrazatalpur.pythonanywhere.com/api";
     return "http://ahsanrazatalpur.pythonanywhere.com/api";
   }
 
-  static const int _timeout = 20; // ✅ Increased timeout for image uploads
+  static const int _timeout = 60; // ✅ Increased timeout for image uploads on remote server
 
   // ==================== HEADERS ====================
   static Map<String, String> _headers({String? token}) {
@@ -60,7 +59,7 @@ class ApiService {
   }) async {
     try {
       final url = Uri.parse("$baseUrl/products/");
-      
+
       debugPrint("=" * 80);
       debugPrint("📤 ADD PRODUCT REQUEST");
       debugPrint("=" * 80);
@@ -70,22 +69,19 @@ class ApiService {
       debugPrint("Image URL: ${product.image ?? 'N/A'}");
 
       if (imageBytes != null && imageFileName != null) {
-        // ✅ Multipart upload with file
         debugPrint("🔄 Using MULTIPART upload");
-        
+
         final request = http.MultipartRequest('POST', url);
-        
+
         if (token != null && token.isNotEmpty) {
           request.headers['Authorization'] = 'Bearer $token';
         }
-        
-        // Add text fields
+
         request.fields['name'] = product.name;
         request.fields['description'] = product.description;
         request.fields['price'] = product.price.toString();
         request.fields['stock'] = product.stock.toString();
-        
-        // Detect content type
+
         String contentType = 'image/jpeg';
         final lowerFileName = imageFileName.toLowerCase();
         if (lowerFileName.endsWith('.png')) {
@@ -97,30 +93,27 @@ class ApiService {
         } else if (lowerFileName.endsWith('.jpg') || lowerFileName.endsWith('.jpeg')) {
           contentType = 'image/jpeg';
         }
-        
+
         debugPrint("📎 Uploading file: $imageFileName");
         debugPrint("📎 Content-Type: $contentType");
         debugPrint("📎 File size: ${imageBytes.length} bytes");
-        
-        // Add image file
+
         request.files.add(
           http.MultipartFile.fromBytes(
-            'image',  // Must match Django field name
+            'image',
             imageBytes,
             filename: imageFileName,
             contentType: http_parser.MediaType.parse(contentType),
           ),
         );
-        
-        final streamedResponse = await request.send().timeout(
-          const Duration(seconds: _timeout),
-        );
+
+        final streamedResponse = await request.send().timeout(const Duration(seconds: _timeout));
         final res = await http.Response.fromStream(streamedResponse);
-        
+
         debugPrint("📥 Response status: ${res.statusCode}");
         debugPrint("📄 Response body: ${res.body}");
         debugPrint("=" * 80);
-        
+
         if (res.statusCode == 201 || res.statusCode == 200) {
           return true;
         } else {
@@ -128,32 +121,30 @@ class ApiService {
           return false;
         }
       } else {
-        // ✅ JSON upload with URL
         debugPrint("🔄 Using JSON upload with URL");
-        
+
         final body = <String, dynamic>{
           'name': product.name,
           'description': product.description,
           'price': product.price,
           'stock': product.stock,
         };
-        
-        // Add image_url if provided
+
         if (product.image != null && product.image!.isNotEmpty) {
           body['image_url'] = product.image;
           debugPrint("📎 Image URL: ${product.image}");
         }
-        
+
         final res = await http.post(
           url,
           headers: _headers(token: token),
           body: jsonEncode(body),
         ).timeout(const Duration(seconds: _timeout));
-        
+
         debugPrint("📥 Response status: ${res.statusCode}");
         debugPrint("📄 Response body: ${res.body}");
         debugPrint("=" * 80);
-        
+
         if (res.statusCode == 201 || res.statusCode == 200) {
           return true;
         } else {
@@ -179,10 +170,10 @@ class ApiService {
       debugPrint("❌ Cannot update product: ID is null");
       return false;
     }
-    
+
     try {
       final url = Uri.parse("$baseUrl/products/${product.id}/");
-      
+
       debugPrint("=" * 80);
       debugPrint("📝 UPDATE PRODUCT REQUEST");
       debugPrint("=" * 80);
@@ -193,22 +184,19 @@ class ApiService {
       debugPrint("Image URL: ${product.image ?? 'N/A'}");
 
       if (imageBytes != null && imageFileName != null) {
-        // ✅ Multipart update with new file
         debugPrint("🔄 Using MULTIPART update with new file");
-        
+
         final request = http.MultipartRequest('PATCH', url);
-        
+
         if (token != null && token.isNotEmpty) {
           request.headers['Authorization'] = 'Bearer $token';
         }
-        
-        // Add text fields
+
         request.fields['name'] = product.name;
         request.fields['description'] = product.description;
         request.fields['price'] = product.price.toString();
         request.fields['stock'] = product.stock.toString();
-        
-        // Detect content type
+
         String contentType = 'image/jpeg';
         final lowerFileName = imageFileName.toLowerCase();
         if (lowerFileName.endsWith('.png')) {
@@ -220,12 +208,11 @@ class ApiService {
         } else if (lowerFileName.endsWith('.jpg') || lowerFileName.endsWith('.jpeg')) {
           contentType = 'image/jpeg';
         }
-        
+
         debugPrint("📎 Uploading file: $imageFileName");
         debugPrint("📎 Content-Type: $contentType");
         debugPrint("📎 File size: ${imageBytes.length} bytes");
-        
-        // Add image file
+
         request.files.add(
           http.MultipartFile.fromBytes(
             'image',
@@ -234,16 +221,14 @@ class ApiService {
             contentType: http_parser.MediaType.parse(contentType),
           ),
         );
-        
-        final streamedResponse = await request.send().timeout(
-          const Duration(seconds: _timeout),
-        );
+
+        final streamedResponse = await request.send().timeout(const Duration(seconds: _timeout));
         final res = await http.Response.fromStream(streamedResponse);
-        
+
         debugPrint("📥 Response status: ${res.statusCode}");
         debugPrint("📄 Response body: ${res.body}");
         debugPrint("=" * 80);
-        
+
         if (res.statusCode == 200) {
           return true;
         } else {
@@ -251,34 +236,32 @@ class ApiService {
           return false;
         }
       } else {
-        // ✅ JSON update (with or without URL)
         debugPrint("🔄 Using JSON update");
-        
+
         final body = <String, dynamic>{
           'name': product.name,
           'description': product.description,
           'price': product.price,
           'stock': product.stock,
         };
-        
-        // Only include image_url if explicitly set
+
         if (product.image != null && product.image!.isNotEmpty) {
           body['image_url'] = product.image;
           debugPrint("📎 Image URL: ${product.image}");
         } else {
           debugPrint("📎 No image change (keeping existing)");
         }
-        
+
         final res = await http.patch(
           url,
           headers: _headers(token: token),
           body: jsonEncode(body),
         ).timeout(const Duration(seconds: _timeout));
-        
+
         debugPrint("📥 Response status: ${res.statusCode}");
         debugPrint("📄 Response body: ${res.body}");
         debugPrint("=" * 80);
-        
+
         if (res.statusCode == 200) {
           return true;
         } else {
@@ -308,11 +291,10 @@ class ApiService {
   }
 
   // ==================== ORDERS ====================
-  
+
   static Future<List<Order>> fetchAllOrders({required String token}) async {
     try {
       debugPrint("🔍 Fetching all orders from: $baseUrl/admin/orders/");
-
       final res = await http.get(
         Uri.parse("$baseUrl/admin/orders/"),
         headers: _headers(token: token),
@@ -323,7 +305,6 @@ class ApiService {
       if (res.statusCode == 200) {
         final body = jsonDecode(res.body);
         List data = [];
-        
         if (body is List) {
           data = body;
         } else if (body is Map && body.containsKey('orders')) {
@@ -331,7 +312,6 @@ class ApiService {
         } else if (body is Map && body.containsKey('results')) {
           data = body['results'];
         }
-        
         return data.map((e) => Order.fromJson(e)).toList();
       }
       throw Exception("Failed to load orders: ${res.statusCode}");
@@ -452,17 +432,12 @@ class ApiService {
     }
   }
 
-  static Future<bool> updateOrderStatus(int orderId, String status,
-      {required String token}) async {
-    return updateOrderStatusByAdmin(
-      orderId: orderId,
-      status: status,
-      token: token,
-    );
+  static Future<bool> updateOrderStatus(int orderId, String status, {required String token}) async {
+    return updateOrderStatusByAdmin(orderId: orderId, status: status, token: token);
   }
 
   // ==================== USERS ====================
-  
+
   static Future<List<User>> fetchUsers({required String token}) async {
     try {
       final res = await http.get(
@@ -492,7 +467,6 @@ class ApiService {
         headers: _headers(token: token),
         body: jsonEncode(data),
       ).timeout(const Duration(seconds: _timeout));
-      
       return res.statusCode == 200;
     } catch (e) {
       debugPrint("updateUser error: $e");
@@ -506,7 +480,6 @@ class ApiService {
         Uri.parse("$baseUrl/users/admin/users/$userId/"),
         headers: _headers(token: token),
       ).timeout(const Duration(seconds: _timeout));
-      
       return res.statusCode == 204 || res.statusCode == 200;
     } catch (e) {
       debugPrint("deleteUser error: $e");
@@ -520,7 +493,6 @@ class ApiService {
         Uri.parse("$baseUrl/users/me/"),
         headers: _headers(token: token),
       ).timeout(const Duration(seconds: _timeout));
-      
       if (res.statusCode == 200) {
         return User.fromJson(jsonDecode(res.body));
       }
@@ -531,7 +503,7 @@ class ApiService {
   }
 
   // ==================== CART ====================
-  
+
   static Future<List<CartItem>> fetchCart({required String token}) async {
     try {
       final res = await http.get(
@@ -560,7 +532,6 @@ class ApiService {
         headers: _headers(token: token),
         body: jsonEncode({'product_id': productId, 'quantity': quantity}),
       ).timeout(const Duration(seconds: _timeout));
-
       return res.statusCode == 200 || res.statusCode == 201;
     } catch (e) {
       debugPrint("addToCart error: $e");
@@ -579,7 +550,6 @@ class ApiService {
         headers: _headers(token: token),
         body: jsonEncode({'product_id': productId, 'quantity': quantity}),
       ).timeout(const Duration(seconds: _timeout));
-
       return res.statusCode == 200 || res.statusCode == 201;
     } catch (e) {
       debugPrint("updateCartItemQuantity error: $e");
@@ -597,7 +567,6 @@ class ApiService {
         headers: _headers(token: token),
         body: jsonEncode({'product_id': productId}),
       ).timeout(const Duration(seconds: _timeout));
-
       return res.statusCode == 200 || res.statusCode == 204;
     } catch (e) {
       debugPrint("removeFromCart error: $e");
@@ -606,7 +575,7 @@ class ApiService {
   }
 
   // ==================== COUPONS ====================
-  
+
   static Future<List<Coupon>> fetchCoupons({required String token}) async {
     try {
       final res = await http.get(
@@ -632,7 +601,6 @@ class ApiService {
         headers: _headers(token: token),
         body: jsonEncode(coupon.toJson()),
       ).timeout(const Duration(seconds: _timeout));
-
       return res.statusCode == 201 || res.statusCode == 200;
     } catch (e) {
       debugPrint("❌ createCoupon error: $e");
@@ -642,14 +610,12 @@ class ApiService {
 
   static Future<bool> updateCoupon(Coupon coupon, {required String token}) async {
     if (coupon.id == null) return false;
-    
     try {
       final res = await http.put(
         Uri.parse("$baseUrl/coupons/${coupon.id}/"),
         headers: _headers(token: token),
         body: jsonEncode(coupon.toJson()),
       ).timeout(const Duration(seconds: _timeout));
-
       return res.statusCode == 200;
     } catch (e) {
       debugPrint("❌ updateCoupon error: $e");
@@ -657,20 +623,19 @@ class ApiService {
     }
   }
 
-  static Future<bool> deleteCoupon(int id, {required String token}) async {
+  static Future<bool> deleteCoupon(int id, {String? token}) async {
     try {
       final res = await http.delete(
         Uri.parse("$baseUrl/coupons/$id/"),
         headers: _headers(token: token),
       ).timeout(const Duration(seconds: _timeout));
-
       return res.statusCode == 204 || res.statusCode == 200;
     } catch (e) {
       debugPrint("❌ deleteCoupon error: $e");
       return false;
     }
   }
-  
+
   static Future<double?> applyCoupon({
     required String code,
     required double cartTotal,
@@ -694,7 +659,7 @@ class ApiService {
   }
 
   // ==================== REVIEWS ====================
-  
+
   static Future<Map<String, dynamic>?> fetchProductReviews({
     required int productId,
     int page = 1,
@@ -703,7 +668,6 @@ class ApiService {
   }) async {
     try {
       debugPrint("🔍 Fetching reviews for product #$productId");
-      
       final res = await http.get(
         Uri.parse("$baseUrl/reviews/product/$productId/?page=$page&page_size=$pageSize"),
         headers: _headers(token: token),
@@ -771,7 +735,6 @@ class ApiService {
           if (title != null && title.isNotEmpty) 'title': title,
         }),
       ).timeout(const Duration(seconds: _timeout));
-
       return res.statusCode == 201 || res.statusCode == 200;
     } catch (e) {
       debugPrint("❌ submitReview error: $e");
@@ -796,7 +759,6 @@ class ApiService {
           if (title != null && title.isNotEmpty) 'title': title,
         }),
       ).timeout(const Duration(seconds: _timeout));
-
       return res.statusCode == 200;
     } catch (e) {
       debugPrint("❌ updateReview error: $e");
@@ -813,7 +775,6 @@ class ApiService {
         Uri.parse("$baseUrl/reviews/$reviewId/"),
         headers: _headers(token: token),
       ).timeout(const Duration(seconds: _timeout));
-
       return res.statusCode == 204 || res.statusCode == 200;
     } catch (e) {
       debugPrint("❌ deleteReview error: $e");
@@ -880,7 +841,7 @@ class ApiService {
   }
 
   // ==================== ADMIN: REVIEWS ====================
-  
+
   static Future<List<Review>> fetchAllReviews({
     required String token,
     int? minRating,
@@ -890,13 +851,11 @@ class ApiService {
     try {
       String queryParams = '';
       final params = <String>[];
-      
       if (minRating != null) params.add('min_rating=$minRating');
       if (maxRating != null) params.add('max_rating=$maxRating');
       if (productId != null) params.add('product=$productId');
-      
       if (params.isNotEmpty) queryParams = '?${params.join('&')}';
-      
+
       final res = await http.get(
         Uri.parse("$baseUrl/reviews/admin/all/$queryParams"),
         headers: _headers(token: token),
@@ -921,7 +880,6 @@ class ApiService {
         Uri.parse("$baseUrl/reviews/admin/$reviewId/"),
         headers: _headers(token: token),
       ).timeout(const Duration(seconds: _timeout));
-
       return res.statusCode == 204 || res.statusCode == 200;
     } catch (e) {
       debugPrint("❌ adminDeleteReview error: $e");

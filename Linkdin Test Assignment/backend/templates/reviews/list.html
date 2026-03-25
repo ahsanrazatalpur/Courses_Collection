@@ -1,0 +1,110 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}Manage Reviews{% endblock %}
+
+{% block content %}
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+  <h2 style="margin:0;color:#3F51B5;">⭐ Manage Reviews</h2>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+    <span style="background:#3F51B5;color:white;padding:6px 14px;border-radius:20px;font-size:13px;font-weight:700;">
+      {{ total_reviews }} Total
+    </span>
+    {% if flagged_count > 0 %}
+      <span style="background:#FF9800;color:white;padding:6px 14px;border-radius:20px;font-size:13px;font-weight:700;">
+        ⚠️ {{ flagged_count }} Flagged
+      </span>
+    {% endif %}
+  </div>
+</div>
+
+{% if messages %}
+  {% for msg in messages %}
+    <div style="background:{% if msg.tags == 'error' %}#fde8e8{% else %}#e8f5e9{% endif %};border:1px solid {% if msg.tags == 'error' %}#f44336{% else %}#4CAF50{% endif %};padding:12px 16px;border-radius:8px;margin-bottom:16px;color:{% if msg.tags == 'error' %}#c62828{% else %}#2e7d32{% endif %};">
+      {{ msg }}
+    </div>
+  {% endfor %}
+{% endif %}
+
+<!-- Filter Tabs -->
+<div style="display:flex;gap:8px;margin-bottom:20px;">
+  <a href="{% url 'review_list' %}"
+     style="padding:8px 18px;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;
+            background:{% if filter_type == 'all' %}#3F51B5{% else %}#f5f5f5{% endif %};
+            color:{% if filter_type == 'all' %}white{% else %}#424242{% endif %};">
+    All Reviews
+  </a>
+  <a href="{% url 'review_list' %}?filter=flagged"
+     style="padding:8px 18px;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;
+            background:{% if filter_type == 'flagged' %}#FF9800{% else %}#f5f5f5{% endif %};
+            color:{% if filter_type == 'flagged' %}white{% else %}#424242{% endif %};">
+    ⚠️ Flagged (≤2 stars)
+  </a>
+</div>
+
+{% if not reviews %}
+  <div style="text-align:center;padding:60px 20px;background:white;border-radius:12px;">
+    <div style="font-size:64px;margin-bottom:16px;">{% if filter_type == 'flagged' %}✅{% else %}⭐{% endif %}</div>
+    <h3 style="color:#9E9E9E;">{% if filter_type == 'flagged' %}No flagged reviews!{% else %}No reviews yet{% endif %}</h3>
+  </div>
+{% else %}
+  {% for review in reviews %}
+    <div style="background:{% if review.rating <= 2 %}#fff8e1{% else %}white{% endif %};border:{% if review.rating <= 2 %}1px solid #FFB300{% else %}1px solid #e0e0e0{% endif %};border-radius:12px;padding:18px 20px;margin-bottom:12px;">
+
+      <!-- Header row -->
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
+        <div>
+          <!-- Product name -->
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+            <span style="background:#e8eaf6;color:#3F51B5;padding:3px 10px;border-radius:6px;font-size:12px;font-weight:700;">🛍️ {{ review.product.name }}</span>
+            {% if review.rating <= 2 %}
+              <span style="background:#FF9800;color:white;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700;">⚠️ FLAGGED</span>
+            {% endif %}
+          </div>
+          <!-- User + stars -->
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <div style="width:36px;height:36px;border-radius:50%;background:#3F51B5;display:flex;align-items:center;justify-content:center;color:white;font-size:14px;font-weight:700;">
+              {{ review.user.username|first|upper }}
+            </div>
+            <div>
+              <strong style="color:#424242;">{{ review.user.username }}</strong>
+              <div style="color:#FFB300;font-size:16px;line-height:1;">
+                {% for i in "12345" %}{% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}{% endfor %}
+                <span style="color:#757575;font-size:12px;margin-left:4px;">{{ review.rating }}/5</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Date + delete -->
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="color:#9E9E9E;font-size:12px;">{{ review.created_at|date:"d M Y" }}</span>
+          <form method="POST" action="{% url 'review_delete' review.pk %}" style="margin:0;"
+                onsubmit="return confirm('Delete this review by {{ review.user.username }}?')">
+            {% csrf_token %}
+            <button type="submit"
+                    style="background:white;color:#f44336;border:2px solid #f44336;padding:6px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">
+              🗑️ Delete
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Title -->
+      {% if review.title %}
+        <strong style="color:#424242;font-size:15px;display:block;margin-bottom:6px;">{{ review.title }}</strong>
+      {% endif %}
+
+      <!-- Comment -->
+      <div style="background:#f9f9f9;border-radius:8px;padding:12px 14px;color:#424242;font-size:14px;line-height:1.6;border:1px solid #eee;">
+        {{ review.comment }}
+      </div>
+
+      <!-- Footer -->
+      <div style="margin-top:10px;display:flex;gap:10px;font-size:12px;color:#9E9E9E;">
+        <span>❤️ {{ review.likes.count }} likes</span>
+        {% if review.is_edited %}<span>✏️ Edited</span>{% endif %}
+        {% if review.order %}<span>✅ Verified purchase</span>{% endif %}
+      </div>
+
+    </div>
+  {% endfor %}
+{% endif %}
+{% endblock %}

@@ -1,0 +1,155 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}Order #{{ order.id }}{% endblock %}
+{% block appbar_title %}Order #{{ order.id }}{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <h3>📋 Order #{{ order.id }}</h3>
+    <a href="{% url 'order_list' %}" class="btn btn-outline">← Back to Orders</a>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start;flex-wrap:wrap;">
+
+    <!-- Left: Order info + items -->
+    <div>
+        <div class="card">
+            <div class="card-header">🧾 Order Details</div>
+            <div style="padding:20px;">
+                <table style="font-size:14px;width:100%;">
+                    <tbody>
+                        <tr>
+                            <td style="color:#9E9E9E;padding:10px 0;width:160px;font-weight:500;">Customer Name</td>
+                            <td style="padding:10px 0;font-weight:700;">{{ order.full_name }}</td>
+                        </tr>
+                        <tr>
+                            <td style="color:#9E9E9E;padding:10px 0;">Phone</td>
+                            <td style="padding:10px 0;">{{ order.phone }}</td>
+                        </tr>
+                        <tr>
+                            <td style="color:#9E9E9E;padding:10px 0;">Address</td>
+                            <td style="padding:10px 0;">{{ order.address }}</td>
+                        </tr>
+                        <tr>
+                            <td style="color:#9E9E9E;padding:10px 0;">Order Date</td>
+                            <td style="padding:10px 0;">{{ order.created_at|date:"M d, Y — H:i" }}</td>
+                        </tr>
+                        <tr>
+                            <td style="color:#9E9E9E;padding:10px 0;">Total Amount</td>
+                            <td style="padding:10px 0;font-weight:700;font-size:18px;color:#3F51B5;">
+                                Rs {{ order.total_amount }}
+                            </td>
+                        </tr>
+                        {% if order.discount_amount %}
+                        <tr>
+                            <td style="color:#9E9E9E;padding:10px 0;">Discount</td>
+                            <td style="padding:10px 0;color:#4CAF50;font-weight:600;">
+                                - Rs {{ order.discount_amount }}
+                            </td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <td style="color:#9E9E9E;padding:10px 0;">Coupon Applied</td>
+                            <td style="padding:10px 0;">
+                                {% if order.coupon_applied %}
+                                <span class="coupon-chip">🏷️ Coupon Applied — Rs {{ order.discount_amount }} off</span>
+                                {% else %}
+                                <span style="color:#9E9E9E;">No coupon applied</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="color:#9E9E9E;padding:10px 0;">Status</td>
+                            <td style="padding:10px 0;">
+                                <span class="status-badge status-{{ order.status|lower }}">
+                                    {% if order.status == 'Pending' %}⏳
+                                    {% elif order.status == 'Shipped' %}🚚
+                                    {% else %}❌{% endif %}
+                                    {{ order.status }}
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Order Items -->
+        <div class="card">
+            <div class="card-header">🛍️ Order Items</div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Qty</th>
+                            <th>Unit Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in order.items.all %}
+                        <tr>
+                            <td>
+                                <div style="display:flex;align-items:center;gap:10px;">
+                                    {% if item.product.image %}
+                                    <img src="{{ item.product.image.url }}"
+                                         style="width:36px;height:36px;object-fit:cover;border-radius:6px;">
+                                    {% else %}
+                                    <div style="width:36px;height:36px;background:#F5F5F5;border-radius:6px;
+                                                display:flex;align-items:center;justify-content:center;font-size:18px;">🛍️</div>
+                                    {% endif %}
+                                    <span style="font-weight:500;">{{ item.name }}</span>
+                                </div>
+                            </td>
+                            <td>{{ item.quantity }}</td>
+                            <td><strong>Rs {{ item.price }}</strong></td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" style="text-align:center;color:#9E9E9E;padding:20px;">No items.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right: Update Status -->
+    <div>
+        <div class="card">
+            <div class="card-header">🔄 Update Status</div>
+            <div style="padding:20px;">
+                <form method="POST" action="{% url 'order_update_status' order.id %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label class="form-label">Current Status</label>
+                        <span class="status-badge status-{{ order.status|lower }}" style="font-size:13px;padding:6px 14px;">
+                            {% if order.status == 'Pending' %}⏳
+                            {% elif order.status == 'Shipped' %}🚚
+                            {% else %}❌{% endif %}
+                            {{ order.status }}
+                        </span>
+                    </div>
+                    <div class="form-group" style="margin-top:16px;">
+                        <label class="form-label">New Status</label>
+                        <!-- ALL statuses from Order.STATUS_CHOICES -->
+                        <select name="status" class="form-control">
+                            <option value="Pending"          {% if order.status == 'Pending' %}selected{% endif %}>⏳ Pending</option>
+                            <option value="Processing"       {% if order.status == 'Processing' %}selected{% endif %}>🔄 Processing</option>
+                            <option value="Shipped"          {% if order.status == 'Shipped' %}selected{% endif %}>🚚 Shipped</option>
+                            <option value="Out for Delivery" {% if order.status == 'Out for Delivery' %}selected{% endif %}>🛵 Out for Delivery</option>
+                            <option value="Delivered"        {% if order.status == 'Delivered' %}selected{% endif %}>✅ Delivered</option>
+                            <option value="Cancelled"        {% if order.status == 'Cancelled' %}selected{% endif %}>❌ Cancelled</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-indigo" style="width:100%;justify-content:center;">
+                        💾 Update Status
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

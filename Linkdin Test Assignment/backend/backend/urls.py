@@ -1,4 +1,4 @@
-# backend/urls.py - UPDATED WITH MEDIA FILE SERVING
+# backend/urls.py - UPDATED WITH MEDIA FILE SERVING + ADMIN DASHBOARD
 
 from django.contrib import admin
 from django.urls import path, include
@@ -12,6 +12,9 @@ def home(request):
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    
+    # ✅ Django + Jinja Admin Dashboard
+    path('dashboard/', include('dashboard.urls')),
     
     # User-related endpoints
     path('api/users/', include('users.urls')),

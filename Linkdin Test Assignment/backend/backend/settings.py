@@ -1,4 +1,4 @@
-# backend/settings.py - UPDATED WITH MEDIA FILE SUPPORT
+# backend/settings.py - UPDATED WITH POSTGRESQL + DJANGO JINJA ADMIN DASHBOARD
 
 from pathlib import Path
 import os
@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'cart',
     'orders',
     'coupons',
-    'dashboard',
+    'dashboard',   # ✅ Django + Jinja admin dashboard
     'users',
     'reviews',
 ]
@@ -65,19 +65,31 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'backend.urls'
 
 # =============================
-# Templates
+# Templates — Django + Jinja2 support
 # =============================
 TEMPLATES = [
+    # ✅ Django template engine (used by admin and dashboard)
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+        },
+    },
+    # ✅ Jinja2 template engine (for custom admin dashboard views)
+    {
+        'BACKEND': 'django.template.backends.jinja2.Jinja2',
+        'DIRS': [os.path.join(BASE_DIR, 'jinja2')],  # Put Jinja2 templates in /jinja2/ folder
+        'APP_DIRS': False,
+        'OPTIONS': {
+            'environment': 'backend.jinja2.environment',  # custom jinja2 env (see note below)
+            'extensions': [],
         },
     },
 ]
@@ -88,12 +100,16 @@ TEMPLATES = [
 WSGI_APPLICATION = 'backend.wsgi.application'
 
 # =============================
-# Database
+# ✅ FIX 1: Database — PostgreSQL (replaces SQLite)
 # =============================
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'ecommerce_db',
+        'USER': 'postgres',
+        'PASSWORD': '@11770099',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
@@ -121,7 +137,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# ✅ CRITICAL: Media files configuration
+# ✅ Media files configuration
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
@@ -167,15 +183,20 @@ CORS_ALLOW_HEADERS = [
     'user-agent',
     'x-csrftoken',
     'x-requested-with',
-    'content-disposition',  # ✅ ADDED for file uploads
+    'content-disposition',  # ✅ For file uploads
 ]
 CORS_ALLOW_METHODS = ['DELETE', 'GET', 'OPTIONS', 'PATCH', 'POST', 'PUT']
 
-# ✅ ADDED: File upload settings
+# ✅ File upload settings
 FILE_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
 
 # =============================
 # Custom User Model
 # =============================
-AUTH_USER_MODEL = 'users.User'  # Use our custom User model
+AUTH_USER_MODEL = 'users.User'
+
+# =============================
+# ✅ FIX 2: Login redirect for Django dashboard
+# =============================
+LOGIN_URL = '/admin/login/'  # Redirect to Django admin login if not authenticated

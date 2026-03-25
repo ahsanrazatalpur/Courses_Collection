@@ -1,0 +1,91 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}User Management{% endblock %}
+
+{% block content %}
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
+  <h2 style="margin:0;color:#3F51B5;">👥 User Management</h2>
+  <span style="background:#3F51B5;color:white;padding:6px 14px;border-radius:20px;font-size:13px;font-weight:700;">
+    {{ users|length }} Users
+  </span>
+</div>
+
+{% if messages %}
+  {% for msg in messages %}
+    <div style="background:{% if msg.tags == 'error' %}#fde8e8{% else %}#e8f5e9{% endif %};border:1px solid {% if msg.tags == 'error' %}#f44336{% else %}#4CAF50{% endif %};padding:12px 16px;border-radius:8px;margin-bottom:16px;color:{% if msg.tags == 'error' %}#c62828{% else %}#2e7d32{% endif %};">
+      {{ msg }}
+    </div>
+  {% endfor %}
+{% endif %}
+
+{% if not users %}
+  <div style="text-align:center;padding:60px 20px;background:white;border-radius:12px;">
+    <div style="font-size:64px;margin-bottom:16px;">👥</div>
+    <h3 style="color:#9E9E9E;">No users found</h3>
+  </div>
+{% else %}
+  {% for user in users %}
+    <div style="background:{% if user.is_blocked %}#fff8e1{% else %}white{% endif %};border:{% if user.is_blocked %}2px solid #FF9800{% else %}1px solid #e0e0e0{% endif %};border-radius:12px;padding:18px 20px;margin-bottom:12px;display:flex;flex-wrap:wrap;align-items:center;gap:14px;">
+
+      <!-- Avatar -->
+      <div style="width:48px;height:48px;border-radius:50%;background:{% if user.role == 'admin' %}#3F51B5{% elif user.is_blocked %}#FF9800{% else %}#4CAF50{% endif %};display:flex;align-items:center;justify-content:center;color:white;font-size:20px;font-weight:700;flex-shrink:0;">
+        {{ user.username|first|upper }}
+      </div>
+
+      <!-- Info -->
+      <div style="flex:1;min-width:160px;">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <strong style="color:#3F51B5;font-size:16px;">{{ user.username }}</strong>
+          {% if user.id == request.user.id %}
+            <span style="background:#2196F3;color:white;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;">YOU</span>
+          {% endif %}
+          <span style="background:{% if user.role == 'admin' %}#3F51B5{% else %}#9E9E9E{% endif %};color:white;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;">{{ user.role|upper }}</span>
+          <span style="background:{% if user.is_blocked %}#FF9800{% else %}#4CAF50{% endif %};color:white;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;">{% if user.is_blocked %}BLOCKED{% else %}ACTIVE{% endif %}</span>
+        </div>
+        <div style="color:#757575;font-size:13px;margin-top:4px;">{{ user.email }}</div>
+      </div>
+
+      <!-- Actions — only for other users -->
+      {% if user.id != request.user.id %}
+        <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+
+          <!-- Block / Unblock -->
+          <form method="POST" action="{% url 'user_toggle_block' user.pk %}" style="margin:0;">
+            {% csrf_token %}
+            <button type="submit"
+                    style="background:{% if user.is_blocked %}#4CAF50{% else %}#FF9800{% endif %};color:white;border:none;padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">
+              {% if user.is_blocked %}✅ Unblock{% else %}🚫 Block{% endif %}
+            </button>
+          </form>
+
+          <!-- Change Role -->
+          <form method="POST" action="{% url 'user_change_role' user.pk %}" style="margin:0;display:flex;gap:6px;">
+            {% csrf_token %}
+            <select name="role" style="padding:8px 10px;border:1px solid #ddd;border-radius:8px;font-size:13px;">
+              <option value="user"  {% if user.role == 'user' %}selected{% endif %}>User</option>
+              <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Admin</option>
+            </select>
+            <button type="submit"
+                    style="background:#3F51B5;color:white;border:none;padding:8px 12px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">
+              Change
+            </button>
+          </form>
+
+          <!-- Delete -->
+          <form method="POST" action="{% url 'user_delete' user.pk %}" style="margin:0;"
+                onsubmit="return confirm('Delete user {{ user.username }}? This cannot be undone.')">
+            {% csrf_token %}
+            <button type="submit"
+                    style="background:white;color:#f44336;border:2px solid #f44336;padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">
+              🗑️ Delete
+            </button>
+          </form>
+
+        </div>
+      {% else %}
+        <div style="color:#9E9E9E;font-size:13px;font-style:italic;">Your account</div>
+      {% endif %}
+
+    </div>
+  {% endfor %}
+{% endif %}
+{% endblock %}

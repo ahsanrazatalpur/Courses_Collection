@@ -1,0 +1,109 @@
+<!-- templates/dashboard/home.html -->
+{% extends 'dashboard/base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block appbar_title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+
+<p class="welcome-text">Welcome, {{ request.user.username }}! 👋</p>
+
+<!-- Analytics Cards (matches Flutter analyticsCard widgets) -->
+<div class="analytics-grid">
+    <div class="analytics-card bg-green">
+        <div class="a-icon">📦</div>
+        <div class="a-value">{{ total_products }}</div>
+        <div class="a-label">Total Products</div>
+    </div>
+    <div class="analytics-card bg-blue">
+        <div class="a-icon">✅</div>
+        <div class="a-value">{{ in_stock }}</div>
+        <div class="a-label">In Stock</div>
+    </div>
+    <div class="analytics-card bg-orange">
+        <div class="a-icon">⚠️</div>
+        <div class="a-value">{{ low_stock }}</div>
+        <div class="a-label">Low Stock</div>
+    </div>
+    <div class="analytics-card bg-red">
+        <div class="a-icon">🚫</div>
+        <div class="a-value">{{ out_of_stock }}</div>
+        <div class="a-label">Out of Stock</div>
+    </div>
+    <div class="analytics-card bg-amber">
+        <div class="a-icon">💰</div>
+        <div class="a-value">{{ total_orders }}</div>
+        <div class="a-label">Total Orders</div>
+    </div>
+</div>
+
+<!-- Recent Orders Table -->
+<div class="card">
+    <div class="card-header">
+        🕐 Recent Orders
+        <a href="{% url 'order_list' %}" class="btn btn-sm btn-indigo">View All</a>
+    </div>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Total</th>
+                    <th>Coupon</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in recent_orders %}
+                <tr>
+                    <td><strong>#{{ order.id }}</strong></td>
+                    <td>{{ order.full_name }}</td>
+                    <td><strong>Rs {{ order.total_amount }}</strong></td>
+                    <td>
+                        {% if order.coupon %}
+                        <span class="coupon-chip">{{ order.coupon.code }}</span>
+                        {% else %}
+                        <span style="color:#9E9E9E;">—</span>
+                        {% endif %}
+                    </td>
+                    <td><span class="status-badge status-{{ order.status }}">{{ order.status }}</span></td>
+                    <td>{{ order.created_at|date:"M d, Y" }}</td>
+                    <td>
+                        <a href="{% url 'order_detail' order.id %}" class="btn btn-sm btn-indigo">View</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" style="text-align:center;color:#9E9E9E;padding:30px;">
+                        No orders yet.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Quick Access -->
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:4px;">
+    <a href="{% url 'product_list' %}" class="analytics-card bg-indigo" style="text-decoration:none;">
+        <div class="a-icon">📦</div>
+        <div class="a-label" style="font-size:14px;">Manage Products</div>
+    </a>
+    <a href="{% url 'order_list' %}" class="analytics-card bg-indigo" style="text-decoration:none;">
+        <div class="a-icon">🛒</div>
+        <div class="a-label" style="font-size:14px;">Manage Orders</div>
+    </a>
+    <a href="{% url 'coupon_list' %}" class="analytics-card bg-indigo" style="text-decoration:none;">
+        <div class="a-icon">🏷️</div>
+        <div class="a-label" style="font-size:14px;">Manage Coupons</div>
+    </a>
+    <a href="{% url 'product_add' %}" class="analytics-card bg-green" style="text-decoration:none;">
+        <div class="a-icon">➕</div>
+        <div class="a-label" style="font-size:14px;">Add Product</div>
+    </a>
+</div>
+
+{% endblock %}

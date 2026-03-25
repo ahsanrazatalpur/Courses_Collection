@@ -1,0 +1,78 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}Manage Orders{% endblock %}
+{% block appbar_title %}Manage Orders{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <h3>🛒 Manage Orders</h3>
+</div>
+
+<!-- Filter tabs — status values match Order model: Pending/Shipped/Cancelled -->
+<div class="filter-tabs">
+    <a href="{% url 'order_list' %}"
+       class="filter-tab {% if not status_filter %}active{% endif %}">All</a>
+    <a href="{% url 'order_list' %}?status=Pending"
+       class="filter-tab {% if status_filter == 'Pending' %}active{% endif %}">⏳ Pending</a>
+    <a href="{% url 'order_list' %}?status=Shipped"
+       class="filter-tab {% if status_filter == 'Shipped' %}active{% endif %}">🚚 Shipped</a>
+    <a href="{% url 'order_list' %}?status=Cancelled"
+       class="filter-tab {% if status_filter == 'Cancelled' %}active{% endif %}">❌ Cancelled</a>
+</div>
+
+<div class="card">
+    <div class="card-header">📋 Orders ({{ orders|length }})</div>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Phone</th>
+                    <th>Total</th>
+                    <th>Coupon</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td><strong>#{{ order.id }}</strong></td>
+                    <td>{{ order.full_name }}</td>
+                    <td>{{ order.phone }}</td>
+                    <td><strong>Rs {{ order.total_amount }}</strong></td>
+                    <td>
+                        {% if order.coupon_applied %}
+                        <span class="coupon-chip">🏷️ Applied</span>
+                        {% else %}
+                        <span style="color:#9E9E9E;font-size:13px;">No coupon</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="status-badge status-{{ order.status|lower }}">
+                            {% if order.status == 'Pending' %}⏳
+                            {% elif order.status == 'Shipped' %}🚚
+                            {% else %}❌{% endif %}
+                            {{ order.status }}
+                        </span>
+                    </td>
+                    <td>{{ order.created_at|date:"M d, Y" }}</td>
+                    <td>
+                        <a href="{% url 'order_detail' order.id %}" class="btn btn-sm btn-indigo">👁️ View</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" style="text-align:center;color:#9E9E9E;padding:40px;">
+                        <div style="font-size:36px;margin-bottom:10px;">🛒</div>
+                        No orders found.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

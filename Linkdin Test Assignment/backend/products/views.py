@@ -43,6 +43,12 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
                     print("⚠️ Empty image field")
                     data.pop('image', None)
         
+        # ✅ KEY FIX: If actual file in FILES, remove 'image' from data
+        # to avoid conflict between file and any leftover string value
+        if 'image' in request.FILES and 'image' in data:
+            # Keep only the file from FILES, not any string from data
+            pass  # serializer will pick up from request.FILES automatically
+        
         serializer = self.get_serializer(data=data)
         
         try:
@@ -94,11 +100,18 @@ class ProductRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView)
         
         data = request.data.copy()
         
-        # ✅ FIX: Handle different update scenarios
+        # ✅ KEY FIX: When a file is uploaded via multipart,
+        # the existing image_url on the product can bleed into validation.
+        # We must explicitly clear image_url from data when uploading a file,
+        # and remove any leftover string from 'image' field in data.
         if 'image' in request.FILES:
-            # File upload - clear URL
+            # Real file upload — remove any string value of 'image' from data
+            # The file will be picked up from request.FILES by the parser
             print("✅ File upload detected - will clear image_url")
-            data['image_url'] = ''
+            # Remove string 'image' from data if present to avoid URL validation
+            if 'image' in data and isinstance(data.get('image'), str):
+                del data['image']
+            data['image_url'] = ''  # Clear existing URL
         elif 'image' in data:
             image_value = data['image']
             if isinstance(image_value, str):

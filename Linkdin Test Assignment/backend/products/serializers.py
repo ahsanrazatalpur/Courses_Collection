@@ -71,6 +71,38 @@ class ProductSerializer(serializers.ModelSerializer):
     def get_is_out_of_stock(self, obj):
         return obj.is_out_of_stock()
 
+    def to_internal_value(self, data):
+        """
+        ✅ KEY FIX: Intercepts data BEFORE validation.
+        If 'image' field contains a URL string (not a file object),
+        move it to 'image_url' to avoid "Enter a valid URL" error on ImageField.
+        This happens when existing products have image_url stored and
+        Flutter sends multipart data.
+        """
+        # Make data mutable if needed (QueryDict)
+        if hasattr(data, '_mutable'):
+            data._mutable = True
+
+        image_value = data.get('image', None)
+
+        # If image field contains a string instead of a file
+        if image_value and isinstance(image_value, str):
+            if image_value.startswith('http://') or image_value.startswith('https://'):
+                # It's a URL — move it to image_url field
+                data['image_url'] = image_value
+                try:
+                    del data['image']
+                except KeyError:
+                    pass
+            elif image_value.strip() == '':
+                # Empty string — remove it so existing image is preserved
+                try:
+                    del data['image']
+                except KeyError:
+                    pass
+
+        return super().to_internal_value(data)
+
     def validate(self, data):
         """
         ✅ FIXED: Only validate image requirement for NEW products
@@ -90,6 +122,12 @@ class ProductSerializer(serializers.ModelSerializer):
         # For updates (self.instance exists), validation passes
         # Existing image will be preserved if none provided
         return data
+
+    def create(self, validated_data):
+        """
+        ✅ Handle product creation
+        """
+        return Product.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
         """

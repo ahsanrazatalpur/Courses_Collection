@@ -1,0 +1,144 @@
+<!-- templates/dashboard/products/form.html -->
+{% extends 'dashboard/base.html' %}
+{% block title %}{{ action }} Product{% endblock %}
+{% block appbar_title %}{{ action }} Product{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <h3>{% if action == 'Add' %}➕ Add Product{% else %}✏️ Edit Product{% endif %}</h3>
+    <a href="{% url 'product_list' %}" class="btn btn-outline">← Back to Products</a>
+</div>
+
+<div style="max-width:520px;">
+    <div class="card">
+        <div class="card-header">
+            📋 Product Details
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" style="padding:20px;">
+            {% csrf_token %}
+
+            <!-- Image Preview (matches Flutter image preview widget) -->
+            <div class="form-group">
+                <label class="form-label">Product Image</label>
+
+                <!-- Preview box -->
+                <div id="imgPreviewWrap" style="
+                    width:100%; height:160px;
+                    background:#F5F5F5;
+                    border-radius:12px;
+                    border:2px dashed #E0E0E0;
+                    display:flex; align-items:center; justify-content:center;
+                    overflow:hidden;
+                    margin-bottom:10px;
+                    cursor:pointer;
+                    position:relative;
+                " onclick="document.getElementById('imageInput').click()">
+                    {% if product and product.image %}
+                    <img id="imgPreview" src="{{ product.image.url }}"
+                         style="width:100%;height:100%;object-fit:cover;"
+                         alt="Current image">
+                    {% else %}
+                    <div id="imgPlaceholder" style="text-align:center;color:#9E9E9E;">
+                        <div style="font-size:48px;">🛍️</div>
+                        <div style="font-size:13px;margin-top:6px;">Click to select image</div>
+                    </div>
+                    <img id="imgPreview" style="display:none;width:100%;height:100%;object-fit:cover;">
+                    {% endif %}
+
+                    <!-- Camera overlay icon (matches Flutter camera icon) -->
+                    <div style="
+                        position:absolute;bottom:10px;right:10px;
+                        background:rgba(63,81,181,0.85);
+                        border-radius:50%; width:36px;height:36px;
+                        display:flex;align-items:center;justify-content:center;
+                        font-size:18px;
+                    ">📷</div>
+                </div>
+
+                <!-- File input (hidden) -->
+                <input type="file" id="imageInput" name="image" accept="image/*"
+                       style="display:none;" onchange="previewImage(this)">
+
+                <!-- URL input (matches Flutter URL option) -->
+                <div class="form-group" style="margin-bottom:0;">
+                    <label class="form-label" style="margin-top:8px;">Or enter image URL</label>
+                    <input type="url" name="image_url" class="form-control"
+                           placeholder="https://example.com/image.jpg"
+                           value="{% if product and product.image %}{{ product.image.url }}{% endif %}"
+                           oninput="previewUrl(this.value)">
+                </div>
+            </div>
+
+            <!-- Product Name -->
+            <div class="form-group">
+                <label class="form-label">Product Name</label>
+                <input type="text" name="name" class="form-control"
+                       value="{% if product %}{{ product.name }}{% endif %}"
+                       placeholder="e.g. Nike Air Max" required>
+            </div>
+
+            <!-- Description -->
+            <div class="form-group">
+                <label class="form-label">Description</label>
+                <textarea name="description" class="form-control"
+                          placeholder="Product description...">{% if product %}{{ product.description }}{% endif %}</textarea>
+            </div>
+
+            <!-- Price + Stock (side by side like Flutter row) -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+                <div class="form-group">
+                    <label class="form-label">Price (Rs)</label>
+                    <input type="number" name="price" step="0.01" class="form-control"
+                           value="{% if product %}{{ product.price }}{% endif %}"
+                           placeholder="0.00" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Stock Quantity</label>
+                    <input type="number" name="stock" class="form-control"
+                           value="{% if product %}{{ product.stock }}{% endif %}"
+                           placeholder="0" required>
+                </div>
+            </div>
+
+            <!-- Buttons (matches Flutter Save + Cancel row) -->
+            <div style="display:flex;gap:12px;margin-top:8px;">
+                <button type="submit" class="btn btn-indigo" style="flex:1;justify-content:center;">
+                    {% if action == 'Add' %}➕ Add Product{% else %}💾 Update Product{% endif %}
+                </button>
+                <a href="{% url 'product_list' %}" class="btn btn-outline" style="flex:1;justify-content:center;">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                const img = document.getElementById('imgPreview');
+                const placeholder = document.getElementById('imgPlaceholder');
+                img.src = e.target.result;
+                img.style.display = 'block';
+                if (placeholder) placeholder.style.display = 'none';
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function previewUrl(url) {
+        if (url.startsWith('http://') || url.startsWith('https://')) {
+            const img = document.getElementById('imgPreview');
+            const placeholder = document.getElementById('imgPlaceholder');
+            img.src = url;
+            img.style.display = 'block';
+            if (placeholder) placeholder.style.display = 'none';
+        }
+    }
+</script>
+
+{% endblock %}
